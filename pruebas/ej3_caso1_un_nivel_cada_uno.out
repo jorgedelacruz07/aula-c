@@ -1,0 +1,12 @@
+Ingrese la cantidad de mediciones: Medicion 1 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 50000.00 lux: Luz solar directa BRILLANTE
+Medicion 2 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 15000.00 lux: Luz diurna de CIELO AZUL
+Medicion 3 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el flujo luminoso (lm) y el area (m2):   -> 5000.00 lux: Dia NUBLADO
+Medicion 4 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 400.00 lux: OCASO
+
+========== REPORTE FINAL ==========
+Total de mediciones     : 4
+Brillante (sol directo) : 1 (25.00%)
+Cielo azul              : 1 (25.00%)
+Nublado                 : 1 (25.00%)
+Ocaso                   : 1 (25.00%)
+Mediciones invalidas    : 0

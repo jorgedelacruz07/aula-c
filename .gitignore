@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Xcode
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcbkptlist
+*.moved-aside
+profile
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# Build & binaries
+build/
+bin/
+*.o
+*.obj
+*.dylib
+*.dSYM/
+
+# Keep test cases and expected outputs in pruebas/
+!pruebas/*.out
+!pruebas/*.in

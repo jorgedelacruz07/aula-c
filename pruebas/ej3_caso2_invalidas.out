@@ -1,0 +1,11 @@
+Ingrese la cantidad de mediciones: Medicion 1 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el flujo luminoso (lm) y el area (m2):   -> Medicion invalida: no se clasifica
+Medicion 2 - Tipo (I = iluminancia directa, F = flujo/area):   -> Medicion invalida: no se clasifica
+Medicion 3 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 200.00 lux: OCASO
+
+========== REPORTE FINAL ==========
+Total de mediciones     : 3
+Brillante (sol directo) : 0 (0.00%)
+Cielo azul              : 0 (0.00%)
+Nublado                 : 0 (0.00%)
+Ocaso                   : 1 (33.33%)
+Mediciones invalidas    : 2

@@ -1,0 +1,4 @@
+1) Rotar un numero
+2) Sumar en base b
+Seleccione una opcion: Ingrese el numero y la cantidad de rotaciones k: Ingrese el sentido (D = derecha, I = izquierda): Numero original: 12345
+Numero tras 2 rotacion(es) en sentido D: 45123

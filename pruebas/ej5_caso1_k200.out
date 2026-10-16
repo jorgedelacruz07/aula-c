@@ -1,0 +1,3 @@
+Ingrese la constante del resorte k (N/m): Ingrese la posicion inicial a y la final b (m): Trabajo aproximado (Riemann): 24.9995 J
+Trabajo exacto (integral)   : 25.0000 J
+La aproximacion coincide con el valor exacto (tolerancia 0.01 J)
