@@ -41,9 +41,11 @@
 #define b1  101
 #define b2  102
 #define b3  103
+#define b4  104
 #define B1  101
 #define B2  102
 #define B3  103
+#define B4  104
 
 #define i1  201
 #define i2  202
@@ -65,7 +67,7 @@
  *  ELIGE AQUI EL EJERCICIO A EJECUTAR CON Cmd + R
  *  Opciones: 1..5 (o ej1..ej5) | b1, b2, b3 | i1, i2, i3 | a1, a2, a3, a4
  * ============================================================================= */
-#define EJERCICIO b1
+#define EJERCICIO b4
 
 /* Los ejercicios usan "int main()" como pide el curso; Xcode activa
    -Wstrict-prototypes y avisaría. Se silencia solo aquí, no en los ejercicios. */
@@ -87,6 +89,8 @@
 #define RUTA_EJERCICIO "../ejercicios/basico/b2_mcm_y_pi_wallis.c"
 #elif EJERCICIO == 103
 #define RUTA_EJERCICIO "../ejercicios/basico/b3_tres_consecutivos.c"
+#elif EJERCICIO == 104
+#define RUTA_EJERCICIO "../ejercicios/basico/b4.c"
 #elif EJERCICIO == 201
 #define RUTA_EJERCICIO "../ejercicios/intermedio/i1_collatz_y_catalanes.c"
 #elif EJERCICIO == 202
@@ -120,9 +124,11 @@
 #undef b1
 #undef b2
 #undef b3
+#undef b4
 #undef B1
 #undef B2
 #undef B3
+#undef B4
 #undef i1
 #undef i2
 #undef i3
