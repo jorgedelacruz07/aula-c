@@ -41,6 +41,7 @@ make all        # compila los 15 programas en build/
 make test       # corre los 30 casos de pruebas/ y compara la salida exacta
 make reglas     # revisa que los 15 archivos cumplan las restricciones del curso
 make ansi       # verifica que compilen en ANSI C89 estricto (-std=c89 -pedantic)
+make verify     # compila y ejecuta todas las comprobaciones de calidad
 make clean      # borra build/
 ```
 

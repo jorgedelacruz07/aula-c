@@ -25,7 +25,7 @@ EJ5 = ej5_riemann_y_limites
 EJERCICIOS = $(EJ1) $(EJ2) $(EJ3) $(EJ4) $(EJ5)
 BINARIOS   = $(addprefix $(BIN_DIR)/,$(EJERCICIOS))
 
-.PHONY: all ej1 ej2 ej3 ej4 ej5 test reglas ansi clean help
+.PHONY: all ej1 ej2 ej3 ej4 ej5 test reglas ansi verify clean help
 
 all: $(BINARIOS)
 
@@ -67,9 +67,17 @@ reglas:
 	@sh herramientas/verificar_reglas.sh $(addprefix $(SRC_DIR)/,$(addsuffix .c,$(EJERCICIOS)))
 
 ansi:
-	@for f in $(addprefix $(SRC_DIR)/,$(addsuffix .c,$(EJERCICIOS))); do \
-		$(CC) -std=c89 -pedantic $(CFLAGS) -Wno-strict-prototypes -fsyntax-only $$f && echo "  OK  $$f (C89)"; \
-	done
+	@fallas=0; \
+	for f in $(addprefix $(SRC_DIR)/,$(addsuffix .c,$(EJERCICIOS))); do \
+		if $(CC) -std=c89 -pedantic $(CFLAGS) -Wno-strict-prototypes -fsyntax-only $$f; then \
+			echo "  OK  $$f (C89)"; \
+		else \
+			echo "  FALLA $$f (C89)"; fallas=$$((fallas + 1)); \
+		fi; \
+	done; \
+	test $$fallas -eq 0
+
+verify: all test reglas ansi
 
 clean:
 	rm -rf $(BIN_DIR)
@@ -171,5 +179,6 @@ list:
 	@echo "    make reglas -> Verifica las reglas estrictas PUCP en los 15 archivos"
 	@echo "    make ansi   -> Verifica compatibilidad ANSI C89 en los 15 archivos"
 	@echo "    make test   -> Ejecuta la bateria de pruebas automaticas"
+	@echo "    make verify -> Compila, prueba y valida reglas del curso + C89"
 	@echo "    make clean  -> Elimina la carpeta build/"
 	@echo "======================================================================"
