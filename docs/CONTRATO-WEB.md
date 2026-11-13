@@ -34,3 +34,16 @@ Autorización: solicitud del propietario para una guía práctica de C en web, c
 ## Cierre
 
 Preservar cambios ajenos, registrar comprobaciones reales y limitaciones en ledger/handoff. No commit, push, despliegue ni cambios de credenciales. El proyecto no tiene perfil de cola: registrar ledger local, sin inventar una cola.
+
+## Ajuste autorizado: legibilidad y nombre Aula C
+
+Solicitud 2026-11-13: corregir textos demasiado pequeños e iconos repetidos sin rediseñar la estética; renombrar carpetas, referencias activas, repositorio GitHub y Switchboard a Aula C.
+
+- App: escala legible (lectura 16 px, código 15 px, controles 14–16 px y metadatos mínimo 12 px), ambos temas, archivo PUCP y modo docente. Preservar ejercicios y cambios anteriores.
+- Identidad: carpeta `~/Projects/Aula C`, repositorio `jorgedelacruz07/aula-c`, paquete `aula-c`, registro/launcher `aulac`; puerto 5183 y proyecto Firebase existentes.
+- Meta-repo: rutas y claves activas en launcher/remoto/workflow/tests/configuración versionada; proyecciones mediante `workspace:sync`. Documentos históricos conservan su fecha y procedencia.
+- Vault/ProjectsDocs: renombrar la ficha de proyecto, corregir navegación y regenerar desde fuentes, sin duplicar manuales.
+- T3: actualizar título y carpeta del proyecto existente, conservando hilos. Xcode: renombrar el contenedor de proyecto conservando target y fuentes.
+- Validación: quick, reglas C, pruebas de integración afectadas, tamaños computados y flujos en navegador claro/oscuro/móvil. Publicar por `npm run deploy` al destino ya autorizado.
+- La migración exige reiniciar únicamente el servidor de este proyecto desde la nueva carpeta; queda autorizada como parte necesaria del cambio solicitado. No reiniciar otros proyectos ni instalar Switchboard.
+- Sin commits ni push de código. Renombrar el repositorio remoto y actualizar origin sí está expresamente solicitado.

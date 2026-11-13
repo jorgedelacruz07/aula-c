@@ -1,23 +1,26 @@
 import { lessons } from "./curriculum.js";
 import { symbols, passes, escapeHtml as esc } from "./learning.js";
 import { CRunner } from "./runner.js";
+
 const $ = (selector) => document.querySelector(selector);
 const runner = new CRunner();
-const storageKey = "aula-c:v1";
+const storageKey = "aula-c:v2";
 let saved;
 try {
   saved = JSON.parse(localStorage.getItem(storageKey));
 } catch {
-  /* Private browsing may disable storage. */
+  /* Navegación privada */
 }
 const state = { drafts: {}, checked: {}, ...saved };
 if (!state.drafts || typeof state.drafts !== "object") state.drafts = {};
 if (!state.checked || typeof state.checked !== "object") state.checked = {};
+
 let selected = null,
   original = "",
   catalog = [],
   loadVersion = 0,
   actionVersion = 0;
+
 function persist() {
   try {
     localStorage.setItem(storageKey, JSON.stringify(state));
@@ -25,18 +28,45 @@ function persist() {
     $("#execution-status").textContent = "No se pudo guardar el borrador en este navegador.";
   }
 }
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  try {
+    localStorage.setItem("aula-theme", theme);
+  } catch {}
+  const isDark = theme === "dark";
+  const icon = $("#theme-icon");
+  const text = $("#theme-text");
+  if (icon) icon.textContent = isDark ? "☀️" : "🌙";
+  if (text) text.textContent = isDark ? "Claro" : "Oscuro";
+}
+
+const savedTheme = localStorage.getItem("aula-theme");
+const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+applyTheme(initialTheme);
+
+if ($("#theme-toggle")) {
+  $("#theme-toggle").onclick = () => {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    applyTheme(current === "dark" ? "light" : "dark");
+  };
+}
+
 function updateProgress() {
   const count = lessons.filter((item) => typeof state.checked[item.path] === "string").length;
   $("#progress").textContent = `${count} de ${lessons.length} casos verificados`;
 }
+
 function renderLessons() {
+  const query = $("#search").value.toLocaleLowerCase("es");
   const visible = lessons.filter(
     (item) =>
       ($("#level").value === "all" || item.level === $("#level").value) &&
       ($("#topic").value === "all" || item.topic === $("#topic").value) &&
-      `${item.title} ${item.topic} ${item.concept}`
+      `${item.title} ${item.topic} ${item.concept} ${item.everyday || ""}`
         .toLocaleLowerCase("es")
-        .includes($("#search").value.toLocaleLowerCase("es")),
+        .includes(query),
   );
   $("#lesson-count").textContent = visible.length;
   $("#lesson-list").innerHTML =
@@ -52,21 +82,76 @@ function renderLessons() {
       (button) => (button.onclick = () => load(lessons.find((item) => item.id === button.dataset.lesson))),
     );
 }
+
 function explain(symbol) {
   $("#symbol-explanation").textContent = symbols[symbol] || "";
   document
     .querySelectorAll("[data-symbol]")
     .forEach((button) => button.classList.toggle("active", button.dataset.symbol === symbol));
 }
+
 function theory(item) {
   const isLesson = !!item.concept;
-  $("#lesson-content").innerHTML =
-    `<div class="lesson-meta"><span>${esc(item.level)}</span><span> / ${esc(item.topic)}</span><span>${isLesson ? ` / ${item.minutes} min de práctica` : ` / Perfil ${esc(item.stage)}`}</span></div><h3>${esc(item.title)}</h3><p class="lesson-concept">${esc(item.concept || "Lee el encabezado y los contratos de las funciones. Predice la salida, selecciona un caso disponible y compara tu razonamiento con la ejecución.")}</p><div class="explanation"><b>EL PORQUÉ</b>${esc(item.why || "Este programa se carga desde su archivo original. Las restricciones de su perfil pertenecen al material de práctica: C general también permite arreglos, estructuras y otros ciclos. El compilador C89 comprueba sintaxis de ese estándar, no las reglas académicas particulares.")}</div><div class="symbols">${(item.symbols || ["&", "*", "%d", "while", "return"]).map((symbol) => `<button class="symbol" data-symbol="${esc(symbol)}">${esc(symbol)}</button>`).join("")}</div><p id="symbol-explanation" aria-live="polite"></p><details class="concept-details"><summary>Un error que vale la pena entender</summary><p>${esc(item.trap || "Valida las conversiones de scanf, los divisores y los límites antes de operar. Que un programa compile no garantiza que su resultado sea correcto.")}</p></details><details class="concept-details"><summary>Ahora te toca: modifica y explica</summary><p>${esc(item.challenge || "Añade un caso límite, justifica su salida y explica la responsabilidad de cada función. Los casos guardados no cubren necesariamente todo el dominio.")}</p></details><div class="teacher-content" ${$("#teacher-mode").checked ? "" : "hidden"}><b>PARA TU SIGUIENTE CLASE</b><p>${esc(item.teacher || "Dibuja el flujo entre módulos. Pide al alumno elegir una variable y describir su tipo, propósito, rango y duración; después solicita una prueba que pueda refutar su solución.")}</p></div>`;
+  const teacherActive = $("#teacher-mode").checked;
+
+  $("#lesson-content").innerHTML = `
+    <div class="lesson-meta">
+      <span>${esc(item.level)}</span><span> / ${esc(item.topic || (item.stage === "Anidados" ? "Ciclos anidados" : "Algoritmos numéricos"))}</span><span>${isLesson ? ` / ${item.minutes} min de práctica` : ` / Perfil ${esc(item.stage)}`}</span>
+    </div>
+    <h3>${esc(item.title)}</h3>
+    ${item.everyday ? `<p class="everyday-hint">${esc(item.everyday)}</p>` : ""}
+    <p class="lesson-concept">${esc(item.concept || "Lee el encabezado y los contratos de las funciones. Predice la salida, selecciona un caso disponible y compara tu razonamiento con la ejecución.")}</p>
+    <div class="explanation">
+      <b>EL PORQUÉ</b>
+      ${esc(item.why || "Este programa se carga desde su archivo original. Las restricciones de su perfil pertenecen al material de práctica: C general también permite arreglos, estructuras y otros ciclos. El compilador C89 comprueba sintaxis de ese estándar, no las reglas académicas particulares.")}
+    </div>
+    <div class="symbols">
+      ${(item.symbols || ["&", "*", "%d", "while", "return"])
+        .map((symbol) => `<button class="symbol" data-symbol="${esc(symbol)}">${esc(symbol)}</button>`)
+        .join("")}
+    </div>
+    <p id="symbol-explanation" aria-live="polite"></p>
+    <details class="concept-details">
+      <summary>Un error que vale la pena entender</summary>
+      <p>${esc(item.trap || "Valida las conversiones de scanf, los divisores y los límites antes de operar. Que un programa compile no garantiza que su resultado sea correcto.")}</p>
+    </details>
+    <details class="concept-details">
+      <summary>Ahora te toca: modifica y explica</summary>
+      <p>${esc(item.challenge || "Añade un caso límite, justifica su salida y explica la responsabilidad de cada función. Los casos guardados no cubren necesariamente todo el dominio.")}</p>
+    </details>
+    <div class="teacher-content" ${teacherActive ? "" : "hidden"}>
+      <b>PARA TU SIGUIENTE CLASE · MODO DOCENTE (PUCP / UNI / UNMSM)</b>
+      <p>${esc(item.teacher || "Dibuja el flujo entre módulos. Pide al alumno elegir una variable y describir su tipo, propósito, rango y duración; después solicita una prueba que pueda refutar su solución.")}</p>
+      ${
+        item.teacherDetails
+          ? `
+      <div class="teacher-sections">
+        <div>
+          <h4>Preguntas socráticas</h4>
+          <ul>${item.teacherDetails.questions.map((q) => `<li>${esc(q)}</li>`).join("")}</ul>
+        </div>
+        <div>
+          <h4>Puntos ciegos de alumnos</h4>
+          <ul>${item.teacherDetails.blindspots.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>
+        </div>
+        <div>
+          <h4>Rúbrica de evaluación</h4>
+          <ul>${item.teacherDetails.rubric.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+        </div>
+      </div>
+      ${item.teacherDetails.blackboard ? `<p style="margin-top:6px;font-family:monospace;font-size:10px;"><b>Pizarra:</b> ${esc(item.teacherDetails.blackboard)}</p>` : ""}
+      `
+          : ""
+      }
+    </div>
+  `;
+
   document
     .querySelectorAll("[data-symbol]")
     .forEach((button) => (button.onclick = () => explain(button.dataset.symbol)));
   explain((item.symbols || ["&"])[0]);
 }
+
 function busy(value) {
   for (const id of ["run", "verify", "reset", "import", "standard", "test-case"])
     $(`#${id}`).disabled = value;
@@ -75,6 +160,7 @@ function busy(value) {
   $("#source").readOnly = value;
   $("#stdin").readOnly = value;
 }
+
 async function load(item) {
   runner.cancel();
   actionVersion++;
@@ -96,10 +182,10 @@ async function load(item) {
     if (version !== loadVersion) return;
     original = source;
     $("#source").value = state.drafts[item.path] ?? source;
-    $("#test-case").innerHTML = item.tests.length
+    $("#test-case").innerHTML = item.tests?.length
       ? item.tests.map((test, i) => `<option value="${i}">${esc(test.name)}</option>`).join("")
       : "<option>Sin casos guardados</option>";
-    $("#stdin").value = item.tests[0]?.input || "";
+    $("#stdin").value = item.tests?.[0]?.input || "";
     $("#output").textContent = "Predice la salida. Luego ejecuta o verifica los casos de referencia.";
     $("#execution-status").textContent =
       state.checked[item.path] === $("#source").value
@@ -120,6 +206,7 @@ async function load(item) {
     }
   }
 }
+
 function recordDraft() {
   if (!selected) return;
   state.drafts[selected.path] = $("#source").value;
@@ -129,6 +216,7 @@ function recordDraft() {
   updateProgress();
   renderLessons();
 }
+
 async function execute(verify = false) {
   if (!selected || runner.active || !original) return;
   const version = ++actionVersion;
@@ -182,22 +270,24 @@ async function execute(verify = false) {
     if (version === actionVersion) busy(false);
   }
 }
+
 function renderExercises() {
   const query = $("#exercise-search").value.toLocaleLowerCase("es");
   const visible = catalog.filter(
     (item) =>
       ($("#exercise-stage").value === "all" || item.stage === $("#exercise-stage").value) &&
       ($("#exercise-level").value === "all" || item.level === $("#exercise-level").value) &&
-      `${item.title} ${item.id} ${item.topic}`.toLocaleLowerCase("es").includes(query),
+      `${item.title} ${item.id} ${item.topic} ${item.everyday || ""}`.toLocaleLowerCase("es").includes(query),
   );
   $("#exercise-count").textContent = `${visible.length} de ${catalog.length} ejercicios`;
   $("#exercise-list").innerHTML =
     visible
       .map(
         (item, i) =>
-          `<button class="exercise-card" data-exercise="${i}"><small>${esc(item.stage)} · ${esc(item.level)}</small><h3>${esc(item.title)}</h3><span>${item.tests.length ? `${item.tests.length} casos disponibles` : "Exploración libre · sin pruebas"} ↗</span></button>`,
+          `<button class="exercise-card" data-exercise="${i}"><small>${esc(item.stage)} · ${esc(item.level)}</small><h3>${esc(item.title)}</h3>${item.everyday ? `<div class="exercise-everyday-text">${esc(item.everyday)}</div>` : ""}<span>${item.tests?.length ? `${item.tests.length} casos disponibles` : "Exploración libre · sin pruebas"}</span></button>`,
       )
       .join("") || '<p class="empty">No hay ejercicios con esos filtros.</p>';
+
   document.querySelectorAll("[data-exercise]").forEach(
     (button) =>
       (button.onclick = () => {
@@ -206,10 +296,12 @@ function renderExercises() {
       }),
   );
 }
+
 for (const topic of new Set(lessons.map((item) => item.topic))) $("#topic").add(new Option(topic, topic));
 for (const id of ["level", "topic", "search"]) $(`#${id}`).addEventListener("input", renderLessons);
 for (const id of ["exercise-stage", "exercise-level", "exercise-search"])
   $(`#${id}`).addEventListener("input", renderExercises);
+
 document.querySelectorAll("[data-level]").forEach(
   (button) =>
     (button.onclick = () => {
@@ -221,12 +313,14 @@ document.querySelectorAll("[data-level]").forEach(
       $("#laboratorio").scrollIntoView({ behavior: "smooth" });
     }),
 );
+
 $("#teacher-mode").checked = state.teacher === true;
 $("#teacher-mode").onchange = () => {
   state.teacher = $("#teacher-mode").checked;
   persist();
   if (selected) theory(selected);
 };
+
 $("#run").onclick = () => execute();
 $("#verify").onclick = () => execute(true);
 $("#stop").onclick = () => runner.cancel();
@@ -241,20 +335,24 @@ $("#source").addEventListener("keydown", (event) => {
     recordDraft();
   }
 });
+
 document.addEventListener("keydown", (event) => {
   if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
     event.preventDefault();
     execute();
   }
 });
+
 $("#reset").onclick = () => {
   $("#source").value = original;
   recordDraft();
   $("#execution-status").textContent = "Ejemplo restaurado";
 };
+
 $("#test-case").onchange = () => {
   $("#stdin").value = selected.tests[Number($("#test-case").value)]?.input || "";
 };
+
 $("#download").onclick = () => {
   const url = URL.createObjectURL(new Blob([$("#source").value], { type: "text/x-c" }));
   const link = document.createElement("a");
@@ -263,6 +361,7 @@ $("#download").onclick = () => {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
+
 $("#import").onclick = () => $("#file-input").click();
 $("#file-input").onchange = async (event) => {
   const file = event.target.files[0];
@@ -288,6 +387,7 @@ $("#file-input").onchange = async (event) => {
       level: "Personal",
       tests: [],
       stage: "Personal",
+      everyday: "Archivo C personalizado importado.",
     };
     original = source;
     $("#source").value = original;
@@ -311,8 +411,10 @@ $("#file-input").onchange = async (event) => {
     event.target.value = "";
   }
 };
+
 window.addEventListener("beforeunload", () => runner.cancel());
 updateProgress();
+
 try {
   const response = await fetch("/catalog.json");
   if (!response.ok) throw new Error("Catálogo no disponible.");
@@ -322,6 +424,7 @@ try {
   $("#exercise-count").textContent = "Catálogo no disponible";
   $("#exercise-list").textContent = "Ejecuta npm run prepare:content y recarga.";
 }
+
 const requested = new URLSearchParams(location.search).get("leccion") || state.last;
 await load(
   lessons.find((item) => item.id === requested) ||

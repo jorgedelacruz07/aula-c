@@ -11,7 +11,15 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%2319283f%27/%3E%3Ctext x=%2712%27 y=%2747%27 font-family=%27serif%27 font-size=%2746%27 fill=%27%23d3e5a6%27%3EC%3C/text%3E%3C/svg%3E"
     />
-    <title>1INF01 · Laboratorio de Mauricio</title>
+    <title>1INF01 · Archivo de Mentoría PUCP</title>
+    <script>
+      (function () {
+        const saved = localStorage.getItem("aula-theme");
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = saved || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
     <link rel="stylesheet" href="/legacy/tailwind.css" />
     <link
       crossorigin="anonymous"
@@ -20,58 +28,70 @@
     />
     <link rel="stylesheet" href="css/styles.css" />
   </head>
-  <body class="bg-slate-950 text-slate-100">
-    <header class="border-b border-slate-800 sticky top-0 z-20 bg-slate-950/95 backdrop-blur">
-      <div class="max-w-7xl mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-3">
-        <a href="#inicio" class="font-black text-lg tracking-tight"
-          >1INF01 <span class="text-cyan-300">/ Estudio</span></a
-        >
-        <nav class="flex gap-4 text-sm text-slate-300">
-          <a href="#mapa">Reglas</a><a href="#punteros">Punteros</a><a href="#recetario">Recetario</a
-          ><a href="#catalogo">Ejercicios</a><a href="#quiz">Quiz</a>
+  <body>
+    <header class="archivo-header">
+      <div class="archivo-nav-container">
+        <div class="archivo-brand">
+          <a href="/" class="back-to-aula">← Volver al Aula C</a>
+          <a href="#inicio" class="archivo-title">1INF01 <span>/ Archivo PUCP</span></a>
+        </div>
+        <nav class="archivo-nav">
+          <a href="#mapa">Reglas</a>
+          <a href="#fundamentos">Fundamentos</a>
+          <a href="#punteros">Punteros</a>
+          <a href="#recetario">Recetario</a>
+          <a href="#catalogo">Ejercicios</a>
+          <a href="#quiz">Quiz</a>
+          <button id="theme-toggle" class="theme-toggle-btn" aria-label="Cambiar tema">
+            <span id="theme-icon">🌙</span> <span id="theme-text">Oscuro</span>
+          </button>
         </nav>
       </div>
     </header>
+
     <main id="inicio" class="max-w-7xl mx-auto px-5">
-      <section class="py-16 grid lg:grid-cols-[1.3fr_.7fr] gap-8 items-center">
+      <section class="py-8 grid lg:grid-cols-[1.3fr_.7fr] gap-6 items-center">
         <div>
-          <p class="uppercase tracking-[.25em] text-cyan-300 text-xs font-bold">
+          <p class="uppercase tracking-[.2em] text-cyan-500 font-bold text-xs" style="color: var(--blue)">
             EEGGCC · PUCP · Guías 8 y 9
           </p>
-          <h1 class="text-4xl md:text-6xl font-black mt-4 leading-tight">
-            De los ciclos simples<br /><span class="text-cyan-300">a la anidación con método.</span>
+          <h1 class="text-3xl md:text-5xl font-black mt-2 leading-tight" style="color: var(--ink)">
+            De los ciclos simples<br /><span style="color: var(--blue)">a la anidación con método.</span>
           </h1>
-          <p class="text-slate-300 mt-5 max-w-2xl">
-            Una mesa de trabajo para practicar recorridos, centinelas, punteros y algoritmos numéricos sin
-            arreglos. Cada programa se conecta con su fuente real en el repositorio.
+          <p class="mt-3 max-w-2xl text-sm leading-relaxed" style="color: var(--muted)">
+            Mesa de trabajo para practicar recorridos, centinelas, punteros y algoritmos numéricos sin
+            arreglos. Cada programa se conecta con su archivo fuente original en el repositorio.
           </p>
-          <a
-            href="#catalogo"
-            class="inline-block mt-7 bg-cyan-300 text-slate-950 font-bold px-5 py-3 rounded-xl"
-            >Abrir catálogo →</a
-          >
+          <div class="flex gap-3 mt-4">
+            <a href="#catalogo" class="button-primary inline-flex items-center gap-2">Abrir catálogo →</a>
+            <a href="#recetario" class="button-secondary inline-flex items-center gap-2">Ver recetario</a>
+          </div>
         </div>
-        <div class="panel p-6">
-          <div class="text-xs uppercase tracking-widest text-slate-400">Ruta sugerida</div>
-          <ol class="mt-4 space-y-3">
-            <li><span class="badge">01</span> Cambia de perfil: Guías 1-6 → 8-9</li>
-            <li><span class="badge">02</span> Simula punteros con dos resultados</li>
-            <li><span class="badge">03</span> Traza una técnica sin arreglos</li>
-            <li><span class="badge">04</span> Resuelve un ejercicio y un bug</li>
+        <div class="panel p-5">
+          <div class="text-xs uppercase tracking-wider font-bold" style="color: var(--blue)">
+            Ruta sugerida
+          </div>
+          <ol class="mt-3 space-y-2 text-sm" style="color: var(--ink-secondary)">
+            <li class="flex items-center"><span class="badge">01</span> Cambia de perfil: Guías 1-6 → 8-9</li>
+            <li class="flex items-center">
+              <span class="badge">02</span> Simula punteros con dos resultados
+            </li>
+            <li class="flex items-center"><span class="badge">03</span> Traza una técnica sin arreglos</li>
+            <li class="flex items-center"><span class="badge">04</span> Resuelve un ejercicio y un bug</li>
           </ol>
         </div>
       </section>
 
-      <section id="mapa" class="py-10">
+      <section id="mapa" class="py-6 border-t" style="border-color: var(--line)">
         <div class="section-heading">
           <p>01 · Mapa mental</p>
           <h2>Dos etapas, dos perfiles de reglas</h2>
         </div>
-        <div class="grid md:grid-cols-2 gap-5 mt-6">
-          <article class="panel p-6">
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <article class="panel p-5">
             <span class="tag tag-slate">Parcial · Guías 1-6</span>
-            <h3 class="text-2xl font-bold mt-3">Control básico</h3>
-            <ul class="check-list mt-4">
+            <h3 class="text-xl font-bold mt-2" style="color: var(--ink)">Control básico</h3>
+            <ul class="check-list">
               <li><b>Permitido:</b> while por contador, funciones, punteros de salida y double.</li>
               <li>
                 <b>Prohibido:</b> for, break, continue, arreglos, strings, struct, bool, float y conteo de
@@ -80,10 +100,10 @@
               <li>Validación secuencial: primero leer y validar; luego procesar.</li>
             </ul>
           </article>
-          <article class="panel p-6 border-cyan-900">
+          <article class="panel p-5" style="border-color: var(--blue)">
             <span class="tag tag-cyan">Laboratorios · Guías 8-9</span>
-            <h3 class="text-2xl font-bold mt-3">Ciclos anidados</h3>
-            <ul class="check-list mt-4">
+            <h3 class="text-xl font-bold mt-2" style="color: var(--ink)">Ciclos anidados</h3>
+            <ul class="check-list">
               <li>Se habilitan for, while anidado, centinelas, break y continue.</li>
               <li>Se habilitan +=, *=, asignación en cascada y salida %02d.</li>
               <li>Contar cifras ahora <b>exige</b> iteración: while (n != 0) { digitos++; n /= 10; }.</li>
@@ -94,13 +114,13 @@
             </ul>
           </article>
         </div>
-        <div class="warning mt-5">
+        <div class="warning mt-4">
           <b>Nota 0 en ambas etapas:</b> arreglos, cadenas, struct, memoria dinámica, variables globales,
           bool, float y switch. En Guías 8-9, no olvides la cuota arquitectónica.
         </div>
-        <div class="panel mt-5 p-6 overflow-x-auto">
-          <h3 class="text-xl font-bold">Traductor rápido · PSeInt ↔ C</h3>
-          <table class="study-table mt-4">
+        <div class="panel mt-4 p-5 overflow-x-auto">
+          <h3 class="text-lg font-bold" style="color: var(--ink)">Traductor rápido · PSeInt ↔ C</h3>
+          <table class="study-table mt-3">
             <thead>
               <tr>
                 <th>PSeInt (perfil PUCP)</th>
@@ -144,57 +164,57 @@
         </div>
       </section>
 
-      <section id="fundamentos" class="py-10">
+      <section id="fundamentos" class="py-6 border-t" style="border-color: var(--line)">
         <div class="section-heading">
           <p>Puente con las guías previas</p>
           <h2>Fundamentos para resolver problemas</h2>
         </div>
-        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
-          <article class="panel p-5">
-            <h3 class="font-bold text-cyan-100">Datos y expresiones</h3>
-            <p class="text-sm text-slate-300 mt-2">
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3 mt-4">
+          <article class="panel p-4">
+            <h3 class="font-bold text-sm" style="color: var(--blue)">Datos y expresiones</h3>
+            <p class="text-xs mt-2 leading-relaxed" style="color: var(--muted)">
               Usa int para conteos y cifras; double para magnitudes fraccionarias. Revisa unidades, límites,
               división entera y precedencia antes de escribir la fórmula.
             </p>
           </article>
-          <article class="panel p-5">
-            <h3 class="font-bold text-cyan-100">Secuencia y selección</h3>
-            <p class="text-sm text-slate-300 mt-2">
+          <article class="panel p-4">
+            <h3 class="font-bold text-sm" style="color: var(--blue)">Secuencia y selección</h3>
+            <p class="text-xs mt-2 leading-relaxed" style="color: var(--muted)">
               Descompón el proceso en pasos y expresa cada decisión con if / else. Para comparar varias
               condiciones, conecta comparaciones completas con && o ||.
             </p>
           </article>
-          <article class="panel p-5">
-            <h3 class="font-bold text-cyan-100">Iteración y centinelas</h3>
-            <p class="text-sm text-slate-300 mt-2">
+          <article class="panel p-4">
+            <h3 class="font-bold text-sm" style="color: var(--blue)">Iteración y centinelas</h3>
+            <p class="text-xs mt-2 leading-relaxed" style="color: var(--muted)">
               Inicializa antes del ciclo, define condición de salida y actualiza en cada vuelta. Combina
               contadores con centinelas y evita ciclos sin progreso.
             </p>
           </article>
-          <article class="panel p-5">
-            <h3 class="font-bold text-cyan-100">Módulos y validación</h3>
-            <p class="text-sm text-slate-300 mt-2">
+          <article class="panel p-4">
+            <h3 class="font-bold text-sm" style="color: var(--blue)">Módulos y validación</h3>
+            <p class="text-xs mt-2 leading-relaxed" style="color: var(--muted)">
               Diseña de arriba hacia abajo: main coordina, módulos calculan y muestran. Valida scanf, dominio
               y rangos antes de usar los datos; documenta parámetros por valor y referencia.
             </p>
           </article>
         </div>
-        <div class="panel p-5 mt-4 text-sm text-slate-300">
-          <b class="text-cyan-100">Herramientas numéricas recurrentes:</b> extrae cifras con % 10 y / 10;
+        <div class="panel p-4 mt-3 text-xs leading-relaxed" style="color: var(--ink-secondary)">
+          <b style="color: var(--blue)">Herramientas numéricas recurrentes:</b> extrae cifras con % 10 y / 10;
           recorre de izquierda a derecha con potencias de diez; usa MCD por Euclides, primos hasta d*d ≤ n,
           divisores propios con límites explícitos, factorial iterativo y variables deslizantes para
           recurrencias. Ante double, compara con tolerancia.
         </div>
       </section>
 
-      <section id="punteros" class="py-12">
+      <section id="punteros" class="py-6 border-t" style="border-color: var(--line)">
         <div class="section-heading">
           <p>02 · Laboratorio de memoria</p>
           <h2>Punteros y pila de llamadas</h2>
         </div>
-        <div class="grid lg:grid-cols-2 gap-5 mt-6">
-          <div class="panel p-6">
-            <pre class="language-c"><code>int suma, producto;
+        <div class="grid lg:grid-cols-2 gap-4 mt-4">
+          <div class="panel p-5">
+            <pre class="language-c"><code class="language-c">int suma, producto;
 calcular_suma_y_producto_digitos(235,
                                   &amp;suma, &amp;producto);
 void calcular_suma_y_producto_digitos(
@@ -207,18 +227,18 @@ void calcular_suma_y_producto_digitos(
         num /= 10;
     }
 }</code></pre>
-            <div class="flex gap-3 mt-4">
-              <button id="stack-next" class="button-primary">Siguiente línea</button
-              ><button id="stack-reset" class="button-secondary">Reiniciar</button>
+            <div class="flex gap-2 mt-3">
+              <button id="stack-next" class="button-primary">Siguiente línea</button>
+              <button id="stack-reset" class="button-secondary">Reiniciar</button>
             </div>
-            <p id="stack-caption" class="text-cyan-200 mt-4 min-h-12">
+            <p id="stack-caption" class="mt-3 text-xs font-mono min-h-8" style="color: var(--blue)">
               Pulsa “Siguiente línea” para iniciar la traza.
             </p>
           </div>
-          <div class="panel p-6">
-            <h3 class="font-bold text-lg">Estado de memoria</h3>
-            <div id="memory-view" class="mt-4 grid grid-cols-2 gap-3"></div>
-            <div class="mt-5 text-sm text-slate-300 space-y-2">
+          <div class="panel p-5">
+            <h3 class="font-bold text-base" style="color: var(--ink)">Estado de memoria (Stack y marcos)</h3>
+            <div id="memory-view" class="mt-3 grid grid-cols-2 gap-2"></div>
+            <div class="mt-4 text-xs space-y-1.5 leading-relaxed" style="color: var(--muted)">
               <p>
                 <code>scanf("%d", p)</code>: <code>p</code> ya es una dirección cuando es parámetro puntero.
               </p>
@@ -230,29 +250,31 @@ void calcular_suma_y_producto_digitos(
         </div>
       </section>
 
-      <section id="recetario" class="py-12">
+      <section id="recetario" class="py-6 border-t" style="border-color: var(--line)">
         <div class="section-heading">
           <p>03 · Arsenal de examen</p>
           <h2>Algoritmos sin arreglos</h2>
         </div>
-        <p class="text-slate-400 mt-2">Elige una técnica para ver la idea, el paso de traza y un patrón C.</p>
-        <div id="recipe-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-6"></div>
+        <p class="mt-1 text-xs" style="color: var(--muted)">
+          Elige una técnica para ver la idea, el paso de traza y un patrón C.
+        </p>
+        <div id="recipe-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3 mt-4"></div>
       </section>
 
-      <section id="catalogo" class="py-12">
+      <section id="catalogo" class="py-6 border-t" style="border-color: var(--line)">
         <div class="section-heading">
           <p>04 · Catálogo del repositorio</p>
           <h2>Busca, lee y prueba cada ejercicio</h2>
         </div>
-        <div class="flex flex-wrap gap-3 mt-6">
-          <label
+        <div class="flex flex-wrap gap-2 mt-4 items-center">
+          <label class="text-xs font-bold" style="color: var(--muted)"
             >Etapa
             <select id="stage-filter" class="select">
               <option value="all">Todas</option>
               <option value="old">Guías 1-6 Parcial</option>
               <option value="nested">Guías 8-9 Anidados</option>
             </select></label
-          ><label
+          ><label class="text-xs font-bold" style="color: var(--muted)"
             >Nivel
             <select id="level-filter" class="select">
               <option value="all">Todos</option>
@@ -260,40 +282,46 @@ void calcular_suma_y_producto_digitos(
               <option>Intermedio</option>
               <option>Avanzado</option>
             </select></label
-          ><input id="search-filter" class="select min-w-56" placeholder="Filtrar por tema…" />
+          ><input id="search-filter" class="select min-w-56" placeholder="Filtrar por tema o código…" />
         </div>
-        <div class="grid lg:grid-cols-[300px_1fr] gap-5 mt-5">
-          <div id="exercise-list" class="panel p-3 max-h-[650px] overflow-auto"></div>
-          <article id="exercise-view" class="panel p-5 min-h-[400px]">
-            <p class="text-slate-400">
+        <div class="grid lg:grid-cols-[280px_1fr] gap-4 mt-4">
+          <div id="exercise-list" class="panel p-2.5 max-h-[580px] overflow-auto"></div>
+          <article id="exercise-view" class="panel p-5 min-h-[380px]">
+            <p style="color: var(--muted)">
               Selecciona un programa para cargar su código, mapa de módulos y pruebas.
             </p>
           </article>
         </div>
       </section>
 
-      <section id="quiz" class="py-12">
+      <section id="quiz" class="py-6 border-t" style="border-color: var(--line)">
         <div class="section-heading">
           <p>05 · Cazador de bugs</p>
           <h2>Diez retos rápidos</h2>
         </div>
-        <div class="panel p-6 mt-6">
+        <div class="panel p-5 mt-4">
           <div class="flex justify-between items-start gap-3">
             <div>
-              <p id="quiz-count" class="text-cyan-300 text-sm"></p>
-              <h3 id="quiz-question" class="text-xl font-bold mt-2"></h3>
+              <p id="quiz-count" class="text-xs font-bold" style="color: var(--blue)"></p>
+              <h3 id="quiz-question" class="text-lg font-bold mt-1" style="color: var(--ink)"></h3>
             </div>
             <button id="quiz-next" class="button-secondary">Siguiente reto</button>
           </div>
-          <pre class="language-c mt-4"><code id="quiz-code"></code></pre>
-          <div id="quiz-options" class="grid sm:grid-cols-2 gap-3 mt-4"></div>
-          <p id="quiz-feedback" aria-live="polite" class="mt-4 min-h-6"></p>
+          <pre class="language-c mt-3"><code id="quiz-code" class="language-c"></code></pre>
+          <div id="quiz-options" class="grid sm:grid-cols-2 gap-2 mt-3"></div>
+          <p id="quiz-feedback" aria-live="polite" class="mt-3 text-xs min-h-5"></p>
         </div>
       </section>
-      <footer class="py-10 text-sm text-slate-500 border-t border-slate-800">
-        Material de práctica para la mentoría de Mauricio · Código local del repositorio · PUCP 1INF01
+
+      <footer
+        class="py-6 text-xs text-center border-t mt-4"
+        style="color: var(--muted); border-color: var(--line)"
+      >
+        Material de práctica para la mentoría de Mauricio · Código local del repositorio · PUCP 1INF01 · Aula
+        C
       </footer>
     </main>
+
     <script
       crossorigin="anonymous"
       src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"

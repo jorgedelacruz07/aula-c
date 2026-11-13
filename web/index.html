@@ -12,6 +12,14 @@
       href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%2319283f%27/%3E%3Ctext x=%2712%27 y=%2747%27 font-family=%27serif%27 font-size=%2746%27 fill=%27%23d3e5a6%27%3EC%3C/text%3E%3C/svg%3E"
     />
     <title>Aula C · Aprende, experimenta, enseña</title>
+    <script>
+      (function () {
+        const saved = localStorage.getItem("aula-theme");
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = saved || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
     <link rel="stylesheet" href="/css/aula.css" />
   </head>
   <body>
@@ -23,23 +31,32 @@
       >
       <p class="nav-caption">TU ESPACIO DE APRENDIZAJE</p>
       <nav aria-label="Principal">
-        <a class="nav-link" href="#ruta"><span>01</span> Ruta de aprendizaje <b>↗</b></a>
-        <a class="nav-link" href="#laboratorio"><span>02</span> Laboratorio C <b>↗</b></a>
-        <a class="nav-link" href="#biblioteca"><span>03</span> Tus ejercicios <b>↗</b></a>
-        <a class="nav-link" href="#referencias"><span>04</span> Universidad y fuentes <b>↗</b></a>
+        <a class="nav-link" href="#ruta"><span>01</span> Ruta de aprendizaje</a>
+        <a class="nav-link" href="#laboratorio"><span>02</span> Laboratorio C</a>
+        <a class="nav-link" href="#biblioteca"><span>03</span> Tus ejercicios</a>
+        <a class="nav-link" href="#referencias"><span>04</span> Universidad y fuentes</a>
       </nav>
       <div class="sidebar-note">
         <span class="tiny-label">APRENDER PARA ENSEÑAR</span>
         <p>Primero predice.<br />Luego ejecuta.<br />Finalmente, explica.</p>
         <span class="note-line"></span><small>El código funciona mejor<br />cuando entiendes por qué.</small>
       </div>
-      <a class="archive-link" href="/archivo.html">Archivo de mentoría PUCP ↗</a>
+      <a class="archive-link" href="/archivo.html">Archivo de mentoría PUCP</a>
       <div class="sidebar-footer"><span class="status-dot"></span> Un laboratorio en tu navegador</div>
     </aside>
     <div class="page">
       <header class="topbar">
-        <span>C-Testing <span class="muted">/</span> <strong>Cuaderno de programación</strong></span
-        ><label class="teacher-toggle"><input id="teacher-mode" type="checkbox" /> Modo docente</label>
+        <div class="topbar-left">
+          <span>Aula C <span class="muted">/</span> <strong>Guía de Programación</strong></span>
+        </div>
+        <div class="topbar-actions">
+          <button id="theme-toggle" class="theme-toggle-btn" aria-label="Cambiar tema claro u oscuro">
+            <span id="theme-icon">🌙</span> <span id="theme-text">Oscuro</span>
+          </button>
+          <label class="teacher-toggle" id="teacher-toggle-label">
+            <input id="teacher-mode" type="checkbox" /> Modo docente
+          </label>
+        </div>
       </header>
       <main id="contenido">
         <section id="ruta" class="hero">
@@ -52,7 +69,7 @@
               Una ruta para aprender C con profundidad y enseñarlo con claridad. Lee, cambia el código y
               descubre qué ocurre, paso a paso.
             </p>
-            <a class="primary hero-button" href="#laboratorio">Comenzar a experimentar <span>↗</span></a>
+            <a class="primary hero-button" href="#laboratorio">Comenzar a experimentar</a>
           </div>
           <div class="hero-diagram" aria-label="Ciclo de aprendizaje: comprender, experimentar y explicar">
             <div class="diagram-top"><span>EL MÉTODO</span><span>01 — 03</span></div>
@@ -64,12 +81,12 @@
             <div class="method-step">
               <span>02</span>
               <div>Experimenta<small>Cambia una cosa. Observa.</small></div>
-              <b>▶</b>
+              <b>run</b>
             </div>
             <div class="method-step">
               <span>03</span>
               <div>Explica<small>Haz visible tu razonamiento</small></div>
-              <b>↗</b>
+              <b>why?</b>
             </div>
             <div class="diagram-bottom">TEORÍA <span>→</span> PRÁCTICA <span>→</span> CRITERIO</div>
           </div>
@@ -84,17 +101,17 @@
           </div>
           <div class="route-cards">
             <button class="route-card" data-level="Básico">
-              <span class="card-number">01 <b>↗</b></span>
+              <span class="card-number">01</span>
               <h3>Los fundamentos</h3>
               <p>Datos, símbolos, decisiones y ciclos.<br />Aprende a leer lo que escribes.</p>
               <small>BÁSICO <span>5 LECCIONES</span></small></button
             ><button class="route-card" data-level="Intermedio">
-              <span class="card-number">02 <b>↗</b></span>
+              <span class="card-number">02</span>
               <h3>Pensar en módulos</h3>
               <p>Funciones, punteros, arreglos y texto.<br />Conecta las piezas del programa.</p>
               <small>INTERMEDIO <span>4 LECCIONES</span></small></button
             ><button class="route-card" data-level="Avanzado">
-              <span class="card-number">03 <b>↗</b></span>
+              <span class="card-number">03</span>
               <h3>Entender la memoria</h3>
               <p>Recursión, reservas, archivos y listas.<br />Razona sobre recursos y límites.</p>
               <small>AVANZADO <span>5 LECCIONES</span></small>

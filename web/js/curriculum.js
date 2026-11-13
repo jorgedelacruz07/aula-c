@@ -2,6 +2,7 @@ export const lessons = [
   {
     id: "01-hola",
     title: "Tu primer programa",
+    everyday: "Problema cotidiano: Mensaje de bienvenida en una terminal o sistema de atención.",
     level: "Básico",
     topic: "Fundamentos",
     minutes: 15,
@@ -11,6 +12,18 @@ export const lessons = [
     trap: "Un ; termina una instrucción; no se coloca después de la cabecera de main. Los comentarios explican intención y no se ejecutan.",
     teacher:
       "Pide al alumno predecir cuántas líneas aparecerán. Después elimina un punto y coma y lee con él el primer diagnóstico del compilador.",
+    teacherDetails: {
+      questions: [
+        "¿Qué componente del sistema interpreta el valor 0 retornado por main?",
+        "¿Qué ocurre si quitamos \\n de la cadena de texto?",
+      ],
+      blindspots: [
+        "Poner punto y coma tras main: int main(void);",
+        "Confundir comillas simples 'A' con comillas dobles \"Hola\".",
+      ],
+      rubric: ["Uso de int main(void) y return 0;", "Inclusión correcta de <stdio.h>."],
+      blackboard: "Código (.c) -> Preprocesador -> Compilador -> Enlazador -> Ejecutable.",
+    },
     challenge: "Imprime tu nombre en una segunda línea. Explica qué cambia al quitar \\n.",
     path: "lecciones/01-hola.c",
     symbols: ["#include", "()", "{}", ";", '""', "\\n"],
@@ -25,6 +38,8 @@ export const lessons = [
   {
     id: "02-tipos",
     title: "Variables y división entera",
+    everyday:
+      "Problema cotidiano: Repartir una cuenta entre amigos (división entera vs división con decimales).",
     level: "Básico",
     topic: "Datos y operadores",
     minutes: 25,
@@ -34,6 +49,21 @@ export const lessons = [
     trap: "Guardar 7 / 2 en double no recupera la parte decimal perdida. Tampoco hay que asumir que int mide siempre cuatro bytes.",
     teacher:
       "Antes de ejecutar, pregunta por los tres resultados. Usa 8 y 3 como segundo ejemplo y exige una justificación basada en tipos.",
+    teacherDetails: {
+      questions: [
+        "¿Por qué double r = 7 / 2; da 3.0 y no 3.5?",
+        "¿Cómo extraemos la última cifra de un entero con % 10?",
+      ],
+      blindspots: [
+        "Creer que la variable receptora cambia la división entera ya calculada.",
+        "Intentar usar % con números reales.",
+      ],
+      rubric: [
+        "Uso de cast explícito (double)a / b.",
+        "Formatos correctos: %d para enteros, %.2f para reales.",
+      ],
+      blackboard: "7 / 2 = 3 (entero) | 7.0 / 2 = 3.50 (real) | 7 % 2 = 1 (residuo).",
+    },
     challenge: "Calcula el promedio de tres notas enteras sin truncar la fracción.",
     path: "lecciones/02-tipos.c",
     symbols: ["=", "/", "%", "%d", "%.2f", "(tipo)"],
@@ -48,6 +78,8 @@ export const lessons = [
   {
     id: "03-entrada",
     title: "Leer y validar datos",
+    everyday:
+      "Problema cotidiano: Control de acceso o registro donde la entrada debe validarse antes de operar.",
     level: "Básico",
     topic: "Entrada y salida",
     minutes: 30,
@@ -57,6 +89,21 @@ export const lessons = [
     trap: "Nunca pases edad donde se requiere &edad. Si scanf falla y usas una variable sin inicializar, el comportamiento puede ser indefinido.",
     teacher:
       "Prueba 20, -1 y una palabra. Pregunta por qué la validación de conversión debe ocurrir antes de comparar el rango.",
+    teacherDetails: {
+      questions: [
+        "¿Qué devuelve scanf si el usuario ingresa texto en lugar de números?",
+        "¿Por qué el operador & es indispensable en variables simples?",
+      ],
+      blindspots: [
+        "Omitir & en scanf, provocando error en tiempo de ejecución.",
+        "No validar el retorno de scanf.",
+      ],
+      rubric: [
+        "Validación en cascada: scanf == 1 y luego dominio.",
+        "Mensaje de error y salida con return 1.",
+      ],
+      blackboard: 'scanf("%d", &edad) -> if != 1: error -> if edad < 0: fuera de rango.',
+    },
     challenge: "Lee dos enteros, comprueba que scanf devuelva 2 y muestra su suma.",
     path: "lecciones/03-entrada.c",
     symbols: ["&", "%d", "!=", "||"],
@@ -83,6 +130,7 @@ export const lessons = [
   {
     id: "04-decisiones",
     title: "Decidir con condiciones",
+    everyday: "Problema cotidiano: Calificación de actas de notas (aprobado, por reforzar o fuera de rango).",
     level: "Básico",
     topic: "Control de flujo",
     minutes: 25,
@@ -92,6 +140,19 @@ export const lessons = [
     trap: "0 <= nota <= 20 no expresa un intervalo en C: primero se calcula 0 <= nota y ese 0 o 1 se compara con 20.",
     teacher:
       "Dibuja las ramas y prueba los bordes 0, 10, 11, 20 y 21. Pide distinguir casos válidos de casos aprobados.",
+    teacherDetails: {
+      questions: [
+        "¿Por qué if (nota = 11) compila pero es un error conceptual grave?",
+        "¿Cómo se evalúa algebraicamente (0 <= nota <= 20) en C?",
+      ],
+      blindspots: ["Confundir = con ==.", "Encadenar comparaciones matemáticas no soportadas."],
+      rubric: [
+        "Uso correcto de operadores relacionales y conectores &&.",
+        "Manejo claro de ramas mutuamente excluyentes.",
+      ],
+      blackboard:
+        "Entrada -> [nota < 0 || nota > 20] -> Error. [nota >= 11] -> Aprobado. Else -> Desaprobado.",
+    },
     challenge: "Añade una categoría de destacado para notas desde 17.",
     path: "lecciones/04-decisiones.c",
     symbols: ["if / else", "==", "&&", "||"],
@@ -115,16 +176,34 @@ export const lessons = [
   },
   {
     id: "05-ciclos",
-    title: "Repetir con un invariante",
+    title: "Sumatoria con un invariante",
+    everyday:
+      "Problema cotidiano: Totalizar las compras del día en una caja registradora o acumular pasos en un podómetro.",
     level: "Básico",
     topic: "Ciclos",
     minutes: 35,
     concept:
-      "Un ciclo necesita inicialización, condición y progreso. Un invariante describe lo que sigue siendo cierto entre vueltas. Aquí suma contiene 1 + ... + (i - 1) al empezar cada iteración.",
-    why: "while evalúa la condición antes de entrar. i++ avanza el contador. for reúne inicialización, condición y actualización; ambos son parte de C, aunque un curso puede limitar su uso.",
-    trap: "Un punto y coma inmediatamente después de while crea un cuerpo vacío. Un acumulador no inicializado no tiene un cero implícito.",
+      "Un ciclo necesita inicialización, condición y progreso. Un invariante describe lo que sigue siendo cierto entre vueltas. En una sumatoria del 1 al N, la variable acumuladora suma contiene 1 + ... + (i - 1) al empezar cada iteración.",
+    why: "while evalúa la condición antes de entrar. i++ avanza el contador para garantizar progreso. suma += i acumula cada nuevo valor. for reúne inicialización, condición y actualización; ambos son parte de C.",
+    trap: "Un punto y coma inmediatamente después de while crea un cuerpo vacío infinito: while(i <= n);. Un acumulador no inicializado contiene basura.",
     teacher:
       "Traza i y suma en papel para n=3. Después pregunta qué ocurre con n=0 y por qué el ciclo termina.",
+    teacherDetails: {
+      questions: [
+        "¿Qué pasa si n = 0? ¿Cuántas iteraciones se realizan?",
+        "¿Por qué es indispensable inicializar suma = 0 antes del ciclo?",
+      ],
+      blindspots: [
+        "Poner punto y coma tras while (i <= n);",
+        "Olvidar la actualización i++, creando un bucle infinito.",
+      ],
+      rubric: [
+        "Inicialización de variables antes del ciclo.",
+        "Garantía de condición de parada y acotamiento de n.",
+      ],
+      blackboard:
+        "Tabla de traza: Vuelta 0: i=1, suma=0 | V1: suma=1, i=2 | V2: suma=3, i=3 | V3: suma=6, i=4 -> Sale.",
+    },
     challenge: "Calcula la suma de los pares de 1 a n. Mantén un límite para evitar desbordamiento.",
     path: "lecciones/05-ciclos.c",
     symbols: ["while", "++", "+=", "<="],
@@ -149,6 +228,8 @@ export const lessons = [
   {
     id: "06-funciones",
     title: "Dividir el problema en funciones",
+    everyday:
+      "Problema cotidiano: Máquina calculadora con módulos separados para entrada, cálculo y presentación.",
     level: "Intermedio",
     topic: "Modularidad",
     minutes: 35,
@@ -158,6 +239,18 @@ export const lessons = [
     trap: "Cambiar un parámetro int dentro de una función no cambia el objeto original del llamador. Una función no debe devolver una dirección a una variable local que ya dejó de existir.",
     teacher:
       "Pide escribir primero el contrato de cuadrado y después su implementación. Comprueba 0, negativos y el máximo aceptado.",
+    teacherDetails: {
+      questions: [
+        "¿Por qué los parámetros en C se pasan por valor?",
+        "¿Qué papel cumple el prototipo antes de main?",
+      ],
+      blindspots: [
+        "Intentar modificar una variable simple del llamador sin usar punteros.",
+        "Escribir funciones que imprimen en vez de retornar el cálculo.",
+      ],
+      rubric: ["Prototipos colocados antes de main.", "Ausencia total de variables globales."],
+      blackboard: "main [n=7] -> copia 7 -> cuadrado [x=7] -> return 49 -> main recibe 49.",
+    },
     challenge: "Extrae la validación a otra función que devuelva 0 o 1.",
     path: "lecciones/06-funciones.c",
     symbols: ["prototipo", "return", "()", "*"],
@@ -176,7 +269,9 @@ export const lessons = [
   },
   {
     id: "07-punteros",
-    title: "Direcciones y objetos",
+    title: "Direcciones y punteros",
+    everyday:
+      "Problema cotidiano: Cajero automático que al retirar devuelve simultáneamente los billetes y el saldo actualizado.",
     level: "Intermedio",
     topic: "Memoria",
     minutes: 45,
@@ -186,6 +281,18 @@ export const lessons = [
     trap: "No desreferencies un puntero no inicializado o NULL. *p++ avanza el puntero; (*p)++ incrementa el valor. El orden depende de la precedencia.",
     teacher:
       "Dibuja dos cajas a y b, luego dos flechas. Explica qué se copia al entrar a intercambiar y qué objeto cambia con *a.",
+    teacherDetails: {
+      questions: [
+        "¿Cuál es la diferencia entre la dirección &x y el valor x?",
+        "¿Por qué (*p)++ incrementa el valor mientras *p++ incrementa la dirección?",
+      ],
+      blindspots: ["Desreferenciar punteros nulos o sin inicializar.", "Olvidar los paréntesis en (*p)++."],
+      rubric: [
+        "Uso correcto de & en la llamada y * en el cuerpo de la función.",
+        "Documentación de parámetros de salida.",
+      ],
+      blackboard: "Memoria: main [&x=1000, x=3] -> func [int *a=1000] -> *a=8 escribe en celda 1000.",
+    },
     challenge: "Escribe una función que entregue suma y producto mediante dos parámetros puntero.",
     path: "lecciones/07-punteros.c",
     symbols: ["&", "*", "(*p)++", "NULL"],
@@ -200,6 +307,8 @@ export const lessons = [
   {
     id: "08-arreglos",
     title: "Arreglos, índices y límites",
+    everyday:
+      "Problema cotidiano: Estación meteorológica que registra las 7 temperaturas semanales para promediarlas.",
     level: "Intermedio",
     topic: "Colecciones",
     minutes: 40,
@@ -209,6 +318,21 @@ export const lessons = [
     trap: "i <= longitud visita una posición fuera del arreglo. Dentro de una función, sizeof sobre el parámetro ajustado a puntero no recupera el tamaño del arreglo original.",
     teacher:
       "Traza cada índice y explica por qué la condición usa <. Compara el límite académico sin arreglos con lo que sí permite el lenguaje.",
+    teacherDetails: {
+      questions: [
+        "¿Por qué los arreglos en C empiezan en 0 y terminan en longitud - 1?",
+        "¿Qué ocurre si escribimos notas[longitud]?",
+      ],
+      blindspots: [
+        "Error off-by-one: escribir i <= n al iterar.",
+        "Usar sizeof dentro de una función para medir un arreglo recibido.",
+      ],
+      rubric: [
+        "Control estricto de límites con i < longitud.",
+        "Paso obligatorio del tamaño como parámetro.",
+      ],
+      blackboard: "Arreglo: [0: 14] [1: 16] [2: 12] [3: 18] -> 4 elementos -> Índices válidos: 0, 1, 2, 3.",
+    },
     challenge: "Encuentra la nota máxima recorriendo el arreglo una sola vez.",
     path: "lecciones/08-arreglos.c",
     symbols: ["[]", "sizeof", "for", "<"],
@@ -223,6 +347,8 @@ export const lessons = [
   {
     id: "09-cadenas",
     title: "Texto y el terminador nulo",
+    everyday:
+      "Problema cotidiano: Emisión de credencial o pase de embarque que requiere delimitar el nombre de usuario.",
     level: "Intermedio",
     topic: "Colecciones",
     minutes: 40,
@@ -232,6 +358,15 @@ export const lessons = [
     trap: 'Nunca uses gets. scanf("%s", nombre) sin límite puede escribir fuera del búfer. La cantidad de bytes de UTF-8 puede diferir del número de letras visibles.',
     teacher:
       "Dibuja el arreglo para Ana y marca el terminador. Explica por qué hacen falta cuatro posiciones para tres letras.",
+    teacherDetails: {
+      questions: ["¿Qué diferencia hay entre '\\0', '0' y NULL?", "¿Por qué no debe usarse jamás gets()?"],
+      blindspots: [
+        "Olvidar reservar el byte adicional para '\\0'.",
+        'Usar scanf("%s") sin especificar ancho máximo.',
+      ],
+      rubric: ["Uso de fgets() con control de búfer.", "Limpieza del salto de línea antes de procesar."],
+      blackboard: "Cadena \"Ana\": [0: 'A'] [1: 'n'] [2: 'a'] [3: '\\0'].",
+    },
     challenge: "Cuenta las vocales ASCII de la cadena sin recorrer después de \\0.",
     path: "lecciones/09-cadenas.c",
     symbols: ["\\0", "[]", "%s", "NULL"],
@@ -246,6 +381,8 @@ export const lessons = [
   {
     id: "10-recursion",
     title: "Recursión y pila de llamadas",
+    everyday:
+      "Problema cotidiano: Conteo regresivo y cálculo de permutaciones reduciendo el problema paso a paso.",
     level: "Avanzado",
     topic: "Algoritmos",
     minutes: 45,
@@ -255,6 +392,21 @@ export const lessons = [
     trap: "La recursión sin caso base agota la pila. Aunque double amplíe el rango, pierde exactitud para enteros grandes. Este ejemplo limita n a 10.",
     teacher:
       "Dibuja las llamadas pendientes y luego sus retornos. Compara espacio y tiempo con un factorial iterativo.",
+    teacherDetails: {
+      questions: [
+        "¿Qué almacena la pila de llamadas (call stack) durante la recursión?",
+        "¿Qué ocurre si se omite el caso base?",
+      ],
+      blindspots: [
+        "Omitir el caso base produciendo desbordamiento de pila.",
+        "Avanzar en dirección contraria al caso base.",
+      ],
+      rubric: [
+        "Definición explícita del caso base al inicio.",
+        "Llamada recursiva que reduce estrictamente el argumento.",
+      ],
+      blackboard: "factorial(3) -> 3 * factorial(2) -> 2 * factorial(1) -> 1 * factorial(0)=1.",
+    },
     challenge: "Implementa la versión iterativa y compara ambos resultados entre 0 y 10.",
     path: "lecciones/10-recursion.c",
     symbols: ["return", "==", "-", "()"],
@@ -274,6 +426,8 @@ export const lessons = [
   {
     id: "11-memoria",
     title: "Reservar y liberar memoria",
+    everyday:
+      "Problema cotidiano: Planilla de sueldos donde la cantidad de trabajadores se conoce recién al inicio del día.",
     level: "Avanzado",
     topic: "Memoria",
     minutes: 50,
@@ -283,6 +437,15 @@ export const lessons = [
     trap: "Después de free no puedes leer ni liberar otra vez el mismo objeto. Si varias variables guardan la dirección, poner una en NULL no invalida mágicamente las demás.",
     teacher:
       "Haz seguir al alumno cada ruta de salida y comprobar si queda memoria sin liberar. Explica la diferencia entre tamaño y duración.",
+    teacherDetails: {
+      questions: [
+        "¿En qué región de la memoria se asigna el espacio de malloc()?",
+        "¿Por qué es obligatorio comprobar si el puntero devuelto es NULL?",
+      ],
+      blindspots: ["No verificar if (ptr == NULL).", "Olvidar llamar a free(), causando fugas de memoria."],
+      rubric: ["Comprobación de puntero nulo.", "Llamada a free() en todas las rutas de salida."],
+      blackboard: "Stack [puntero local] -> Heap [bloque de memoria dinámica]. free() libera el Heap.",
+    },
     challenge:
       "Lee una cantidad entre 1 y 100 y reserva ese número de enteros; libera también en las rutas de error.",
     path: "lecciones/11-memoria.c",
@@ -298,6 +461,8 @@ export const lessons = [
   {
     id: "12-estructuras",
     title: "Modelar datos con struct",
+    everyday:
+      "Problema cotidiano: Ficha médica o universitaria que empaqueta código, créditos y promedio ponderado.",
     level: "Avanzado",
     topic: "Estructuras de datos",
     minutes: 45,
@@ -307,6 +472,18 @@ export const lessons = [
     trap: "El tamaño de una estructura puede incluir relleno por alineación: no sumes tamaños de campos para adivinar sizeof. Un puntero a estructura también debe apuntar a un objeto válido.",
     teacher:
       "Pide explicar alumno.nota y p->nota con el mismo dibujo. Diseña un contrato para cambiar una nota válida.",
+    teacherDetails: {
+      questions: [
+        "¿Por qué es más eficiente pasar una estructura por puntero constante?",
+        "¿Qué diferencia hay entre alumno.nota y p->nota?",
+      ],
+      blindspots: [
+        "Olvidar el punto y coma tras la definición del struct.",
+        "Escribir *p.nota por error de precedencia en lugar de p->nota.",
+      ],
+      rubric: ["Definición estructurada y paso por puntero constante.", "Uso del operador flecha (->)."],
+      blackboard: "variable.campo (objeto directo) | puntero->campo (a través de dirección).",
+    },
     challenge: "Crea una función que reciba const struct Alumno * y determine si está aprobado.",
     path: "lecciones/12-estructuras.c",
     symbols: ["struct", ".", "->", "const"],
@@ -321,6 +498,8 @@ export const lessons = [
   {
     id: "13-archivos",
     title: "Archivos y errores de E/S",
+    everyday:
+      "Problema cotidiano: Libro contable digital donde las transacciones se graban en disco para que no se pierdan.",
     level: "Avanzado",
     topic: "Entrada y salida",
     minutes: 50,
@@ -330,6 +509,16 @@ export const lessons = [
     trap: "feof no predice si una lectura va a funcionar. Primero intenta leer y comprueba el resultado. El archivo del navegador no persiste tras la ejecución. Este WASI requiere una ruta absoluta; el ejemplo selecciona una ruta distinta con #ifdef __wasi__ para mantener la ejecución nativa en el directorio de trabajo.",
     teacher:
       "Pregunta dónde queda el cursor después de escribir. Quita rewind y explica el resultado. Luego compara con un archivo nativo en Xcode.",
+    teacherDetails: {
+      questions: [
+        "¿Por qué es incorrecto usar while (!feof(fp)) como condición de ciclo?",
+        "¿Para qué sirve rewind() tras escribir en un archivo?",
+      ],
+      blindspots: ["No verificar if (fp == NULL).", "Olvidar llamar a fclose() al finalizar."],
+      rubric: ["Comprobación obligatoria tras fopen.", "Cierre garantizado con fclose()."],
+      blackboard:
+        "fopen -> fprintf (cursor avanza) -> rewind (cursor regresa al inicio) -> fscanf -> fclose.",
+    },
     challenge: "Escribe tres registros y recupéralos comprobando cada operación.",
     path: "lecciones/13-archivos.c",
     symbols: ["FILE *", "NULL", "&", "?:"],
@@ -344,6 +533,8 @@ export const lessons = [
   {
     id: "14-listas",
     title: "Una primera lista enlazada",
+    everyday:
+      "Problema cotidiano: Cola de atención bancaria turno a turno, donde cada cliente se enlaza al siguiente sin límite fijo.",
     level: "Avanzado",
     topic: "Estructuras de datos",
     minutes: 60,
@@ -353,6 +544,21 @@ export const lessons = [
     trap: "No liberes nodos locales con free ni conserves sus direcciones después de salir de su ámbito. Una lista con un ciclo no termina con un recorrido que solo busca NULL.",
     teacher:
       "Dibuja primero los enlaces y después el código. Compara acceso por índice en un arreglo con recorrido secuencial de una lista. Discute coste O(n).",
+    teacherDetails: {
+      questions: [
+        "¿Cuál es la ventaja de una lista enlazada frente a un arreglo estático?",
+        "¿Qué representa el puntero NULL al final de la lista?",
+      ],
+      blindspots: [
+        "Perder el puntero inicial a la cabeza de la lista.",
+        "Desreferenciar un puntero que ya es NULL.",
+      ],
+      rubric: [
+        "Definición auto-referenciada con struct Nodo *siguiente.",
+        "Recorrido con puntero temporal while (actual != NULL).",
+      ],
+      blackboard: "[Cabeza] -> [Nodo 1: dato | sig] -> [Nodo 2: dato | sig] -> NULL.",
+    },
     challenge: "Agrega un tercer nodo y escribe una función que cuente los nodos sin modificar la lista.",
     path: "lecciones/14-listas.c",
     symbols: ["struct", "->", "NULL", "&"],

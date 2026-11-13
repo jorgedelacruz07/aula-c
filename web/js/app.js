@@ -155,12 +155,37 @@ const quiz = [
 ];
 
 const $ = (s) => document.querySelector(s);
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  try {
+    localStorage.setItem("aula-theme", theme);
+  } catch {}
+  const isDark = theme === "dark";
+  const icon = $("#theme-icon");
+  const text = $("#theme-text");
+  if (icon) icon.textContent = isDark ? "☀️" : "🌙";
+  if (text) text.textContent = isDark ? "Claro" : "Oscuro";
+}
+
+const savedTheme = localStorage.getItem("aula-theme");
+const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+applyTheme(initialTheme);
+
+if ($("#theme-toggle")) {
+  $("#theme-toggle").onclick = () => {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    applyTheme(current === "dark" ? "light" : "dark");
+  };
+}
+
 function renderRecipes() {
   const root = $("#recipe-grid");
   recipes.forEach((r) => {
     const card = document.createElement("details");
-    card.className = "panel recipe-card p-5";
-    card.innerHTML = `<summary class="font-bold cursor-pointer text-cyan-100">Técnica ${r.n}: ${r.title}</summary><p class="text-sm text-slate-300 mt-3">${r.idea}</p><p class="text-sm text-cyan-200 mt-2"><b>Traza:</b> ${r.trace}</p><pre class="language-c mt-3"><code class="language-c">${escapeHtml(r.c)}</code></pre><p class="text-sm text-slate-400 mt-2"><b>PSeInt:</b> ${escapeHtml(r.psi)}</p>`;
+    card.className = "panel recipe-card p-4";
+    card.innerHTML = `<summary class="font-bold cursor-pointer" style="color:var(--ink);">Técnica ${r.n}: ${r.title}</summary><p class="text-xs mt-2" style="color:var(--ink-secondary);">${r.idea}</p><p class="text-xs mt-1.5" style="color:var(--blue);"><b>Traza:</b> ${r.trace}</p><pre class="language-c mt-2"><code class="language-c">${escapeHtml(r.c)}</code></pre><p class="text-xs mt-1.5" style="color:var(--muted);"><b>PSeInt:</b> ${escapeHtml(r.psi)}</p>`;
     root.append(card);
   });
   Prism.highlightAll();
@@ -269,11 +294,11 @@ async function loadExercise(x) {
       ? tests
           .map(
             (t, i) =>
-              `<div class="border-t border-slate-700 pt-3 mt-3"><div class="flex justify-between gap-3"><b>${escapeHtml(t.name)}</b><button class="button-secondary copy-case" data-case="${i}">Copiar entrada</button></div><pre class="case-input mt-2 p-3 bg-slate-950 rounded-lg">${escapeHtml(t.input)}</pre><details class="mt-2"><summary>Salida esperada</summary><pre class="mt-2 p-3 bg-slate-950 rounded-lg">${escapeHtml(t.output)}</pre></details></div>`,
+              `<div class="border-t pt-3 mt-3" style="border-color:var(--line);"><div class="flex justify-between items-center gap-3"><b class="text-xs" style="color:var(--ink);">${escapeHtml(t.name)}</b><button class="button-secondary copy-case" data-case="${i}">Copiar entrada</button></div><pre class="case-input mt-2 p-2.5 rounded-md font-mono text-xs overflow-auto" style="background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);">${escapeHtml(t.input)}</pre><details class="mt-2 text-xs"><summary class="cursor-pointer font-bold" style="color:var(--muted);">Salida esperada</summary><pre class="mt-1.5 p-2.5 rounded-md font-mono text-xs overflow-auto" style="background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);">${escapeHtml(t.output)}</pre></details></div>`,
           )
           .join("")
-      : '<p class="mt-3 text-slate-400">Aún no hay casos guardados para esta clave.</p>';
-    view.innerHTML = `<div><span class="tag ${x.stage === "Anidados" ? "tag-cyan" : "tag-slate"}">${x.stage === "Anidados" ? "Guías 8-9" : "Guías 1-6"} · ${x.level}</span><h3 class="text-2xl font-black mt-2">${x.id} · ${x.title}</h3></div><p class="mt-4 text-sm text-slate-300"><b>Árbol Top-Down:</b> main() → ${modules.filter((m) => m !== "main").join(" → ") || "funciones auxiliares por identificar"}</p><details class="mt-4"><summary class="cursor-pointer font-bold">Código C completo</summary><pre class="language-c mt-3"><code class="language-c">${escapeHtml(source)}</code></pre></details><details class="mt-3"><summary class="cursor-pointer font-bold">Guía línea por línea</summary><div class="mt-3 max-h-96 overflow-auto">${notes}</div></details><details class="mt-3" open><summary class="cursor-pointer font-bold">Casos de prueba (${tests.length})</summary>${testHtml}</details>`;
+      : '<p class="mt-3 text-xs" style="color:var(--muted);">Aún no hay casos guardados para esta clave.</p>';
+    view.innerHTML = `<div><span class="tag ${x.stage === "Anidados" ? "tag-cyan" : "tag-slate"}">${x.stage === "Anidados" ? "Guías 8-9" : "Guías 1-6"} · ${x.level}</span><h3 class="text-xl font-bold mt-1.5" style="color:var(--ink);">${x.id} · ${x.title}</h3></div><p class="mt-3 text-xs" style="color:var(--ink-secondary);"><b>Árbol Top-Down:</b> main() → ${modules.filter((m) => m !== "main").join(" → ") || "funciones auxiliares por identificar"}</p><details class="mt-3"><summary class="cursor-pointer font-bold text-xs" style="color:var(--ink);">Código C completo</summary><pre class="language-c mt-2"><code class="language-c">${escapeHtml(source)}</code></pre></details><details class="mt-2"><summary class="cursor-pointer font-bold text-xs" style="color:var(--ink);">Guía línea por línea</summary><div class="mt-2 max-h-80 overflow-auto">${notes}</div></details><details class="mt-2" open><summary class="cursor-pointer font-bold text-xs" style="color:var(--ink);">Casos de prueba (${tests.length})</summary>${testHtml}</details>`;
     view
       .querySelectorAll(".copy-case")
       .forEach(

@@ -1,4 +1,4 @@
-# Ledger · C-Testing
+# Ledger · Aula C (antes C-Testing)
 
 ## 2026-11-13 · Aula C web
 
@@ -9,3 +9,15 @@
 - Verificación final e integración: ver `handoff.md` al cierre.
 
 - Cierre global: el ledger del meta-repo rechazó la escritura (`HOST_NOT_OWNER`: autoridad Air, sesión Mini). Registro preservado aquí; pendiente de reconciliación desde el host propietario. No se forzó el cambio.
+
+## 2026-11-13 · Optimización UI/UX, Modo Docente, Dark Theme y Casos Cotidianos
+
+- Solicitud: problemas de C con título y descripción visual basados en casos cotidianos (ej. sumatoria acumulada), optimización de espacios en blanco y paddings/margins, mejora de tamaños de texto, tema oscuro (Dark Theme), fortalecimiento del Modo Docente, rediseño de `/archivo.html` y actualización de `README.md`.
+- Implementación:
+  - Casos cotidianos: 14 lecciones y 26 ejercicios catalogados con títulos intuitivos, analogías de la vida real (caja registradora, cajero automático, sensores de luz, validación de PIN bancario, etc.) e íconos temáticos.
+  - Modo Docente fortalecido: cockpit universitario para cátedra (PUCP, UNI, UNMSM) con preguntas socráticas, puntos ciegos de alumnos, rúbricas de evaluación y esquemas de trazabilidad en pizarra.
+  - Dark Theme: soporte nativo y sincronizado de tema Claro/Oscuro con selector en la barra superior y persistencia en `localStorage`.
+  - UI/UX compacta: optimización drástica de espacios en blanco, márgenes y paddings reducidos en workbench y secciones; tipografía accesible y legible.
+  - Subpágina `/archivo.html`: rediseño completo integrado al sistema de tokens de Aula C con navegación superior, enlace de retorno, temas y visualizador de código y pruebas limpio.
+  - Documentación: `README.md` actualizado con todas las nuevas capacidades.
+- Verificación: `npm run quick` y `npm test` exit 0 (5/5 pruebas unitarias y de integración C pasadas; formato Prettier limpio).
