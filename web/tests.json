@@ -1,0 +1,292 @@
+{
+  "na1": [
+    {
+      "name": "anidados_na1_cambio_base_especial_nk",
+      "input": "272 2 3\n",
+      "output": "Numero base n^k, base n [2..9], k: Binario: 10111010\n"
+    }
+  ],
+  "na2": [
+    {
+      "name": "anidados_na2_primos_buenos_debiles_honaker",
+      "input": "3 2 20\n",
+      "output": "1 Buenos | 2 Debiles | 3 Honaker/Woodall: 7 posicion=4 Honaker=0 Woodall=1\n"
+    },
+    {
+      "name": "anidados_na2_primos_buenos_debiles_honaker_buenos",
+      "input": "1 2 30\n",
+      "output": "1 Buenos | 2 Debiles | 3 Honaker/Woodall: 2 \n"
+    },
+    {
+      "name": "anidados_na2_primos_buenos_debiles_honaker_debiles",
+      "input": "2 10 30\n",
+      "output": "1 Buenos | 2 Debiles | 3 Honaker/Woodall: \n"
+    }
+  ],
+  "na3": [
+    {
+      "name": "anidados_na3_lynch_bell_y_ormiston",
+      "input": "1 1 50\n",
+      "output": "1 Lynch-Bell | 2 Ormiston: 1 2 3 4 5 6 7 8 9 12 15 24 36 48 \n"
+    },
+    {
+      "name": "anidados_na3_lynch_bell_y_ormiston_ormiston",
+      "input": "2 13 31\n",
+      "output": "1 Lynch-Bell | 2 Ormiston: Pares=0\n"
+    }
+  ],
+  "na4": [
+    {
+      "name": "anidados_na4_odontologicos_2025_2_y_triangulos",
+      "input": "3\n3\n",
+      "output": "1 Odontologico | 2 Odonto-energetico | 3 Triangulos: Figura I\n  ***\n  * \n***\nFigura D\n  ***\n * *\n***\nFigura H\n  * *\n ***\n* *\nFigura A\n  * *\n ***\n* *\nFigura L\n  *  \n *  \n***\nExitosas=5 Fallidas=0\n"
+    },
+    {
+      "name": "anidados_na4_odontologicos_2025_2_y_triangulos_energeticos",
+      "input": "2\n100 200\n",
+      "output": "1 Odontologico | 2 Odonto-energetico | 3 Triangulos: \n"
+    },
+    {
+      "name": "anidados_na4_odontologicos_2025_2_y_triangulos_odontologicos",
+      "input": "1\n10 30\n",
+      "output": "1 Odontologico | 2 Odonto-energetico | 3 Triangulos: 14 23 \n"
+    }
+  ],
+  "nb1": [
+    {
+      "name": "anidados_nb1_triangulo_pascal_for",
+      "input": "3\n",
+      "output": "Filas: 1 \n1 1 \n1 2 1 \n"
+    }
+  ],
+  "nb2": [
+    {
+      "name": "anidados_nb2_tablas_digitos_y_pitagorica",
+      "input": "2\n1\n",
+      "output": "1 Tablas por digito | 2 Pitagorica: 00 01 02 03 04 05 06 07 08 09 10 \n00 00 00 00 00 00 00 00 00 00 00 \n"
+    },
+    {
+      "name": "anidados_nb2_tablas_digitos_y_pitagorica_digitos",
+      "input": "1\n52421\n",
+      "output": "1 Tablas por digito | 2 Pitagorica: 05 x 01 = 05  02 x 01 = 02  04 x 01 = 04  02 x 01 = 02  01 x 01 = 01  \n05 x 02 = 10  02 x 02 = 04  04 x 02 = 08  02 x 02 = 04  01 x 02 = 02  \n05 x 03 = 15  02 x 03 = 06  04 x 03 = 12  02 x 03 = 06  01 x 03 = 03  \n05 x 04 = 20  02 x 04 = 08  04 x 04 = 16  02 x 04 = 08  01 x 04 = 04  \n05 x 05 = 25  02 x 05 = 10  04 x 05 = 20  02 x 05 = 10  01 x 05 = 05  \n05 x 06 = 30  02 x 06 = 12  04 x 06 = 24  02 x 06 = 12  01 x 06 = 06  \n05 x 07 = 35  02 x 07 = 14  04 x 07 = 28  02 x 07 = 14  01 x 07 = 07  \n05 x 08 = 40  02 x 08 = 16  04 x 08 = 32  02 x 08 = 16  01 x 08 = 08  \n05 x 09 = 45  02 x 09 = 18  04 x 09 = 36  02 x 09 = 18  01 x 09 = 09  \n05 x 10 = 50  02 x 10 = 20  04 x 10 = 40  02 x 10 = 20  01 x 10 = 10  \n05 x 11 = 55  02 x 11 = 22  04 x 11 = 44  02 x 11 = 22  01 x 11 = 11  \n05 x 12 = 60  02 x 12 = 24  04 x 12 = 48  02 x 12 = 24  01 x 12 = 12  \n"
+    }
+  ],
+  "nb3": [
+    {
+      "name": "anidados_nb3_primos_gemelos_subrangos_mersenne",
+      "input": "3\n3\n",
+      "output": "1 Gemelos | 2 Subrangos | 3 Mersenne: M_1=1 primo=no\nM_2=3 primo=si\nM_3=7 primo=si\n"
+    },
+    {
+      "name": "anidados_nb3_primos_gemelos_subrangos_mersenne_gemelos",
+      "input": "1\n2 30\n",
+      "output": "1 Gemelos | 2 Subrangos | 3 Mersenne: (3,5)\n(5,7)\n(11,13)\n(17,19)\n"
+    },
+    {
+      "name": "anidados_nb3_primos_gemelos_subrangos_mersenne_subrangos",
+      "input": "2\n1 20 5\n",
+      "output": "1 Gemelos | 2 Subrangos | 3 Mersenne: [1,5] primos=3 armstrong=5\n[6,10] primos=1 armstrong=4\n[11,15] primos=2 armstrong=0\n[16,20] primos=2 armstrong=0\n"
+    }
+  ],
+  "ni1": [
+    {
+      "name": "anidados_ni1_goldbach_euclides_fracciones",
+      "input": "1\n7\n",
+      "output": "1 Goldbach | 2 Fracciones: 7 = 2 + 2 + 3\n"
+    },
+    {
+      "name": "anidados_ni1_goldbach_euclides_fracciones_fracciones",
+      "input": "2\n1 2\n1 3\n0\n",
+      "output": "1 Goldbach | 2 Fracciones: Pares numerador denominador; numerador <= 0 termina\nSuma=1/2\n"
+    }
+  ],
+  "ni2": [
+    {
+      "name": "anidados_ni2_juego_capicuas_y_multibase",
+      "input": "2\n10 12\n",
+      "output": "1 Juego | 2 Multibase: Base 4: 1\nBase 5: 1\nBase 6: 0\nBase 7: 0\nBase 8: 0\nBase 9: 1\n"
+    },
+    {
+      "name": "anidados_ni2_juego_capicuas_y_multibase_capicuas",
+      "input": "1\n2\n2\n11\n",
+      "output": "1 Juego | 2 Multibase: 2 exito=1 capicua=2\n11 exito=1 capicua=11\nMayor=11\n"
+    }
+  ],
+  "ni3": [
+    {
+      "name": "anidados_ni3_poderosos_intocables_sociables",
+      "input": "1\n1 10\n",
+      "output": "1 Poderosos | 2 Intocables | 3 Sociables: 1 4 8 9 \n"
+    },
+    {
+      "name": "anidados_ni3_poderosos_intocables_sociables_intocables",
+      "input": "2\n1 10\n",
+      "output": "1 Poderosos | 2 Intocables | 3 Sociables: 1 2 5 \n"
+    },
+    {
+      "name": "anidados_ni3_poderosos_intocables_sociables_sociables",
+      "input": "3\n-5\n6\n0\n",
+      "output": "1 Poderosos | 2 Intocables | 3 Sociables: Numeros (0 termina):\nReintente\n6 -> 6\n"
+    }
+  ],
+  "ej1": [
+    {
+      "name": "ej1_caso1_suma",
+      "input": "97531 5\n+\n",
+      "output": "Ingrese un numero y su cantidad de digitos: Ingrese la operacion de la secuencia (+, -, *, /): Los digitos del numero 97531 tienen una secuencia de +2\n"
+    },
+    {
+      "name": "ej1_caso2_resta",
+      "input": "345678 6\n-\n",
+      "output": "Ingrese un numero y su cantidad de digitos: Ingrese la operacion de la secuencia (+, -, *, /): Los digitos del numero 345678 tienen una secuencia de -1\n"
+    },
+    {
+      "name": "ej1_caso3_multiplicacion",
+      "input": "842 3\n*\n",
+      "output": "Ingrese un numero y su cantidad de digitos: Ingrese la operacion de la secuencia (+, -, *, /): Los digitos del numero 842 tienen una secuencia de *2\n"
+    },
+    {
+      "name": "ej1_caso4_division",
+      "input": "139 3\n/\n",
+      "output": "Ingrese un numero y su cantidad de digitos: Ingrese la operacion de la secuencia (+, -, *, /): Los digitos del numero 139 tienen una secuencia de /3\n"
+    },
+    {
+      "name": "ej1_caso5_no_cumple",
+      "input": "12345 5\n+\n",
+      "output": "Ingrese un numero y su cantidad de digitos: Ingrese la operacion de la secuencia (+, -, *, /): Los digitos del numero 12345 no tienen una secuencia de +\n"
+    },
+    {
+      "name": "ej1_caso6_digitos_incorrectos",
+      "input": "1234 3\n+\n",
+      "output": "Ingrese un numero y su cantidad de digitos: Ingrese la operacion de la secuencia (+, -, *, /): Datos incorrectos\n"
+    },
+    {
+      "name": "ej1_caso7_con_cero",
+      "input": "9630 4\n+\n",
+      "output": "Ingrese un numero y su cantidad de digitos: Ingrese la operacion de la secuencia (+, -, *, /): Los digitos del numero 9630 tienen una secuencia de +3\n"
+    }
+  ],
+  "ej2": [
+    {
+      "name": "ej2_caso1_z_pertenece",
+      "input": "Z\n2\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Ingrese un numero entre 0 y 1000: Terminos Z(0)..Z(14): 3 2 1 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11\nEl numero 2 SI pertenece a los 15 primeros terminos de Z\n"
+    },
+    {
+      "name": "ej2_caso2_z_no_pertenece",
+      "input": "z\n7\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Ingrese un numero entre 0 y 1000: Terminos Z(0)..Z(14): 3 2 1 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11\nEl numero 7 NO pertenece a los 15 primeros terminos de Z\n"
+    },
+    {
+      "name": "ej2_caso3_z_fuera_rango",
+      "input": "Z\n1500\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Ingrese un numero entre 0 y 1000: Terminos Z(0)..Z(14): 3 2 1 0 -1 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11\nEl numero debe estar en el rango [0, 1000]\n"
+    },
+    {
+      "name": "ej2_caso4_s_a1_n2",
+      "input": "S\n1\n2\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Ingrese el valor de a (entre 0 y 2): Ingrese el valor de n (entre 0 y 10): El resultado de la sumatoria es: 552.0000\n"
+    },
+    {
+      "name": "ej2_caso5_s_a0_n3",
+      "input": "s\n0\n3\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Ingrese el valor de a (entre 0 y 2): Ingrese el valor de n (entre 0 y 10): El resultado de la sumatoria es: 3.0000\n"
+    },
+    {
+      "name": "ej2_caso6_s_a05_n4",
+      "input": "S\n0.5\n4\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Ingrese el valor de a (entre 0 y 2): Ingrese el valor de n (entre 0 y 10): El resultado de la sumatoria es: 741750.7083\n"
+    },
+    {
+      "name": "ej2_caso7_s_fuera_rango",
+      "input": "S\n2.5\n3\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Ingrese el valor de a (entre 0 y 2): Ingrese el valor de n (entre 0 y 10): Datos fuera de rango: a debe estar en [0, 2] y n en [0, 10]\n"
+    },
+    {
+      "name": "ej2_caso8_opcion_invalida",
+      "input": "X\n",
+      "output": "Seleccione una opcion (Z = sucesion, S = sumatoria): Opcion invalida\n"
+    }
+  ],
+  "ej3": [
+    {
+      "name": "ej3_caso1_un_nivel_cada_uno",
+      "input": "4\nI\n50000 L\ni\n150 h\nF\n25000 5\nI\n400 L\n",
+      "output": "Ingrese la cantidad de mediciones: Medicion 1 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 50000.00 lux: Luz solar directa BRILLANTE\nMedicion 2 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 15000.00 lux: Luz diurna de CIELO AZUL\nMedicion 3 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el flujo luminoso (lm) y el area (m2):   -> 5000.00 lux: Dia NUBLADO\nMedicion 4 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 400.00 lux: OCASO\n\n========== REPORTE FINAL ==========\nTotal de mediciones     : 4\nBrillante (sol directo) : 1 (25.00%)\nCielo azul              : 1 (25.00%)\nNublado                 : 1 (25.00%)\nOcaso                   : 1 (25.00%)\nMediciones invalidas    : 0\n"
+    },
+    {
+      "name": "ej3_caso2_invalidas",
+      "input": "3\nF\n1000 0\nX\nI\n2 H\n",
+      "output": "Ingrese la cantidad de mediciones: Medicion 1 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el flujo luminoso (lm) y el area (m2):   -> Medicion invalida: no se clasifica\nMedicion 2 - Tipo (I = iluminancia directa, F = flujo/area):   -> Medicion invalida: no se clasifica\nMedicion 3 - Tipo (I = iluminancia directa, F = flujo/area):   Ingrese el valor y la unidad (L = lux, H = hectolux):   -> 200.00 lux: OCASO\n\n========== REPORTE FINAL ==========\nTotal de mediciones     : 3\nBrillante (sol directo) : 0 (0.00%)\nCielo azul              : 0 (0.00%)\nNublado                 : 0 (0.00%)\nOcaso                   : 1 (33.33%)\nMediciones invalidas    : 2\n"
+    },
+    {
+      "name": "ej3_caso3_n_cero",
+      "input": "0\n",
+      "output": "Ingrese la cantidad de mediciones: La cantidad de mediciones debe ser mayor que 0\n"
+    }
+  ],
+  "ej4": [
+    {
+      "name": "ej4_caso1_rotar_derecha",
+      "input": "1\n12345 2\nD\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese el numero y la cantidad de rotaciones k: Ingrese el sentido (D = derecha, I = izquierda): Numero original: 12345\nNumero tras 2 rotacion(es) en sentido D: 45123\n"
+    },
+    {
+      "name": "ej4_caso2_rotar_izquierda_k7",
+      "input": "1\n12345 7\ni\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese el numero y la cantidad de rotaciones k: Ingrese el sentido (D = derecha, I = izquierda): Numero original: 12345\nNumero tras 7 rotacion(es) en sentido i: 34512\n"
+    },
+    {
+      "name": "ej4_caso3_con_cero",
+      "input": "1\n1230 1\nD\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese el numero y la cantidad de rotaciones k: Ingrese el sentido (D = derecha, I = izquierda): Datos incorrectos\n"
+    },
+    {
+      "name": "ej4_caso4_nueve_cifras",
+      "input": "1\n987654321 1\nD\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese el numero y la cantidad de rotaciones k: Ingrese el sentido (D = derecha, I = izquierda): Numero original: 987654321\nNumero tras 1 rotacion(es) en sentido D: 198765432\n"
+    },
+    {
+      "name": "ej4_caso5_base2",
+      "input": "2\n2\n101 11\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese la base b (1 < b <= 10): Ingrese los dos numeros (maximo 3 cifras cada uno): (101)_2 + (11)_2 = (1000)_2\n"
+    },
+    {
+      "name": "ej4_caso6_base5",
+      "input": "2\n5\n234 43\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese la base b (1 < b <= 10): Ingrese los dos numeros (maximo 3 cifras cada uno): (234)_5 + (43)_5 = (332)_5\n"
+    },
+    {
+      "name": "ej4_caso7_base7",
+      "input": "2\n7\n123 456\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese la base b (1 < b <= 10): Ingrese los dos numeros (maximo 3 cifras cada uno): (123)_7 + (456)_7 = (612)_7\n"
+    },
+    {
+      "name": "ej4_caso8_base8_acarreo",
+      "input": "2\n8\n777 1\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese la base b (1 < b <= 10): Ingrese los dos numeros (maximo 3 cifras cada uno): (777)_8 + (1)_8 = (1000)_8\n"
+    },
+    {
+      "name": "ej4_caso9_digito_invalido",
+      "input": "2\n2\n102 1\n",
+      "output": "1) Rotar un numero\n2) Sumar en base b\nSeleccione una opcion: Ingrese la base b (1 < b <= 10): Ingrese los dos numeros (maximo 3 cifras cada uno): Datos incorrectos\n"
+    }
+  ],
+  "ej5": [
+    {
+      "name": "ej5_caso1_k200",
+      "input": "200\n0 0.5\n",
+      "output": "Ingrese la constante del resorte k (N/m): Ingrese la posicion inicial a y la final b (m): Trabajo aproximado (Riemann): 24.9995 J\nTrabajo exacto (integral)   : 25.0000 J\nLa aproximacion coincide con el valor exacto (tolerancia 0.01 J)\n"
+    },
+    {
+      "name": "ej5_caso2_k50",
+      "input": "50\n0.1 0.3\n",
+      "output": "Ingrese la constante del resorte k (N/m): Ingrese la posicion inicial a y la final b (m): Trabajo aproximado (Riemann): 1.9999 J\nTrabajo exacto (integral)   : 2.0000 J\nLa aproximacion coincide con el valor exacto (tolerancia 0.01 J)\n"
+    },
+    {
+      "name": "ej5_caso3_invalido",
+      "input": "100\n0.4 0.2\n",
+      "output": "Ingrese la constante del resorte k (N/m): Ingrese la posicion inicial a y la final b (m): Datos incorrectos: se requiere k > 0 y 0 <= a < b\n"
+    }
+  ]
+}

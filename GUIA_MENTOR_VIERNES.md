@@ -536,3 +536,15 @@ printf '2\n3\n' | ./build/a3_zuckerman_y_casa_lucas
 ```sh
 printf '0 0 4\n0 2\n1 8 1.0\n' | ./build/a4_centro_masa_y_sumatorias
 ```
+
+---
+
+## Ruta de estudio · Guías 8 y 9 (ciclos iterativos anidados)
+
+La batería nueva vive en `ejercicios/anidados/`, sin alterar las rutas del parcial. Compilar y ejecutar un ejercicio con `make nb1`, `make ni2`, `make na4`, etc. Para toda la batería: `make anidados`; para sus casos reproducibles: `make test_anidados`; para ambos perfiles normativos: `make reglas`.
+
+En esta etapa se permiten y practican `for`, ciclos anidados, centinelas, `break`, `continue`, asignaciones compuestas y `%02d`. El conteo de cifras vuelve a ser iterativo. Siguen fuera de regla arreglos, cadenas, `struct`, memoria dinámica, variables globales, `bool`, `float` y `switch`. En intermedio y avanzado, antes de codificar, dibujar el árbol de 4-5 módulos, marcar qué funciones contienen iteraciones y definir un módulo de cálculo con dos resultados por referencia.
+
+Para abrir el material visual durante la mentoría, ejecutar `make web` en la raíz y navegar a <http://localhost:8080>. La plataforma contiene comparativa de reglas, traducción PSeInt/C, visualizador de pila de llamadas y punteros, recetario de diez algoritmos, catálogo filtrable enlazado a los `.c` locales y modo de diez retos de bugs. Tailwind y Prism se obtienen de CDN.
+
+Los archivos `pruebas/anidados_*.in/.out` son pruebas locales didácticas, no copias certificadas de casos oficiales. Usarlos para discutir trazas y luego variar entradas y bordes.

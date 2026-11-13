@@ -25,7 +25,7 @@ EJ5 = ej5_riemann_y_limites
 EJERCICIOS = $(EJ1) $(EJ2) $(EJ3) $(EJ4) $(EJ5)
 BINARIOS   = $(addprefix $(BIN_DIR)/,$(EJERCICIOS))
 
-.PHONY: all ej1 ej2 ej3 ej4 ej5 test reglas ansi verify clean help
+.PHONY: all ej1 ej2 ej3 ej4 ej5 test reglas ansi verify clean help nb1 nb2 nb3 ni1 ni2 ni3 na1 na2 na3 na4 anidados test_anidados web
 
 all: $(BINARIOS)
 
@@ -50,7 +50,7 @@ ej5: $(BIN_DIR)/$(EJ5)
 # compara contra el .out del mismo nombre.
 test: all
 	@fallas=0; \
-	for entrada in pruebas/*.in; do \
+	for entrada in pruebas/ej*.in; do \
 		caso=$$(basename $$entrada .in); \
 		num=$$(echo $$caso | sed -E 's/^ej([0-9]+)_.*/\1/'); \
 		bin=$$(ls $(BIN_DIR)/ej$${num}_* | head -1); \
@@ -64,7 +64,7 @@ test: all
 	test $$fallas -eq 0 && echo "Todos los casos pasan."
 
 reglas:
-	@sh herramientas/verificar_reglas.sh $(addprefix $(SRC_DIR)/,$(addsuffix .c,$(EJERCICIOS)))
+	@sh herramientas/verificar_reglas.sh $(addprefix $(SRC_DIR)/,$(addsuffix .c,$(EJERCICIOS))) $(wildcard $(SRC_DIR)/anidados/basico/*.c) $(wildcard $(SRC_DIR)/anidados/intermedio/*.c) $(wildcard $(SRC_DIR)/anidados/avanzado/*.c)
 
 ansi:
 	@fallas=0; \
@@ -92,6 +92,7 @@ help:
 B1 = b1_polinomio_completo
 B2 = b2_mcm_y_pi_wallis
 B3 = b3_tres_consecutivos
+B4 = b4
 
 I1 = i1_collatz_y_catalanes
 I2 = i2_intervalos_y_rectas
@@ -102,16 +103,16 @@ A2 = a2_validar_password_6_cifras
 A3 = a3_zuckerman_y_casa_lucas
 A4 = a4_centro_masa_y_sumatorias
 
-EJERCICIOS_NIVELES = $(B1) $(B2) $(B3) $(I1) $(I2) $(I3) $(A1) $(A2) $(A3) $(A4)
+EJERCICIOS_NIVELES = $(B1) $(B2) $(B3) $(B4) $(I1) $(I2) $(I3) $(A1) $(A2) $(A3) $(A4)
 BINARIOS_NIVELES   = $(addprefix $(BIN_DIR)/,$(EJERCICIOS_NIVELES))
 
 # Se agregan las rutas con subcarpeta a EJERCICIOS para que 'make reglas' y
 # 'make ansi' verifiquen automáticamente los 15 programas del proyecto.
-EJERCICIOS += basico/$(B1) basico/$(B2) basico/$(B3) \
+EJERCICIOS += basico/$(B1) basico/$(B2) basico/$(B3) basico/$(B4) \
               intermedio/$(I1) intermedio/$(I2) intermedio/$(I3) \
               avanzado/$(A1) avanzado/$(A2) avanzado/$(A3) avanzado/$(A4)
 
-.PHONY: b1 b2 b3 i1 i2 i3 a1 a2 a3 a4 list
+.PHONY: b1 b2 b3 b4 i1 i2 i3 a1 a2 a3 a4 list
 
 all: $(BINARIOS_NIVELES)
 
@@ -130,6 +131,8 @@ b2: $(BIN_DIR)/$(B2)
 	@./$<
 b3: $(BIN_DIR)/$(B3)
 	@./$<
+b4: $(BIN_DIR)/$(B4)
+	@./$<
 
 i1: $(BIN_DIR)/$(I1)
 	@./$<
@@ -147,38 +150,54 @@ a3: $(BIN_DIR)/$(A3)
 a4: $(BIN_DIR)/$(A4)
 	@./$<
 
+# Guías 8-9: Ciclos iterativos anidados.
+ANIDADOS = nb1_triangulo_pascal_for nb2_tablas_digitos_y_pitagorica nb3_primos_gemelos_subrangos_mersenne \
+           ni1_goldbach_euclides_fracciones ni2_juego_capicuas_y_multibase ni3_poderosos_intocables_sociables \
+           na1_cambio_base_especial_nk na2_primos_buenos_debiles_honaker na3_lynch_bell_y_ormiston na4_odontologicos_2025_2_y_triangulos
+
+$(BIN_DIR)/nb%: $(SRC_DIR)/anidados/basico/nb%.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $< -o $@ $(LDLIBS)
+$(BIN_DIR)/ni%: $(SRC_DIR)/anidados/intermedio/ni%.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $< -o $@ $(LDLIBS)
+$(BIN_DIR)/na%: $(SRC_DIR)/anidados/avanzado/na%.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $< -o $@ $(LDLIBS)
+
+nb1: $(BIN_DIR)/nb1_triangulo_pascal_for
+	@./$<
+nb2: $(BIN_DIR)/nb2_tablas_digitos_y_pitagorica
+	@./$<
+nb3: $(BIN_DIR)/nb3_primos_gemelos_subrangos_mersenne
+	@./$<
+ni1: $(BIN_DIR)/ni1_goldbach_euclides_fracciones
+	@./$<
+ni2: $(BIN_DIR)/ni2_juego_capicuas_y_multibase
+	@./$<
+ni3: $(BIN_DIR)/ni3_poderosos_intocables_sociables
+	@./$<
+na1: $(BIN_DIR)/na1_cambio_base_especial_nk
+	@./$<
+na2: $(BIN_DIR)/na2_primos_buenos_debiles_honaker
+	@./$<
+na3: $(BIN_DIR)/na3_lynch_bell_y_ormiston
+	@./$<
+na4: $(BIN_DIR)/na4_odontologicos_2025_2_y_triangulos
+	@./$<
+
+anidados: $(addprefix $(BIN_DIR)/,$(ANIDADOS))
+
+test_anidados: anidados
+	@fallas=0; for entrada in pruebas/anidados_*.in; do [ -f "$$entrada" ] || continue; caso=$$(basename "$$entrada" .in); clave=$${caso#anidados_}; bin=""; for nombre in $(ANIDADOS); do case "$$clave" in "$$nombre"*) bin="$(BIN_DIR)/$$nombre"; break;; esac; done; if [ -n "$$bin" ] && $$bin < "$$entrada" | diff -q - "pruebas/$$caso.out" >/dev/null; then echo "  OK    $$caso"; else echo "  FALLA $$caso"; [ -n "$$bin" ] && $$bin < "$$entrada" | diff - "pruebas/$$caso.out"; fallas=$$((fallas+1)); fi; done; test $$fallas -eq 0 && echo "Todos los casos anidados pasan."
+
 list:
 	@echo "======================================================================"
 	@echo "  COMANDOS DISPONIBLES - 1INF01 FUNDAMENTOS DE PROGRAMACION (PUCP)"
+	@echo "  [Ejercicios existentes] make ej1..ej5, b1..b4, i1..i3, a1..a4"
+	@echo "  [Guías 8-9 Básico] make nb1, nb2, nb3"
+	@echo "  [Guías 8-9 Intermedio] make ni1, ni2, ni3"
+	@echo "  [Guías 8-9 Avanzado] make na1, na2, na3, na4"
+	@echo "  [Utilidades] make all, anidados, test, test_anidados, reglas, ansi, verify, web, clean"
 	@echo "======================================================================"
-	@echo "  [Bloque Original]"
-	@echo "    make ej1   -> Secuencia entre digitos contiguos"
-	@echo "    make ej2   -> Sucesion Z(n) y sumatoria con factorial"
-	@echo "    make ej3   -> Lote de iluminancias y contadores por referencia"
-	@echo "    make ej4   -> Rotacion de digitos y suma en base b"
-	@echo "    make ej5   -> Suma de Riemann e integral exacta"
-	@echo ""
-	@echo "  [Nivel Basico - ejercicios/basico/]"
-	@echo "    make b1    -> Polinomio completo (Guia 2.1.1)"
-	@echo "    make b2    -> MCM (100 primeros multiplos) y Pi de Wallis (Guia 2.1.3 y 2.1.9)"
-	@echo "    make b3    -> Tres numeros consecutivos sin arreglos (Guia 2.1.7)"
-	@echo ""
-	@echo "  [Nivel Intermedio - ejercicios/intermedio/]"
-	@echo "    make i1    -> Conjetura de Collatz y Numeros Catalanes (Guia 2.2.1 y 2.2.3)"
-	@echo "    make i2    -> Interseccion de intervalos y Rectas PQ/RS (Guia 2.1.5 y 2.2.2)"
-	@echo "    make i3    -> Lab 5 (2025-1): Sucesion B(n), Densidad y Presion (Guia 2.2.9)"
-	@echo ""
-	@echo "  [Nivel Avanzado - ejercicios/avanzado/]"
-	@echo "    make a1    -> Numeros felices e infelices primos (Guia 2.3.1)"
-	@echo "    make a2    -> Validacion de password bancario de 6 cifras (Guia 2.3.4)"
-	@echo "    make a3    -> Lab 5 (2023-2): Zuckerman, T(n), Casa y Lucas (Guia 2.3.9 y 2.3.10)"
-	@echo "    make a4    -> Centro de masa 2D y Sumatoria Lab 2021-2 (Guia 2.3.7 y 2.3.8)"
-	@echo ""
-	@echo "  [Verificacion y Utilidades]"
-	@echo "    make all    -> Compila los 15 programas en build/"
-	@echo "    make reglas -> Verifica las reglas estrictas PUCP en los 15 archivos"
-	@echo "    make ansi   -> Verifica compatibilidad ANSI C89 en los 15 archivos"
-	@echo "    make test   -> Ejecuta la bateria de pruebas automaticas"
-	@echo "    make verify -> Compila, prueba y valida reglas del curso + C89"
-	@echo "    make clean  -> Elimina la carpeta build/"
-	@echo "======================================================================"
+
+web:
+	@echo "Plataforma de estudio: http://localhost:8080"
+	@python3 herramientas/servidor_web.py --port 8080

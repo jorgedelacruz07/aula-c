@@ -103,3 +103,22 @@ up / down          # moverse entre frames de la pila
 | Funciones vs procedimientos | cada prototipo está etiquetado en un comentario |
 | Factoriales en `double`, `1.0 / fact`, `fabs(a - b) < tol` | ver Ej2, I1, A4 y Ej5 |
 | `scanf("%d", num)` sin `&` si `num` ya es puntero; `" %c"` con espacio | todos los módulos de lectura |
+
+## Guías 8-9: ciclos iterativos anidados
+
+Se añadieron diez programas autónomos en `ejercicios/anidados/`:
+
+- `make nb1`, `make nb2`, `make nb3`: Pascal; tablas por dígito y pitagórica; primos gemelos, Armstrong y Mersenne.
+- `make ni1`, `make ni2`, `make ni3`: Goldbach y fracciones; juego de capicúas y multibase; poderosos, intocables y secuencias con centinela.
+- `make na1`, `make na2`, `make na3`, `make na4`: cambio de base especial; familias de primos; Lynch-Bell/Ormiston; odontológicos y triángulos.
+- `make anidados` compila la batería; `make test_anidados` ejecuta sus casos guardados en `pruebas/anidados_*.in/.out`.
+- `make reglas` valida los perfiles Parcial (Guías 1-6) y Anidados (Guías 8-9).
+- `make web` sirve la plataforma en <http://localhost:8080>; detener con Ctrl-C.
+
+### Plataforma para la sesión con Mauricio
+
+Desde la raíz ejecuta `make web` y abre <http://localhost:8080>. El sitio no requiere npm ni proceso de build. Incluye el mapa comparativo de reglas, la traducción PSeInt/C, una simulación paso a paso de parámetros por referencia, diez recetas sin arreglos, el catálogo filtrable de fuentes del repo con guía línea a línea y pruebas copiables, y diez retos interactivos de depuración. Tailwind CSS y Prism.js se cargan desde CDN, por lo que se requiere conexión a Internet para esos estilos y el resaltado; el contenido y los programas permanecen locales.
+
+### Límites didácticos de los ejemplos
+
+Los casos añadidos son casos de regresión de esta práctica y no se presentan como transcripciones oficiales de evaluaciones PUCP. Cada ejercicio documenta en sus comentarios el perfil y la intención técnica. Revisar rangos y límites antes de adaptar los algoritmos a entradas mayores.
