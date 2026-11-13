@@ -41,3 +41,11 @@
   --red: #ffb4b4;
   --code-bg: #101928;
 }
+
+/* Native scrollbars and form controls follow the active theme. */
+:root {
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+}

@@ -1624,3 +1624,46 @@ footer > a {
     scroll-behavior: auto;
   }
 }
+
+/* Legibility floor: reading text and controls never go below 14 px.
+   Only uppercase eyebrows/labels (metadata) stay at 12 px. */
+.method-step small,
+.route-card p,
+.filters label,
+.text-button,
+.input-heading label,
+.input-area p,
+.runtime-note summary,
+.runtime-note p,
+.exercise-card small,
+.exercise-everyday-text,
+.exercise-card > span,
+.material-note,
+.reference-grid article a,
+.teaching-guide a,
+footer p,
+footer a,
+.sidebar-footer,
+.lesson-meta span {
+  font-size: 14px;
+}
+.route-card p,
+.input-area p,
+.runtime-note p,
+.exercise-everyday-text,
+.material-note {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.route-card small,
+.shortcut,
+.pill,
+.brand small,
+.reference-grid article > span,
+.lesson-button small,
+footer small {
+  font-size: 13px;
+}
+.material-note code {
+  font-size: 14px;
+}

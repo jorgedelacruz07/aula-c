@@ -21,3 +21,7 @@
   - Subpágina `/archivo.html`: rediseño completo integrado al sistema de tokens de Aula C con navegación superior, enlace de retorno, temas y visualizador de código y pruebas limpio.
   - Documentación: `README.md` actualizado con todas las nuevas capacidades.
 - Verificación: `npm run quick` y `npm test` exit 0 (5/5 pruebas unitarias y de integración C pasadas; formato Prettier limpio).
+
+### 2026-11-13 · NOTE · Legibilidad y renombre a Aula C
+
+- **Resultado:** Textos de lectura/controles ≥14 px (verificado por estilos computados en 1440 px y 390 px, claro/oscuro, sin desbordamiento horizontal). Iconos decorativos repetidos retirados. Proyecto renombrado a Aula C en carpeta, GitHub, Xcode, registro, launcher (`aulac`), Switchboard, Vault, ProjectsDocs y T3. Gates: `npm run quick`, `make verify anidados test_anidados` y `npm run quick` del meta-repo en verde.

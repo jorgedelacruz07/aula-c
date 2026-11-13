@@ -22,10 +22,10 @@ Fecha: 2026-11-13. Base Git C-Testing: `4486fd8`; implementación local sin comm
 
 ## Integración y documentación
 
-- Meta-repo: catálogo `ctesting` / `C-Testing` / `5183`, dispatch individual y all, registro canónico y enlace production; proyecciones generadas con `workspace:sync`.
+- Meta-repo: catálogo `aulac` / `Aula C` / `5183` (antes `ctesting` / `C-Testing`; alias `ctesting` conservado en `project-remote`), dispatch individual y all, registro canónico y enlace production; proyecciones generadas con `workspace:sync`.
 - Configuración versionada Air: forward loopback `5183`, diagnóstico de túneles, URL y claves del launcher remoto. No se reiniciaron túneles ni se instaló Switchboard. La configuración debe llegar al checkout del Air por su flujo normal; conexiones ya abiertas conservan su conjunto de forwards hasta reconectar.
 - ProjectsDocs toma README, documentación y ficha Vault desde sus fuentes canónicas. Al cierre se usa su pipeline privado existente para regenerar y auditar; no se publica la biblioteca pública de Funnel.
-- Vault: `02-Projects/C-Testing/C-Testing.md`, intención docente, método y navegación. No se copiaron manuales del repo.
+- Vault: `02-Projects/Aula C/Aula C.md`, intención docente, método y navegación. No se copiaron manuales del repo.
 - Cierre del meta-repo: `queue:ledger add` fue rechazado con `HOST_NOT_OWNER` (autoridad `Jorges-MacBook-Air.local`, ejecución `Jorges-Mac-Mini.local`). Se conservó el rechazo y no se cambió la propiedad ni se usó un bypass. La implementación queda registrada en el ledger de C-Testing; el asiento global debe reconciliarse desde el host propietario.
 - Se observaron commits externos de integración en el meta-repo durante la sesión; se preservaron. Esta sesión no ejecutó commit ni push.
 
@@ -34,3 +34,9 @@ Fecha: 2026-11-13. Base Git C-Testing: `4486fd8`; implementación local sin comm
 Incorporar el material concreto del propietario con procedencia, semestre, restricciones y permiso de publicación. Ampliar búsqueda/ordenamiento y estructuras dinámicas antes de considerar el tramo avanzado completo. Los retos son abiertos: pasar los casos de referencia no certifica dominio ni corrige automáticamente la variante propuesta.
 
 Fuentes: `docs/ARQUITECTURA.md`, `docs/PLAN-DOCENTE.md`, `docs/CONTRATO-WEB.md`. C-Testing no dispone de perfil de cola; el trabajo se registra aquí y en `ledger.md`, sin inventar uno.
+
+## 2026-11-13 · Legibilidad y renombre a Aula C
+
+- UX: escala mínima de 14 px para lectura y controles (12 px solo en etiquetas en mayúsculas), flechas ↗ decorativas retiradas de navegación y tarjetas (se mantienen solo en enlaces externos), emoji del modo docente retirado, `color-scheme` por tema.
+- Renombre: carpeta `~/Projects/Aula C`, repo `jorgedelacruz07/aula-c` (origin actualizado), paquete `aula-c`, `Aula C.xcodeproj`, catálogo/launcher `aulac`, ficha Vault `02-Projects/Aula C/`, proyecto T3 «Aula C». Puerto 5183 y Firebase `aula-c-jorge` sin cambios.
+- Pendiente en el MacBook Air: renombrar su copia local a `~/Projects/Aula C` y `git remote set-url origin git@github.com:jorgedelacruz07/aula-c.git`.
