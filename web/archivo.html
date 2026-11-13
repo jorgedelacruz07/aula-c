@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Laboratorio de estudio 1INF01 PUCP para Mauricio: ciclos anidados, punteros y algoritmos sin arreglos."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%2319283f%27/%3E%3Ctext x=%2712%27 y=%2747%27 font-family=%27serif%27 font-size=%2746%27 fill=%27%23d3e5a6%27%3EC%3C/text%3E%3C/svg%3E"
+    />
+    <title>1INF01 · Laboratorio de Mauricio</title>
+    <link rel="stylesheet" href="/legacy/tailwind.css" />
+    <link
+      crossorigin="anonymous"
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="bg-slate-950 text-slate-100">
+    <header class="border-b border-slate-800 sticky top-0 z-20 bg-slate-950/95 backdrop-blur">
+      <div class="max-w-7xl mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+        <a href="#inicio" class="font-black text-lg tracking-tight"
+          >1INF01 <span class="text-cyan-300">/ Estudio</span></a
+        >
+        <nav class="flex gap-4 text-sm text-slate-300">
+          <a href="#mapa">Reglas</a><a href="#punteros">Punteros</a><a href="#recetario">Recetario</a
+          ><a href="#catalogo">Ejercicios</a><a href="#quiz">Quiz</a>
+        </nav>
+      </div>
+    </header>
+    <main id="inicio" class="max-w-7xl mx-auto px-5">
+      <section class="py-16 grid lg:grid-cols-[1.3fr_.7fr] gap-8 items-center">
+        <div>
+          <p class="uppercase tracking-[.25em] text-cyan-300 text-xs font-bold">
+            EEGGCC · PUCP · Guías 8 y 9
+          </p>
+          <h1 class="text-4xl md:text-6xl font-black mt-4 leading-tight">
+            De los ciclos simples<br /><span class="text-cyan-300">a la anidación con método.</span>
+          </h1>
+          <p class="text-slate-300 mt-5 max-w-2xl">
+            Una mesa de trabajo para practicar recorridos, centinelas, punteros y algoritmos numéricos sin
+            arreglos. Cada programa se conecta con su fuente real en el repositorio.
+          </p>
+          <a
+            href="#catalogo"
+            class="inline-block mt-7 bg-cyan-300 text-slate-950 font-bold px-5 py-3 rounded-xl"
+            >Abrir catálogo →</a
+          >
+        </div>
+        <div class="panel p-6">
+          <div class="text-xs uppercase tracking-widest text-slate-400">Ruta sugerida</div>
+          <ol class="mt-4 space-y-3">
+            <li><span class="badge">01</span> Cambia de perfil: Guías 1-6 → 8-9</li>
+            <li><span class="badge">02</span> Simula punteros con dos resultados</li>
+            <li><span class="badge">03</span> Traza una técnica sin arreglos</li>
+            <li><span class="badge">04</span> Resuelve un ejercicio y un bug</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="mapa" class="py-10">
+        <div class="section-heading">
+          <p>01 · Mapa mental</p>
+          <h2>Dos etapas, dos perfiles de reglas</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5 mt-6">
+          <article class="panel p-6">
+            <span class="tag tag-slate">Parcial · Guías 1-6</span>
+            <h3 class="text-2xl font-bold mt-3">Control básico</h3>
+            <ul class="check-list mt-4">
+              <li><b>Permitido:</b> while por contador, funciones, punteros de salida y double.</li>
+              <li>
+                <b>Prohibido:</b> for, break, continue, arreglos, strings, struct, bool, float y conteo de
+                cifras con bucles.
+              </li>
+              <li>Validación secuencial: primero leer y validar; luego procesar.</li>
+            </ul>
+          </article>
+          <article class="panel p-6 border-cyan-900">
+            <span class="tag tag-cyan">Laboratorios · Guías 8-9</span>
+            <h3 class="text-2xl font-bold mt-3">Ciclos anidados</h3>
+            <ul class="check-list mt-4">
+              <li>Se habilitan for, while anidado, centinelas, break y continue.</li>
+              <li>Se habilitan +=, *=, asignación en cascada y salida %02d.</li>
+              <li>Contar cifras ahora <b>exige</b> iteración: while (n != 0) { digitos++; n /= 10; }.</li>
+              <li>
+                Intermedio/avanzado: 4-5 módulos, ciclos en main y subprogramas, dos salidas por referencia no
+                lectoras.
+              </li>
+            </ul>
+          </article>
+        </div>
+        <div class="warning mt-5">
+          <b>Nota 0 en ambas etapas:</b> arreglos, cadenas, struct, memoria dinámica, variables globales,
+          bool, float y switch. En Guías 8-9, no olvides la cuota arquitectónica.
+        </div>
+        <div class="panel mt-5 p-6 overflow-x-auto">
+          <h3 class="text-xl font-bold">Traductor rápido · PSeInt ↔ C</h3>
+          <table class="study-table mt-4">
+            <thead>
+              <tr>
+                <th>PSeInt (perfil PUCP)</th>
+                <th>C</th>
+                <th>Lectura</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Mientras condicion Hacer</code></td>
+                <td><code>while (condicion) { }</code></td>
+                <td>Repite mientras la condición sea verdadera.</td>
+              </tr>
+              <tr>
+                <td><code>Para i &lt;- 1 Hasta n</code></td>
+                <td><code>for (i = 1; i &lt;= n; i++)</code></td>
+                <td>Contador con inicio, condición y actualización.</td>
+              </tr>
+              <tr>
+                <td><code>Escribir Sin Saltar x</code></td>
+                <td><code>printf("%d", x)</code></td>
+                <td>Imprime sin salto de línea.</td>
+              </tr>
+              <tr>
+                <td><code>trunc(a / b)</code></td>
+                <td><code>a / b</code> con enteros</td>
+                <td>La división entera descarta la parte decimal.</td>
+              </tr>
+              <tr>
+                <td><code>a MOD b</code></td>
+                <td><code>a % b</code></td>
+                <td>Residuo entero.</td>
+              </tr>
+              <tr>
+                <td>Leer y validar antes de operar</td>
+                <td><code>scanf(...) != esperado</code></td>
+                <td>Cascada: cada dato se valida antes del siguiente paso.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="fundamentos" class="py-10">
+        <div class="section-heading">
+          <p>Puente con las guías previas</p>
+          <h2>Fundamentos para resolver problemas</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
+          <article class="panel p-5">
+            <h3 class="font-bold text-cyan-100">Datos y expresiones</h3>
+            <p class="text-sm text-slate-300 mt-2">
+              Usa int para conteos y cifras; double para magnitudes fraccionarias. Revisa unidades, límites,
+              división entera y precedencia antes de escribir la fórmula.
+            </p>
+          </article>
+          <article class="panel p-5">
+            <h3 class="font-bold text-cyan-100">Secuencia y selección</h3>
+            <p class="text-sm text-slate-300 mt-2">
+              Descompón el proceso en pasos y expresa cada decisión con if / else. Para comparar varias
+              condiciones, conecta comparaciones completas con && o ||.
+            </p>
+          </article>
+          <article class="panel p-5">
+            <h3 class="font-bold text-cyan-100">Iteración y centinelas</h3>
+            <p class="text-sm text-slate-300 mt-2">
+              Inicializa antes del ciclo, define condición de salida y actualiza en cada vuelta. Combina
+              contadores con centinelas y evita ciclos sin progreso.
+            </p>
+          </article>
+          <article class="panel p-5">
+            <h3 class="font-bold text-cyan-100">Módulos y validación</h3>
+            <p class="text-sm text-slate-300 mt-2">
+              Diseña de arriba hacia abajo: main coordina, módulos calculan y muestran. Valida scanf, dominio
+              y rangos antes de usar los datos; documenta parámetros por valor y referencia.
+            </p>
+          </article>
+        </div>
+        <div class="panel p-5 mt-4 text-sm text-slate-300">
+          <b class="text-cyan-100">Herramientas numéricas recurrentes:</b> extrae cifras con % 10 y / 10;
+          recorre de izquierda a derecha con potencias de diez; usa MCD por Euclides, primos hasta d*d ≤ n,
+          divisores propios con límites explícitos, factorial iterativo y variables deslizantes para
+          recurrencias. Ante double, compara con tolerancia.
+        </div>
+      </section>
+
+      <section id="punteros" class="py-12">
+        <div class="section-heading">
+          <p>02 · Laboratorio de memoria</p>
+          <h2>Punteros y pila de llamadas</h2>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-5 mt-6">
+          <div class="panel p-6">
+            <pre class="language-c"><code>int suma, producto;
+calcular_suma_y_producto_digitos(235,
+                                  &amp;suma, &amp;producto);
+void calcular_suma_y_producto_digitos(
+    int num, int *p_suma, int *p_producto) {
+    *p_suma = 0;
+    *p_producto = 1;
+    while (num != 0) {
+        *p_suma += num % 10;
+        *p_producto *= num % 10;
+        num /= 10;
+    }
+}</code></pre>
+            <div class="flex gap-3 mt-4">
+              <button id="stack-next" class="button-primary">Siguiente línea</button
+              ><button id="stack-reset" class="button-secondary">Reiniciar</button>
+            </div>
+            <p id="stack-caption" class="text-cyan-200 mt-4 min-h-12">
+              Pulsa “Siguiente línea” para iniciar la traza.
+            </p>
+          </div>
+          <div class="panel p-6">
+            <h3 class="font-bold text-lg">Estado de memoria</h3>
+            <div id="memory-view" class="mt-4 grid grid-cols-2 gap-3"></div>
+            <div class="mt-5 text-sm text-slate-300 space-y-2">
+              <p>
+                <code>scanf("%d", p)</code>: <code>p</code> ya es una dirección cuando es parámetro puntero.
+              </p>
+              <p><code>(*cont)++</code> o <code>*cont += 1</code> incrementa el valor apuntado.</p>
+              <p><code>*cont++</code> incrementa el puntero por precedencia; no es lo mismo.</p>
+              <p><code>break</code> sale solo del ciclo más interno que lo contiene.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="recetario" class="py-12">
+        <div class="section-heading">
+          <p>03 · Arsenal de examen</p>
+          <h2>Algoritmos sin arreglos</h2>
+        </div>
+        <p class="text-slate-400 mt-2">Elige una técnica para ver la idea, el paso de traza y un patrón C.</p>
+        <div id="recipe-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-6"></div>
+      </section>
+
+      <section id="catalogo" class="py-12">
+        <div class="section-heading">
+          <p>04 · Catálogo del repositorio</p>
+          <h2>Busca, lee y prueba cada ejercicio</h2>
+        </div>
+        <div class="flex flex-wrap gap-3 mt-6">
+          <label
+            >Etapa
+            <select id="stage-filter" class="select">
+              <option value="all">Todas</option>
+              <option value="old">Guías 1-6 Parcial</option>
+              <option value="nested">Guías 8-9 Anidados</option>
+            </select></label
+          ><label
+            >Nivel
+            <select id="level-filter" class="select">
+              <option value="all">Todos</option>
+              <option>Básico</option>
+              <option>Intermedio</option>
+              <option>Avanzado</option>
+            </select></label
+          ><input id="search-filter" class="select min-w-56" placeholder="Filtrar por tema…" />
+        </div>
+        <div class="grid lg:grid-cols-[300px_1fr] gap-5 mt-5">
+          <div id="exercise-list" class="panel p-3 max-h-[650px] overflow-auto"></div>
+          <article id="exercise-view" class="panel p-5 min-h-[400px]">
+            <p class="text-slate-400">
+              Selecciona un programa para cargar su código, mapa de módulos y pruebas.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="quiz" class="py-12">
+        <div class="section-heading">
+          <p>05 · Cazador de bugs</p>
+          <h2>Diez retos rápidos</h2>
+        </div>
+        <div class="panel p-6 mt-6">
+          <div class="flex justify-between items-start gap-3">
+            <div>
+              <p id="quiz-count" class="text-cyan-300 text-sm"></p>
+              <h3 id="quiz-question" class="text-xl font-bold mt-2"></h3>
+            </div>
+            <button id="quiz-next" class="button-secondary">Siguiente reto</button>
+          </div>
+          <pre class="language-c mt-4"><code id="quiz-code"></code></pre>
+          <div id="quiz-options" class="grid sm:grid-cols-2 gap-3 mt-4"></div>
+          <p id="quiz-feedback" aria-live="polite" class="mt-4 min-h-6"></p>
+        </div>
+      </section>
+      <footer class="py-10 text-sm text-slate-500 border-t border-slate-800">
+        Material de práctica para la mentoría de Mauricio · Código local del repositorio · PUCP 1INF01
+      </footer>
+    </main>
+    <script
+      crossorigin="anonymous"
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"
+    ></script>
+    <script
+      crossorigin="anonymous"
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"
+    ></script>
+    <script
+      crossorigin="anonymous"
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"
+    ></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

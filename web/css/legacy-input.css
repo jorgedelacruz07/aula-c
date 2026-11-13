@@ -1,0 +1,4 @@
+/* Build utilities only for the preserved mentoring platform. Aula C uses its own CSS. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

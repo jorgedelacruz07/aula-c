@@ -27,3 +27,14 @@ bin/
 # Keep test cases and expected outputs in pruebas/
 !pruebas/*.out
 !pruebas/*.in
+
+# Web and downloaded compiler (recreated by npm run prepare:content)
+node_modules/
+dist/
+web/public/
+.cache/
+.firebase/
+
+.playwright-mcp/
+
+firebase-debug*.log

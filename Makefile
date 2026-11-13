@@ -199,5 +199,4 @@ list:
 	@echo "======================================================================"
 
 web:
-	@echo "Plataforma de estudio: http://localhost:8080"
-	@python3 herramientas/servidor_web.py --port 8080
+	@npm run dev
