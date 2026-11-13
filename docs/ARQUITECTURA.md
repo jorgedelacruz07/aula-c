@@ -43,10 +43,10 @@ Para futuras publicaciones: conservar el destino exclusivo y verificar las cuota
 Con Firebase CLI ya instalada y autenticada, para actualizar el destino autorizado:
 
 ```sh
-CONFIRM=DEPLOY FIREBASE_PROJECT=aula-c-jorge npm run deploy
+npm run deploy
 ```
 
-El script exige ambas variables, construye localmente y llama a `firebase deploy --only hosting --project <id>`. No inventa una `.firebaserc`, no modifica el proyecto por defecto de otros repos y no crea recursos de cómputo. Publica sobre el sitio Hosting predeterminado del proyecto indicado: no apuntarlo a un sitio de otro producto sin una decisión explícita.
+El script publica por defecto en `aula-c-jorge` (otro proyecto existente: `FIREBASE_PROJECT=<id> npm run deploy`), construye localmente y llama a `firebase deploy --only hosting --project <id>`. No inventa una `.firebaserc`, no modifica el proyecto por defecto de otros repos y no crea recursos de cómputo. Publica sobre el sitio Hosting predeterminado del proyecto indicado: no apuntarlo a un sitio de otro producto sin una decisión explícita.
 
 ## Fuentes educativas
 

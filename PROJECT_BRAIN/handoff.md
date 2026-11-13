@@ -6,7 +6,7 @@ Fecha: 2026-11-13. Base Git C-Testing: `4486fd8`; implementación local sin comm
 
 - Web pública: <https://aula-c-jorge.web.app>. Proyecto y sitio Firebase exclusivos `aula-c-jorge` (número `335432240132`). Sin cuenta de facturación vinculada: `billingEnabled=false`, comprobado con gcloud.
 - Desarrollo: `npm run dev` → `127.0.0.1:5183`, strictPort. Se detectó un servidor de este repo ya activo y se reutilizó; no se detuvieron procesos existentes.
-- Comandos: `format`, `quick`, `test:c`, `build`, `deploy`. Publicación autorizada: `CONFIRM=DEPLOY FIREBASE_PROJECT=aula-c-jorge npm run deploy`.
+- Comandos: `format`, `quick`, `test:c`, `build`, `deploy`. Publicación: `npm run deploy` (por defecto `aula-c-jorge`).
 - 14 lecciones / 22 casos nuevos; 26 ejercicios / 52 casos originales. Teoría, glosario, preguntas docentes, retos abiertos, editor, stdin, diagnósticos, cancelación, descarga/importación y progreso local.
 - Ejecución C real con Clang 8 y WASI en workers. Límites y diferencias frente a Xcode documentados. Archivos efímeros; no hay API de ejecución nativa.
 - Firebase Hosting estático; no Functions, Cloud Run, App Hosting, bases de datos, claves nuevas ni facturación habilitada.

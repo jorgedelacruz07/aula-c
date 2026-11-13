@@ -48,7 +48,7 @@ Abre **<http://127.0.0.1:5183>**. El puerto es fijo en loopback y coincide con e
 | `npm run quick`  | Comprueba formato, ejecuta pruebas de lecciones y los 52 casos C originales en temporales, construye la web y revisa whitespace |
 | `npm run test:c` | Controles académicos existentes: `make verify anidados test_anidados`                                                           |
 | `npm run build`  | Genera `dist/`, listo para Firebase Hosting estático                                                                            |
-| `npm run deploy` | Publicación protegida en Firebase Hosting: requiere `CONFIRM=DEPLOY FIREBASE_PROJECT=aula-c-jorge`                              |
+| `npm run deploy` | Build + publicación en Firebase Hosting `aula-c-jorge` (otro proyecto: `FIREBASE_PROJECT=<id>`)                                 |
 | `make web`       | Alias de `npm run dev`                                                                                                          |
 
 ---
@@ -90,7 +90,7 @@ La aplicación está diseñada para servirse como sitio estático sin requerir b
 - Proyecto Firebase exclusivo: `aula-c-jorge` (sin cuenta de facturación vinculada).
 - Para desplegar nueva versión:
   ```sh
-  CONFIRM=DEPLOY FIREBASE_PROJECT=aula-c-jorge npm run deploy
+  npm run deploy
   ```
 
 ---
