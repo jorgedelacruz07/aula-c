@@ -1,5 +1,15 @@
 # Handoff · Aula C
 
+## Publicación de ejercicios resueltos · 2026-11-14
+
+- Autorización expresa: «haz commit, push a master y deploy a prod».
+- Código y documentación de las 42 prácticas, navegación por lección y soluciones por defecto confirmados en `20bd502` y enviados a `origin/master`.
+- Gate final: `npm run quick` exit 0, 25/25 pruebas, 165 casos nuevos, 52 del archivo, formato, build y diff check. Revisión independiente de política sin hallazgos materiales; sin cambios de API/runner/dependencias/infraestructura.
+- Despliegue mediante `npm run deploy -- --web-only`: Auth + Hosting `aula-c-jorge` publicados con la URL del API existente. Producción: <https://aula-c-jorge.web.app>.
+- Verificación pública: tres HTML, nueve assets JS/CSS y las 42 soluciones C (54 recursos) coinciden por SHA-256 con `dist`; todas las rutas devolvieron 200. Cabeceras COOP/COEP correctas para compilador y popup de acceso. Las soluciones no contienen TODO.
+- API: health 200 con configuración de almacenamiento/IA presentes; administración anónima 401; materiales públicos 200 y CORS válido. Los ocho documentos continúan privados, con cero materiales aprobados publicados.
+- Este bloque reemplaza el estado local de las entradas anteriores; el cierre documental se confirma después del despliegue. No se realizó una revisión visual en navegador en esta publicación.
+
 ## Ejercicios resueltos como referencia docente · 2026-11-14 · cambios locales
 
 - Solicitud: presentar los ejercicios resueltos según tema/nivel para explicar en Aula C; el alumno construye los programas en su laptop personal.

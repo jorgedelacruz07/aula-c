@@ -89,3 +89,11 @@
 - **Solicitud:** ejercicios resueltos para enseñar con Aula C; el alumno reconstruye el código en su laptop.
 - **Resultado:** las 42 prácticas cargan el C resuelto y comentado; desarrollo visible, descarga directa e indicaciones de compilación/reconstrucción local. Plantillas como alternativa secundaria, con borradores separados; alcance por lección conservado. Actualizados README y guía docente.
 - **Verificación:** `npm run quick` exit 0, 25/25 pruebas, 165 casos de prácticas y build. Las 42 rutas predeterminadas sirven exactamente las soluciones locales sin TODO. Sin cambios a API/infraestructura ni publicación.
+
+## 2026-11-14 · RELEASE · Ejercicios resueltos publicados
+
+- **Autorización:** commit, push a master y deploy a producción pedidos expresamente por el propietario.
+- **Git:** entrega de 42 prácticas/soluciones, UX por lección y documentación en `20bd502`, enviada a origin/master.
+- **Gate:** `npm run quick` exit 0, 25/25 pruebas, 165 casos nuevos y 52 del archivo; revisión de política sin hallazgos materiales.
+- **Publicación:** `npm run deploy -- --web-only` finalizado; Auth + Hosting `aula-c-jorge`, con API existente. Web pública <https://aula-c-jorge.web.app>.
+- **Evidencia:** 54 recursos (3 HTML, 9 assets y 42 soluciones C) HTTP 200 y SHA-256 idénticos al build; COOP/COEP correctos. API health 200, administración anónima 401 y materiales públicos 200 con CORS válido; cero borradores privados publicados.
