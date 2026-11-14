@@ -133,33 +133,68 @@
             </button>
           </div>
         </section>
-        <section id="laboratorio" class="lab-section">
-          <div class="section-title">
-            <div>
-              <p class="eyebrow">APRENDE HACIENDO</p>
-              <h2>La teoría, al lado del código.</h2>
+        <section id="laboratorio" class="lab-section" aria-labelledby="lab-title">
+          <div class="lab-header">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow"><span class="short-line"></span> APRENDE HACIENDO</p>
+                <h2 id="lab-title">La teoría, al lado del código.</h2>
+              </div>
+              <span class="pill"><span class="status-dot"></span> C real · WebAssembly</span>
             </div>
-            <span class="pill"><span class="status-dot"></span> C real · WebAssembly</span>
-          </div>
-          <div class="filters">
-            <label
-              >Nivel<select id="level">
-                <option value="all">Todos los niveles</option>
-                <option>Básico</option>
-                <option>Intermedio</option>
-                <option>Avanzado</option>
-              </select></label
-            ><label
-              >Tema<select id="topic">
-                <option value="all">Todos los temas</option>
-              </select></label
-            ><label class="search-label"
-              >Buscar<input id="search" type="search" placeholder="Punteros, ciclos, memoria…"
-            /></label>
+
+            <div class="lab-toolbar">
+              <div class="stage-tabs" role="group" aria-label="Filtrar lecciones por nivel">
+                <button type="button" class="stage-tab active" data-lesson-level-tab="all">
+                  Todas <span id="count-lesson-all">14</span>
+                </button>
+                <button type="button" class="stage-tab" data-lesson-level-tab="Básico">
+                  Básico <span id="count-lesson-basico">5</span>
+                </button>
+                <button type="button" class="stage-tab" data-lesson-level-tab="Intermedio">
+                  Intermedio <span id="count-lesson-intermedio">4</span>
+                </button>
+                <button type="button" class="stage-tab" data-lesson-level-tab="Avanzado">
+                  Avanzado <span id="count-lesson-avanzado">5</span>
+                </button>
+              </div>
+
+              <div class="filters lab-filters">
+                <label class="sr-only" for="level">Nivel</label>
+                <select id="level" hidden>
+                  <option value="all">Todos los niveles</option>
+                  <option>Básico</option>
+                  <option>Intermedio</option>
+                  <option>Avanzado</option>
+                </select>
+                <label
+                  >Tema<select id="topic">
+                    <option value="all">Todos los temas</option>
+                  </select></label
+                ><label class="search-label"
+                  >Buscar lección<input id="search" type="search" placeholder="Punteros, ciclos, memoria…"
+                /></label>
+              </div>
+            </div>
           </div>
           <div class="workbench">
-            <aside class="lesson-nav">
-              <p class="nav-caption">LECCIONES <span id="lesson-count"></span></p>
+            <aside class="lesson-nav" aria-label="Ruta de lecciones">
+              <div class="lesson-nav-header">
+                <div class="lesson-nav-title-row">
+                  <p class="nav-caption">LECCIONES</p>
+                  <span id="lesson-count" class="lesson-count-badge">14</span>
+                </div>
+                <div class="lesson-progress-box">
+                  <div class="lesson-progress-meta">
+                    <span id="lesson-progress-text">0 / 14 verificadas</span>
+                    <span id="lesson-total-minutes">520 min</span>
+                  </div>
+                  <div class="lesson-progress-bar" aria-hidden="true">
+                    <span id="lesson-progress-fill" style="width: 0%"></span>
+                  </div>
+                </div>
+              </div>
+              <div id="active-external-item" class="active-external-banner" hidden></div>
               <div id="lesson-list"></div>
             </aside>
             <div class="lesson-main">
@@ -236,45 +271,97 @@ Prueba a predecirla antes de ejecutar.</pre>
             </div>
           </div>
         </section>
-        <section id="biblioteca" class="library-section">
-          <div class="section-title">
-            <div>
-              <p class="eyebrow">TU MATERIAL, EN UN SOLO LUGAR</p>
-              <h2>Del ejercicio a la explicación.</h2>
+        <section id="biblioteca" class="library-section" aria-labelledby="library-title">
+          <div class="library-header">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow"><span class="short-line"></span> TU MATERIAL, EN UN SOLO LUGAR</p>
+                <h2 id="library-title">Del ejercicio a la explicación.</h2>
+                <p class="section-description">
+                  Los programas originales del repositorio con sus comentarios pedagógicos, casos de prueba y
+                  contexto real. Selecciona cualquier ejercicio para inspeccionarlo, modificarlo y compilarlo
+                  en el laboratorio.
+                </p>
+              </div>
+              <div class="library-stats" aria-live="polite">
+                <div class="stat-badge">
+                  <strong id="stat-visible-exercises">26</strong>
+                  <span id="exercise-count">Cargando catálogo…</span>
+                </div>
+                <div class="stat-badge">
+                  <strong id="stat-total-tests">52</strong>
+                  <span>casos de referencia</span>
+                </div>
+                <div class="stat-badge stat-badge-accent">
+                  <strong id="stat-verified-exercises">0</strong>
+                  <span>en tu progreso</span>
+                </div>
+              </div>
             </div>
-            <span id="exercise-count" class="pill">Cargando catálogo…</span>
+
+            <div class="library-toolbar">
+              <div class="stage-tabs" role="group" aria-label="Filtrar por perfil de práctica">
+                <button type="button" class="stage-tab active" data-stage-tab="all">
+                  Todos <span id="count-stage-all">26</span>
+                </button>
+                <button type="button" class="stage-tab" data-stage-tab="Parcial">
+                  Algoritmos · Parcial <span id="count-stage-parcial">16</span>
+                </button>
+                <button type="button" class="stage-tab" data-stage-tab="Anidados">
+                  Ciclos anidados <span id="count-stage-anidados">10</span>
+                </button>
+              </div>
+
+              <div class="filters library-filters">
+                <label class="sr-only" for="exercise-stage">Perfil</label>
+                <select id="exercise-stage" hidden>
+                  <option value="all">Todos los perfiles</option>
+                  <option>Parcial</option>
+                  <option>Anidados</option>
+                </select>
+                <label
+                  >Nivel<select id="exercise-level">
+                    <option value="all">Todos los niveles</option>
+                    <option>Básico</option>
+                    <option>Intermedio</option>
+                    <option>Avanzado</option>
+                  </select></label
+                >
+                <label
+                  >Cobertura<select id="exercise-coverage">
+                    <option value="all">Todos los ejercicios</option>
+                    <option value="tested">Con casos de prueba</option>
+                    <option value="free">Exploración libre</option>
+                  </select></label
+                >
+                <label class="search-label"
+                  >Buscar ejercicio o concepto<input
+                    id="exercise-search"
+                    type="search"
+                    placeholder="Primos, sumatorias, sensores, binario…"
+                /></label>
+              </div>
+            </div>
           </div>
-          <p class="section-description">
-            Los programas originales del repositorio, con sus comentarios y pruebas disponibles. Ábrelos en el
-            laboratorio y explora sus decisiones.
-          </p>
-          <div class="filters">
-            <label
-              >Perfil<select id="exercise-stage">
-                <option value="all">Todos los perfiles</option>
-                <option>Parcial</option>
-                <option>Anidados</option>
-              </select></label
-            ><label
-              >Nivel<select id="exercise-level">
-                <option value="all">Todos</option>
-                <option>Básico</option>
-                <option>Intermedio</option>
-                <option>Avanzado</option>
-              </select></label
-            ><label class="search-label"
-              >Buscar por tema<input
-                id="exercise-search"
-                type="search"
-                placeholder="Primos, sumatorias, dígitos…"
-            /></label>
-          </div>
+
           <div id="exercise-list" class="exercise-grid"></div>
-          <p class="material-note">
-            ¿Tienes más material? Usa <b>Abrir .c</b> para experimentar con un archivo local. Para
-            incorporarlo al catálogo, agrégalo a <code>ejercicios/</code> y vuelve a ejecutar
-            <code>npm run dev</code>.
-          </p>
+
+          <div class="material-callout">
+            <div class="material-callout-info">
+              <span class="callout-badge">ARCHIVO LOCAL · .C</span>
+              <h3>¿Tienes un ejercicio propio o de clase?</h3>
+              <p class="material-note">
+                Ábrelo directamente desde tu computadora para compilarlo en el navegador sin subirlo a ningún
+                servidor. Si deseas integrarlo al catálogo permanente, agrégalo a <code>ejercicios/</code> y
+                ejecuta <code>npm run dev</code>.
+              </p>
+            </div>
+            <div class="material-callout-actions">
+              <button type="button" id="library-import" class="secondary callout-import-btn">
+                📂 Abrir archivo .c en el laboratorio
+              </button>
+            </div>
+          </div>
         </section>
         <section id="material-docente" class="library-section" aria-labelledby="material-title">
           <div class="section-title">

@@ -58,26 +58,163 @@ if ($("#theme-toggle")) {
 function updateProgress() {
   const count = lessons.filter((item) => typeof state.checked[item.path] === "string").length;
   $("#progress").textContent = `${count} de ${lessons.length} casos verificados`;
+  const pct = lessons.length ? Math.round((count / lessons.length) * 100) : 0;
+  if ($("#lesson-progress-text")) {
+    $("#lesson-progress-text").textContent = `${count} de ${lessons.length} verificadas (${pct}%)`;
+  }
+  if ($("#lesson-progress-fill")) {
+    $("#lesson-progress-fill").style.width = `${pct}%`;
+  }
+}
+
+// Keep the active lesson visible inside the rail without scrolling the page itself.
+function revealActiveLesson(list) {
+  const active = list.querySelector(".lesson-button.active");
+  if (!active) return;
+  const horizontal = list.scrollWidth > list.clientWidth + 1 && list.scrollHeight <= list.clientHeight + 1;
+  const listBox = list.getBoundingClientRect();
+  const box = active.getBoundingClientRect();
+  if (horizontal) {
+    if (box.left < listBox.left || box.right > listBox.right) list.scrollLeft += box.left - listBox.left - 4;
+    return;
+  }
+  const headerOffset = 40;
+  if (box.top < listBox.top + headerOffset) list.scrollTop += box.top - listBox.top - headerOffset;
+  else if (box.bottom > listBox.bottom - 12) list.scrollTop += box.bottom - listBox.bottom + 28;
+}
+
+function updateLessonListFades(list = $("#lesson-list")) {
+  if (!list) return;
+  list.classList.toggle("can-scroll-up", list.scrollTop > 2);
+  list.classList.toggle("can-scroll-down", list.scrollTop + list.clientHeight < list.scrollHeight - 2);
 }
 
 function renderLessons() {
-  const query = $("#search").value.toLocaleLowerCase("es");
+  const query = ($("#search")?.value || "").toLocaleLowerCase("es");
+  const levelVal = $("#level")?.value || "all";
+  const topicVal = $("#topic")?.value || "all";
+
+  if ($("#count-lesson-all")) $("#count-lesson-all").textContent = lessons.length;
+  if ($("#count-lesson-basico"))
+    $("#count-lesson-basico").textContent = lessons.filter((l) => l.level === "Básico").length;
+  if ($("#count-lesson-intermedio"))
+    $("#count-lesson-intermedio").textContent = lessons.filter((l) => l.level === "Intermedio").length;
+  if ($("#count-lesson-avanzado"))
+    $("#count-lesson-avanzado").textContent = lessons.filter((l) => l.level === "Avanzado").length;
+
+  document.querySelectorAll("[data-lesson-level-tab]").forEach((tab) => {
+    const active = tab.dataset.lessonLevelTab === levelVal;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-pressed", String(active));
+  });
+
   const visible = lessons.filter(
     (item) =>
-      ($("#level").value === "all" || item.level === $("#level").value) &&
-      ($("#topic").value === "all" || item.topic === $("#topic").value) &&
+      (levelVal === "all" || item.level === levelVal) &&
+      (topicVal === "all" || item.topic === topicVal) &&
       `${item.title} ${item.topic} ${item.concept} ${item.everyday || ""}`
         .toLocaleLowerCase("es")
         .includes(query),
   );
-  $("#lesson-count").textContent = visible.length;
-  $("#lesson-list").innerHTML =
-    visible
-      .map(
-        (item) =>
-          `<button class="lesson-button ${selected?.id === item.id ? "active" : ""}" data-lesson="${item.id}" aria-pressed="${selected?.id === item.id}"><span>${item.id.slice(0, 2)}</span><div>${esc(item.title)}<small>${item.minutes} min · ${state.checked[item.path] ? "Caso verificado ✓" : esc(item.topic)}</small></div></button>`,
-      )
-      .join("") || '<p class="empty">No hay lecciones con estos filtros.</p>';
+
+  $("#lesson-count").textContent =
+    visible.length === lessons.length ? `${visible.length}` : `${visible.length}/${lessons.length}`;
+  const totalMinutes = visible.reduce((sum, item) => sum + (item.minutes || 0), 0);
+  if ($("#lesson-total-minutes")) {
+    $("#lesson-total-minutes").textContent = `${totalMinutes} min en vista`;
+  }
+
+  const externalBanner = $("#active-external-item");
+  if (externalBanner) {
+    const isExternalSelected = selected && !lessons.some((l) => l.id === selected.id);
+    if (isExternalSelected) {
+      externalBanner.hidden = false;
+      externalBanner.innerHTML = `
+        <div class="external-banner-top">
+          <span class="external-badge">${esc(selected.stage || "Catálogo")} · ${esc(selected.level || "")}</span>
+          <span class="external-active-dot">Activo</span>
+        </div>
+        <strong>${esc(selected.title)}</strong>
+        <small>${esc((selected.path || "").split("/").pop())}</small>
+      `;
+    } else {
+      externalBanner.hidden = true;
+      externalBanner.innerHTML = "";
+    }
+  }
+
+  const levelsOrder = ["Básico", "Intermedio", "Avanzado"];
+  const groupedHtml = visible.length
+    ? levelsOrder
+        .map((lvl) => {
+          const groupItems = visible.filter((item) => item.level === lvl);
+          if (!groupItems.length) return "";
+          const doneInGroup = groupItems.filter(
+            (item) => typeof state.checked[item.path] === "string",
+          ).length;
+          const levelSlug = lvl
+            .toLocaleLowerCase("es")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+          const itemsHtml = groupItems
+            .map((item) => {
+              const isSelected = selected?.id === item.id;
+              const isChecked = Boolean(state.checked[item.path]);
+              const hasDraft = Boolean(state.drafts[item.path]) && !isChecked;
+              const stepNum = item.id.slice(0, 2);
+              return `<button type="button" class="lesson-button ${isSelected ? "active" : ""} ${isChecked ? "verified" : ""}" data-lesson="${item.id}" aria-pressed="${isSelected}">
+                <span class="lesson-step-badge ${isChecked ? "done" : ""}">${isChecked ? "✓" : stepNum}</span>
+                <div class="lesson-button-body">
+                  <div class="lesson-button-title">${esc(item.title)}</div>
+                  <small class="lesson-button-meta">
+                    <span class="lesson-topic-pill">${esc(item.topic)}</span>
+                    <span class="lesson-meta-sep">·</span>
+                    <span>${item.minutes} min</span>
+                    ${
+                      isChecked
+                        ? '<span class="lesson-status-tag verified">Verificada</span>'
+                        : hasDraft
+                          ? '<span class="lesson-status-tag draft">Borrador</span>'
+                          : ""
+                    }
+                  </small>
+                </div>
+              </button>`;
+            })
+            .join("");
+
+          return `<div class="lesson-group">
+            <div class="lesson-group-header">
+              <span class="lesson-group-badge level-${levelSlug}">${esc(lvl)}</span>
+              <span class="lesson-group-count">${doneInGroup}/${groupItems.length}</span>
+            </div>
+            <div class="lesson-group-items">${itemsHtml}</div>
+          </div>`;
+        })
+        .join("")
+    : `<div class="lesson-empty-state">
+        <p class="empty">No hay lecciones con estos filtros.</p>
+        <button type="button" class="secondary reset-lessons-btn" id="reset-lesson-filters">Ver las 14 lecciones</button>
+      </div>`;
+
+  const list = $("#lesson-list");
+  const previousScroll = list.scrollTop;
+  list.innerHTML = groupedHtml;
+  list.scrollTop = previousScroll;
+  revealActiveLesson(list);
+  updateLessonListFades(list);
+
+  const resetLessonsBtn = $("#reset-lesson-filters");
+  if (resetLessonsBtn) {
+    resetLessonsBtn.onclick = () => {
+      $("#level").value = "all";
+      $("#topic").value = "all";
+      $("#search").value = "";
+      renderLessons();
+    };
+  }
+
   document
     .querySelectorAll("[data-lesson]")
     .forEach(
@@ -95,10 +232,34 @@ function explain(symbol) {
 function theory(item) {
   const isLesson = !!item.concept;
   const teacherActive = $("#teacher-mode").checked;
+  const lessonIndex = lessons.findIndex((l) => l.id === item.id);
+  const prevLesson = lessonIndex > 0 ? lessons[lessonIndex - 1] : null;
+  const nextLesson = lessonIndex >= 0 && lessonIndex < lessons.length - 1 ? lessons[lessonIndex + 1] : null;
+  const isVerified = Boolean(state.checked[item.path]);
+  const levelSlug = (item.level || "Básico")
+    .toLocaleLowerCase("es")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   $("#lesson-content").innerHTML = `
-    <div class="lesson-meta">
-      <span>${esc(item.level)}</span><span> / ${esc(item.topic || (item.stage === "Anidados" ? "Ciclos anidados" : "Algoritmos numéricos"))}</span><span>${isLesson ? ` / ${item.minutes} min de práctica` : ` / Perfil ${esc(item.stage)}`}</span>
+    <div class="lesson-header-bar">
+      <div class="lesson-meta">
+        ${lessonIndex >= 0 ? `<span class="lesson-step-chip">LECCIÓN ${String(lessonIndex + 1).padStart(2, "0")} DE ${lessons.length}</span>` : `<span class="lesson-step-chip">EJERCICIO DE CATÁLOGO</span>`}
+        <span class="badge-level level-${esc(levelSlug)}">${esc(item.level)}</span>
+        <span class="lesson-meta-topic">${esc(item.topic || (item.stage === "Anidados" ? "Ciclos anidados" : "Algoritmos numéricos"))}</span>
+        <span class="lesson-meta-duration">${isLesson ? `⏱ ${item.minutes} min` : `Perfil ${esc(item.stage)}`}</span>
+        ${isVerified ? `<span class="lesson-verified-pill">✓ Caso verificado</span>` : ""}
+      </div>
+      ${
+        lessonIndex >= 0
+          ? `<div class="lesson-stepper">
+              <button type="button" class="stepper-btn" id="prev-lesson-btn" ${prevLesson ? "" : "disabled"} title="${prevLesson ? esc(prevLesson.title) : "Primera lección"}">← Anterior</button>
+              <button type="button" class="stepper-btn" id="next-lesson-btn" ${nextLesson ? "" : "disabled"} title="${nextLesson ? esc(nextLesson.title) : "Última lección"}">Siguiente →</button>
+            </div>`
+          : `<div class="lesson-stepper">
+              <button type="button" class="stepper-btn" id="back-to-lessons-btn">← Volver a lecciones</button>
+            </div>`
+      }
     </div>
     <h3>${esc(item.title)}</h3>
     ${item.everyday ? `<p class="everyday-hint">${esc(item.everyday)}</p>` : ""}
@@ -107,20 +268,28 @@ function theory(item) {
       <b>EL PORQUÉ</b>
       ${esc(item.why || "Este programa se carga desde su archivo original. Las restricciones de su perfil pertenecen al material de práctica: C general también permite arreglos, estructuras y otros ciclos. El compilador C89 comprueba sintaxis de ese estándar, no las reglas académicas particulares.")}
     </div>
-    <div class="symbols">
-      ${(item.symbols || ["&", "*", "%d", "while", "return"])
-        .map((symbol) => `<button class="symbol" data-symbol="${esc(symbol)}">${esc(symbol)}</button>`)
-        .join("")}
+    <div class="symbols-panel">
+      <span class="symbols-caption">SÍMBOLOS CLAVE DE LA LECCIÓN (haz clic para inspeccionar):</span>
+      <div class="symbols">
+        ${(item.symbols || ["&", "*", "%d", "while", "return"])
+          .map(
+            (symbol) =>
+              `<button type="button" class="symbol" data-symbol="${esc(symbol)}">${esc(symbol)}</button>`,
+          )
+          .join("")}
+      </div>
+      <p id="symbol-explanation" aria-live="polite"></p>
     </div>
-    <p id="symbol-explanation" aria-live="polite"></p>
-    <details class="concept-details">
-      <summary>Un error que vale la pena entender</summary>
-      <p>${esc(item.trap || "Valida las conversiones de scanf, los divisores y los límites antes de operar. Que un programa compile no garantiza que su resultado sea correcto.")}</p>
-    </details>
-    <details class="concept-details">
-      <summary>Ahora te toca: modifica y explica</summary>
-      <p>${esc(item.challenge || "Añade un caso límite, justifica su salida y explica la responsabilidad de cada función. Los casos guardados no cubren necesariamente todo el dominio.")}</p>
-    </details>
+    <div class="concept-accordions">
+      <details class="concept-details">
+        <summary>⚠️ Un error que vale la pena entender</summary>
+        <p>${esc(item.trap || "Valida las conversiones de scanf, los divisores y los límites antes de operar. Que un programa compile no garantiza que su resultado sea correcto.")}</p>
+      </details>
+      <details class="concept-details">
+        <summary>🚀 Ahora te toca: modifica y explica</summary>
+        <p>${esc(item.challenge || "Añade un caso límite, justifica su salida y explica la responsabilidad de cada función. Los casos guardados no cubren necesariamente todo el dominio.")}</p>
+      </details>
+    </div>
     <div class="teacher-content" ${teacherActive ? "" : "hidden"}>
       <b>PARA TU SIGUIENTE CLASE · MODO DOCENTE (PUCP / UNI / UNMSM)</b>
       <p>${esc(item.teacher || "Dibuja el flujo entre módulos. Pide al alumno elegir una variable y describir su tipo, propósito, rango y duración; después solicita una prueba que pueda refutar su solución.")}</p>
@@ -141,12 +310,22 @@ function theory(item) {
           <ul>${item.teacherDetails.rubric.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
         </div>
       </div>
-      ${item.teacherDetails.blackboard ? `<p style="margin-top:6px;font-family:monospace;font-size:10px;"><b>Pizarra:</b> ${esc(item.teacherDetails.blackboard)}</p>` : ""}
+      ${item.teacherDetails.blackboard ? `<p class="teacher-blackboard"><b>Pizarra:</b> ${esc(item.teacherDetails.blackboard)}</p>` : ""}
       `
           : ""
       }
     </div>
   `;
+
+  if ($("#prev-lesson-btn") && prevLesson) {
+    $("#prev-lesson-btn").onclick = () => load(prevLesson);
+  }
+  if ($("#next-lesson-btn") && nextLesson) {
+    $("#next-lesson-btn").onclick = () => load(nextLesson);
+  }
+  if ($("#back-to-lessons-btn")) {
+    $("#back-to-lessons-btn").onclick = () => load(lessons[0]);
+  }
 
   document
     .querySelectorAll("[data-symbol]")
@@ -176,6 +355,7 @@ async function load(item) {
   $("#output").className = "";
   theory(item);
   renderLessons();
+  renderExercises();
   busy(true);
   try {
     let source = item.sourceC;
@@ -220,6 +400,7 @@ function recordDraft() {
   persist();
   updateProgress();
   renderLessons();
+  renderExercises();
 }
 
 async function execute(verify = false) {
@@ -252,12 +433,12 @@ async function execute(verify = false) {
       $("#execution-status").textContent = allPassed
         ? `${item.tests.length} caso(s) verificado(s). Explica por qué funciona.`
         : "Hay diferencias: revisa los resultados.";
-      if (allPassed && $("#source").value === code && lessons.some((lesson) => lesson.path === item.path))
-        state.checked[item.path] = code;
+      if (allPassed && $("#source").value === code) state.checked[item.path] = code;
       else delete state.checked[item.path];
       persist();
       updateProgress();
       renderLessons();
+      renderExercises();
     } else {
       const result = await runner.run(code, $("#stdin").value, { standard, onStatus });
       if (version !== actionVersion) return;
@@ -277,21 +458,111 @@ async function execute(verify = false) {
 }
 
 function renderExercises() {
-  const query = $("#exercise-search").value.toLocaleLowerCase("es");
-  const visible = catalog.filter(
-    (item) =>
-      ($("#exercise-stage").value === "all" || item.stage === $("#exercise-stage").value) &&
-      ($("#exercise-level").value === "all" || item.level === $("#exercise-level").value) &&
-      `${item.title} ${item.id} ${item.topic} ${item.everyday || ""}`.toLocaleLowerCase("es").includes(query),
-  );
-  $("#exercise-count").textContent = `${visible.length} de ${catalog.length} ejercicios`;
+  if (!catalog.length) return;
+  const query = ($("#exercise-search")?.value || "").toLocaleLowerCase("es");
+  const stageVal = $("#exercise-stage")?.value || "all";
+  const levelVal = $("#exercise-level")?.value || "all";
+  const coverageVal = $("#exercise-coverage")?.value || "all";
+
+  const parcialCount = catalog.filter((item) => item.stage === "Parcial").length;
+  const anidadosCount = catalog.filter((item) => item.stage === "Anidados").length;
+  if ($("#count-stage-all")) $("#count-stage-all").textContent = catalog.length;
+  if ($("#count-stage-parcial")) $("#count-stage-parcial").textContent = parcialCount;
+  if ($("#count-stage-anidados")) $("#count-stage-anidados").textContent = anidadosCount;
+
+  document.querySelectorAll("[data-stage-tab]").forEach((tab) => {
+    const active = tab.dataset.stageTab === stageVal;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-pressed", String(active));
+  });
+
+  const visible = catalog.filter((item) => {
+    const matchStage = stageVal === "all" || item.stage === stageVal;
+    const matchLevel = levelVal === "all" || item.level === levelVal;
+    const hasTests = Boolean(item.tests?.length);
+    const matchCoverage = coverageVal === "all" || (coverageVal === "tested" ? hasTests : !hasTests);
+    const matchQuery = `${item.title} ${item.id} ${item.topic} ${item.everyday || ""} ${item.path || ""}`
+      .toLocaleLowerCase("es")
+      .includes(query);
+    return matchStage && matchLevel && matchCoverage && matchQuery;
+  });
+
+  const totalTests = visible.reduce((sum, item) => sum + (item.tests?.length || 0), 0);
+  const engagedCount = catalog.filter(
+    (item) => typeof state.checked[item.path] === "string" || typeof state.drafts[item.path] === "string",
+  ).length;
+
+  if ($("#stat-visible-exercises")) $("#stat-visible-exercises").textContent = visible.length;
+  if ($("#stat-total-tests")) $("#stat-total-tests").textContent = totalTests;
+  if ($("#stat-verified-exercises")) $("#stat-verified-exercises").textContent = engagedCount;
+  $("#exercise-count").textContent =
+    visible.length === catalog.length
+      ? `de ${catalog.length} ejercicios`
+      : `de ${catalog.length} ejercicios filtrados`;
+
   $("#exercise-list").innerHTML =
     visible
-      .map(
-        (item, i) =>
-          `<button class="exercise-card" data-exercise="${i}"><small>${esc(item.stage)} · ${esc(item.level)}</small><h3>${esc(item.title)}</h3>${item.everyday ? `<div class="exercise-everyday-text">${esc(item.everyday)}</div>` : ""}<span>${item.tests?.length ? `${item.tests.length} casos disponibles` : "Exploración libre · sin pruebas"}</span></button>`,
-      )
-      .join("") || '<p class="empty">No hay ejercicios con esos filtros.</p>';
+      .map((item, i) => {
+        const isSelected = selected?.path === item.path;
+        const isVerified = typeof state.checked[item.path] === "string";
+        const hasDraft = typeof state.drafts[item.path] === "string";
+        const fileName = (item.path || "").split("/").pop();
+        const testCount = item.tests?.length || 0;
+        const levelSlug = (item.level || "Básico")
+          .toLocaleLowerCase("es")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+        return `<button type="button" class="exercise-card ${isSelected ? "active" : ""} ${isVerified ? "verified" : ""}" data-exercise="${i}" aria-pressed="${isSelected}">
+          <div class="exercise-card-top">
+            <span class="exercise-icon" aria-hidden="true">${esc(item.icon || "📄")}</span>
+            <div class="exercise-badges">
+              <span class="badge-stage">${esc(item.stage)}</span>
+              <span class="badge-level level-${esc(levelSlug)}">${esc(item.level)}</span>
+            </div>
+            <span class="exercise-code-id">${esc(item.id.toUpperCase())}</span>
+          </div>
+          <div class="exercise-card-body">
+            <h3>${esc(item.title)}</h3>
+            ${item.everyday ? `<p class="exercise-everyday-text">${esc(item.everyday)}</p>` : ""}
+          </div>
+          <div class="exercise-card-meta">
+            <span class="exercise-topic-tag">${esc(item.topic || "Algoritmos en C")}</span>
+            <code class="exercise-filename">${esc(fileName)}</code>
+          </div>
+          <div class="exercise-card-footer">
+            <span class="exercise-test-pill ${testCount ? "has-tests" : "free-mode"}">
+              <span class="pill-dot"></span>
+              ${
+                isVerified
+                  ? `Verificado (${testCount} ${testCount === 1 ? "caso" : "casos"}) ✓`
+                  : testCount
+                    ? `${testCount} ${testCount === 1 ? "caso de prueba" : "casos disponibles"}`
+                    : hasDraft
+                      ? "Borrador guardado · libre"
+                      : "Exploración libre"
+              }
+            </span>
+            <span class="exercise-cta">${isSelected ? "En laboratorio ●" : "Abrir en lab →"}</span>
+          </div>
+        </button>`;
+      })
+      .join("") ||
+    `<div class="empty-catalog-state">
+      <p class="empty">No encontramos ejercicios con esos criterios de búsqueda.</p>
+      <button type="button" class="secondary reset-filters-btn" id="reset-exercise-filters">Restablecer filtros</button>
+    </div>`;
+
+  const resetBtn = $("#reset-exercise-filters");
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      $("#exercise-stage").value = "all";
+      $("#exercise-level").value = "all";
+      if ($("#exercise-coverage")) $("#exercise-coverage").value = "all";
+      $("#exercise-search").value = "";
+      renderExercises();
+    };
+  }
 
   document.querySelectorAll("[data-exercise]").forEach(
     (button) =>
@@ -304,8 +575,30 @@ function renderExercises() {
 
 for (const topic of new Set(lessons.map((item) => item.topic))) $("#topic").add(new Option(topic, topic));
 for (const id of ["level", "topic", "search"]) $(`#${id}`).addEventListener("input", renderLessons);
-for (const id of ["exercise-stage", "exercise-level", "exercise-search"])
-  $(`#${id}`).addEventListener("input", renderExercises);
+$("#lesson-list").addEventListener("scroll", () => updateLessonListFades(), { passive: true });
+window.addEventListener("resize", () => updateLessonListFades(), { passive: true });
+window.matchMedia("(max-width: 820px)").addEventListener("change", () => {
+  revealActiveLesson($("#lesson-list"));
+  updateLessonListFades();
+});
+document.querySelectorAll("[data-lesson-level-tab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    $("#level").value = button.dataset.lessonLevelTab;
+    renderLessons();
+  });
+});
+for (const id of ["exercise-stage", "exercise-level", "exercise-coverage", "exercise-search"]) {
+  if ($(`#${id}`)) $(`#${id}`).addEventListener("input", renderExercises);
+}
+document.querySelectorAll("[data-stage-tab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    $("#exercise-stage").value = button.dataset.stageTab;
+    renderExercises();
+  });
+});
+if ($("#library-import")) {
+  $("#library-import").onclick = () => $("#file-input").click();
+}
 
 document.querySelectorAll("[data-level]").forEach(
   (button) =>
