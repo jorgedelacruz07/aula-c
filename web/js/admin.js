@@ -315,13 +315,20 @@ $("#delete-document").addEventListener("click", async () => {
   }
 });
 
+function syncThemeButton() {
+  const current = document.documentElement.dataset.theme || "light";
+  $("#theme-icon").textContent = current === "dark" ? "☀️" : "🌙";
+  $("#theme-text").textContent = current === "dark" ? "Claro" : "Oscuro";
+}
+
+syncThemeButton();
+
 $("#theme-toggle").addEventListener("click", () => {
   const current = document.documentElement.dataset.theme || "light";
   const next = current === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
   localStorage.setItem("aula-theme", next);
-  $("#theme-icon").textContent = next === "dark" ? "☀️" : "🌙";
-  $("#theme-text").textContent = next === "dark" ? "Claro" : "Oscuro";
+  syncThemeButton();
 });
 
 getRedirectResult(auth).catch((error) => {
