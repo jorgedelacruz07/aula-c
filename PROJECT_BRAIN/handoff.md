@@ -10,7 +10,7 @@ La adición estática del 2026-11-13 queda como antecedente histórico; el estad
 - Tipos: PDF, DOCX, TXT y Markdown. Fuente y borradores son privados; el docente edita y confirma publicación. El API no ejecuta C. La carpeta de objetos de desarrollo vence a los 7 días.
 - Switchboard comparte el catálogo `aulac`: web `5183`, API `5184`. Actualizados `project-dev`, túnel SSH y los documentos fuente del workspace.
 - ProjectsDocs privado se regeneró correctamente desde fuentes canónicas; auditoría pasó, con aviso de 93 enlaces no resueltos ya incluidos en su informe. No se publicó la copia pública.
-- Pendiente de esta sesión: registrar el SHA final, revisar el diff y empujar los cambios del repo Aula C a `master`.
+- Repo Aula C limpio y sincronizado: cambios publicados en `master`, commit `76c33db5881c4f4d5d4e99837dd482bf7c959e0c`. El portal público de ProjectsDocs no se publicó.
 
 Fecha: 2026-11-13. Base Git C-Testing: `4486fd8`; implementación local sin commit de esta sesión.
 
