@@ -6,8 +6,8 @@ const apiProject = "aula-c-knowledge-jorge";
 const apiRegion = "us-central1";
 const apiService = "aula-c-docs-api";
 const args = process.argv.slice(2);
-if (args.some((arg) => arg !== "--api-only")) {
-  throw new Error("Opción no válida. Usa npm run deploy o npm run deploy -- --api-only.");
+if (args.some((arg) => !["--api-only", "--web-only"].includes(arg)) || new Set(args).size > 1) {
+  throw new Error("Usa npm run deploy, npm run deploy -- --api-only o npm run deploy -- --web-only.");
 }
 
 function run(command, args, options = {}) {
@@ -17,8 +17,10 @@ function run(command, args, options = {}) {
   return result;
 }
 
-console.log("Publicando API de documentos en Cloud Run…");
-run("node", ["scripts/deploy-api.mjs"]);
+if (!args.includes("--web-only")) {
+  console.log("Publicando API de documentos en Cloud Run…");
+  run("node", ["scripts/deploy-api.mjs"]);
+}
 if (args.includes("--api-only")) {
   console.log("API de Aula C publicada.");
   process.exit(0);

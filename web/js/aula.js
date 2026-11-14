@@ -1,6 +1,8 @@
 import { lessons } from "./curriculum.js";
 import { symbols, passes, escapeHtml as esc } from "./learning.js";
 import { CRunner } from "./runner.js";
+import { apiBase } from "./firebase-config.js";
+import { materialLabItem, fetchPublishedMaterials } from "./materials.js";
 
 const $ = (selector) => document.querySelector(selector);
 const runner = new CRunner();
@@ -84,7 +86,7 @@ function renderLessons() {
 }
 
 function explain(symbol) {
-  $("#symbol-explanation").textContent = symbols[symbol] || "";
+  $("#symbol-explanation").textContent = selected?.symbolExplanations?.[symbol] || symbols[symbol] || "";
   document
     .querySelectorAll("[data-symbol]")
     .forEach((button) => button.classList.toggle("active", button.dataset.symbol === symbol));
@@ -444,43 +446,10 @@ function sourceLabel(pages, sections) {
     : "Referencia de origen pendiente de confirmar";
 }
 
-function materialLabItem(material, item, index, type) {
-  const isLesson = type === "lesson";
-  const title = item.title || (isLesson ? "Lección" : "Ejercicio");
-  return {
-    id: `material-${material.id}-${type}-${index}`,
-    path: `material/${material.id}/${type}-${index}.c`,
-    title,
-    level: item.level || "Intermedio",
-    topic: item.topic || (isLesson ? "Material docente" : "Práctica guiada"),
-    minutes: item.minutes || 20,
-    everyday: item.everyday || "Problema basado en material docente revisado.",
-    concept: isLesson ? item.concept : item.statement,
-    why: isLesson
-      ? item.why
-      : `Entrada: ${item.input || "por definir"}. Salida: ${item.output || "por definir"}. ${item.constraints?.join(" ") || ""}`,
-    symbols: isLesson
-      ? (item.symbols || []).map((symbol) => symbol.symbol || symbol)
-      : ["#include", "()", "{}", ";"],
-    trap: item.commonErrors?.join(" ") || item.hints?.join(" "),
-    challenge:
-      (item.teacherQuestions || []).join(" ") || "Explica qué decisión tomaste y qué caso límite probarías.",
-    sourceC: isLesson ? item.exampleC : item.solutionC,
-    tests: (item.tests || []).map((test, testIndex) => ({
-      name: test.name || `Caso ${testIndex + 1}`,
-      input: test.input || "",
-      output: test.expectedOutput || test.output || "",
-    })),
-    stage: "Material docente",
-  };
-}
-
 async function renderPublishedMaterials() {
   const container = $("#published-materials");
   try {
-    const response = await fetch("/api/public/materials");
-    if (!response.ok) throw new Error("Material docente temporalmente no disponible.");
-    const { materials = [] } = await response.json();
+    const materials = await fetchPublishedMaterials(apiBase);
     $("#published-count").textContent =
       `${materials.length} ${materials.length === 1 ? "material aprobado" : "materiales aprobados"}`;
     if (!materials.length) {

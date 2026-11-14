@@ -47,6 +47,7 @@ Vite aplica las cabeceras COOP/COEP en local. El proyecto Firebase `aula-c-jorge
 - Gemini 2.5 Flash usa `maxOutputTokens=24576` y `thinkingBudget=1024`: el razonamiento no puede agotar por sí solo el espacio destinado al JSON. Se comprueba `finishReason` antes de aceptar la respuesta. `MAX_TOKENS`, JSON mal formado o datos incompletos activan como máximo un reintento con hasta 2 lecciones y 2 ejercicios, dentro de un plazo compartido de 180 segundos.
 - El servidor valida campos internos, referencias y casos antes de guardar o publicar. No repara JSON truncado agregando llaves ni guarda respuestas parciales. Los errores distinguen cuota, conexión, tiempo y salida incompleta; quedan registrados en los metadatos privados sin contenido del documento ni credenciales. Un reanálisis exitoso limpia el error anterior.
 - La IA genera material original y un borrador privado. El docente edita y confirma su revisión antes de publicar. Solo los JSON publicados bajo `published/` se exponen en `/api/public/materials` y se consumen en el aula; no se publican los archivos originales.
+- La web obtiene el catálogo desde `VITE_AULA_API_URL` en producción y desde el proxy `/api` en local. `web/js/materials.js` adapta el material aprobado al laboratorio: conserva código, stdin/salidas esperadas, explicaciones de símbolos del documento y la apertura, preguntas, errores, rúbrica y pizarra del Modo docente.
 - La API key es fuente de verdad en Doppler `dev-tools/dev`; durante el despliegue se sincroniza de stdin a Secret Manager `aula-c-gemini-api-key`. Cloud Run usa Application Default Credentials con `aula-c-docs-api@aula-c-knowledge-jorge.iam.gserviceaccount.com`; no hay llaves de service account.
 - Cloud Run está configurado a escala cero en reposo, una instancia máxima, concurrencia 1, 1 vCPU/1 GiB y CPU throttling. Esto reduce cómputo ocioso, pero no garantiza gasto total cero: GCS, red, Secret Manager, Artifact Registry y solicitudes pueden generar cargos.
 
@@ -59,6 +60,8 @@ npm run deploy
 `npm run deploy` construye la imagen API con Docker local, la sube a Artifact Registry, actualiza el secreto desde Doppler, despliega Cloud Run y luego compila el sitio con la URL del API y publica Authentication + Hosting en `aula-c-jorge`. No usa Cloud Build ni crea llaves de cuenta de servicio. El despliegue puede generar cargos de GCP.
 
 `npm run deploy -- --api-only` sigue el mismo recorrido de Docker/Artifact Registry/Cloud Run y termina al actualizar el API. Las pruebas de recuperación están en `scripts/document-analysis.test.mjs` y forman parte de `npm run quick`.
+
+`npm run deploy -- --web-only` construye la web con la URL del servicio Cloud Run existente y publica Hosting/Auth. Las pruebas de adaptación de material, guía docente y catálogo están en `scripts/material-integration.test.mjs`.
 
 ## Fuentes educativas
 

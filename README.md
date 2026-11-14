@@ -114,7 +114,7 @@ La ejecución C ocurre completamente en WebAssembly (WASI/Clang 8) dentro del na
   npm run deploy
   ```
 
-Para publicar únicamente una corrección del API, usa `npm run deploy -- --api-only`. Esto permite actualizar el procesamiento de documentos independientemente de los cambios de la web.
+Para publicar únicamente una corrección del API, usa `npm run deploy -- --api-only`. Para actualizar únicamente la web con el API ya existente, usa `npm run deploy -- --web-only`.
 
 ---
 
