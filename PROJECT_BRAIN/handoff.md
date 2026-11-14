@@ -1,5 +1,14 @@
 # Handoff · Aula C
 
+## Actualización 2026-11-14 · PDF reales recuperados
+
+- Causa reproducida: el Laboratorio 10 generaba `MAX_TOKENS`; de 12.000 tokens de salida, Gemini consumía 7.624 en razonamiento y cortaba el JSON. El archivo PDF original era válido.
+- Corrección en `177897d`: razonamiento limitado a 1.024 tokens, salida de hasta 24.576, esquema acotado a 3 lecciones/4 ejercicios, validación interna y un reintento compacto como máximo con plazo total de 180 s. Los errores distinguen cuota, timeout y salida incompleta; un éxito limpia el error anterior.
+- Producción: `npm run deploy -- --api-only`; revisión `aula-c-docs-api-00006-n52` al 100 %, min=0, max=1, CPU throttling, 1 vCPU/1 GiB. Health 200 y administración anónima 401. Se conservaron fuera del commit/deploy los cambios previos de `web/css/aula.css`, `web/index.html` y `web/js/aula.js`.
+- Prueba real con los PDF autorizados: Laboratorio 10 (21 páginas) → 3 lecciones y 4 ejercicios; guía #8/#9 (68 páginas) → 3 lecciones y 3 ejercicios. Ambos terminaron con `STOP`, JSON válido, referencias dentro del número de páginas y campos docentes.
+- GCS: original del laboratorio reutilizado y su borrador recuperado en `documents/e4f9c80f-4579-4ea5-807f-d885b6328554/`. La guía adjunta se incorporó como borrador privado en `documents/82e486d1-2048-4516-8ed9-c88e953aff59/`. Ninguno se publicó; `/api/public/materials` sigue vacío. Los ejemplos/casos generados requieren revisión docente antes de publicarse.
+- Verificación: `npm run quick` exit 0 (13 pruebas y build), arranque de imagen Docker linux/amd64 con health 200/401 anónimo. Las pruebas simulan truncamiento, JSON incorrecto, cuota, bloqueo, UTF-8 y recuperación del objeto original.
+
 ## Actualización 2026-11-14 · Ingesta de documentos en producción
 
 La adición estática del 2026-11-13 queda como antecedente histórico; el estado actual incluye backend de documentos.

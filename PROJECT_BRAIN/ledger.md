@@ -1,5 +1,14 @@
 # Ledger · Aula C (antes C-Testing)
 
+## 2026-11-14 · FIX · Análisis de PDF extensos y recuperación de borradores
+
+- Solicitud: corregir los fallos de formato de los PDF subidos a `/admin` y obtener teoría, explicaciones, código comentado y prácticas.
+- Diagnóstico con el PDF real: Gemini devolvía `MAX_TOKENS` y JSON cortado; el PDF era válido. Los tokens de razonamiento agotaban el presupuesto de la respuesta.
+- Entrega `177897d`: límite explícito de razonamiento, mayor espacio de salida, esquema acotado, un reintento compacto con plazo compartido, validación de campos internos y errores específicos; se mantiene el original y se limpia el error al recuperar el borrador.
+- Evidencia: `npm run quick` pasó (13 pruebas), arranque Docker linux/amd64 pasó y ambas llamadas reales a Gemini terminaron `STOP`. Laboratorio 10: 3 lecciones/4 ejercicios; guía de ciclos anidados: 3 lecciones/3 ejercicios.
+- Producción: deploy del API con `npm run deploy -- --api-only`, revisión `aula-c-docs-api-00006-n52` al 100 %, health 200 y admin anónimo 401. Ambos documentos quedan como borradores privados en GCS, sin publicación pública. El docente aún debe revisar la precisión, código y casos.
+- Conservados los cambios de interfaz que ya estaban modificados al retomar la tarea; este commit y despliegue incluyen la corrección del API.
+
 ## 2026-11-13 · Aula C web
 
 - Solicitud: guía teórico-práctica para aprender y enseñar C, ejecución web, comandos npm, integración Switchboard y documentación en ProjectsDocs/Vault.
