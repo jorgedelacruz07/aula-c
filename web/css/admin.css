@@ -84,6 +84,28 @@
 .upload-card {
   margin-bottom: 18px;
 }
+.library-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-bottom: 16px;
+}
+.library-controls label {
+  display: grid;
+  gap: 5px;
+  font-size: 14px;
+}
+.library-controls [hidden] {
+  display: none;
+}
+.library-controls select {
+  min-width: 220px;
+}
+.library-controls .privacy-note {
+  flex: 1 1 280px;
+  margin: 0;
+}
 .admin-section-title {
   display: flex;
   justify-content: space-between;

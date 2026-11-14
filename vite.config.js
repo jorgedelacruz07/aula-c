@@ -1,6 +1,18 @@
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
+import { SHARED_LIBRARY_PROXY } from "./web/js/admin-library.js";
 export const STUDY_PORT = 5183;
+export function sharedLibraryProxy() {
+  return {
+    target: "https://aula-c-docs-api-uwwafcckza-uc.a.run.app",
+    changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/library-api/, "/api"),
+    configure(proxy) {
+      // This is a server-to-server request. Firebase's bearer token remains required.
+      proxy.on("proxyReq", (request) => request.removeHeader("origin"));
+    },
+  };
+}
 const headers = {
   "Cross-Origin-Opener-Policy": "same-origin",
   "Cross-Origin-Embedder-Policy": "require-corp",
@@ -13,7 +25,11 @@ function crossOriginIsolationPlugin() {
       if (pathname === "/admin" || pathname === "/archivo") {
         req.url = `${pathname}.html${url.slice(pathname.length)}`;
       }
-      if (!pathname.startsWith("/admin") && !pathname.startsWith("/api")) {
+      if (
+        !pathname.startsWith("/admin") &&
+        !pathname.startsWith("/api") &&
+        !pathname.startsWith(SHARED_LIBRARY_PROXY)
+      ) {
         for (const [key, value] of Object.entries(headers)) {
           res.setHeader(key, value);
         }
@@ -35,7 +51,10 @@ export default defineConfig({
     host: "127.0.0.1",
     port: STUDY_PORT,
     strictPort: true,
-    proxy: { "/api": { target: "http://127.0.0.1:5184", changeOrigin: true } },
+    proxy: {
+      "/api": { target: "http://127.0.0.1:5184", changeOrigin: true },
+      [SHARED_LIBRARY_PROXY]: sharedLibraryProxy(),
+    },
   },
   preview: { host: "127.0.0.1", port: STUDY_PORT, strictPort: true },
   build: {

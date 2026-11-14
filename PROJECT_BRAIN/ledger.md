@@ -1,5 +1,12 @@
 # Ledger · Aula C (antes C-Testing)
 
+## 2026-11-14 · FIX · Biblioteca principal visible en administración local
+
+- Solicitud: mostrar en `localhost:5183/admin` los documentos procesados por el asistente.
+- Causa: separación de namespaces; producción usa la biblioteca principal y el API local usa `dev/`.
+- Entrega: administración local con biblioteca principal por defecto vía proxy Vite autenticado y selector de pruebas temporales. Los originales permanecen en su espacio persistente; no se duplican ni se debilita el control por ID token.
+- Evidencia: selección principal observada en navegador local, ruta proxy 401 sin sesión, ocho documentos verificados en GCS, `npm run quick` exit 0 con 21 pruebas y build. La ventana de prueba no tenía sesión del propietario para leer la lista autenticada.
+
 ## 2026-11-14 · DATA/FEATURE · Biblioteca de fundamentos y conexión con el aula
 
 - Solicitud: usar los seis documentos nuevos para alimentar teoría, conocimientos, ejercicios y práctica de Aula C.

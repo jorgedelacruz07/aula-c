@@ -1,5 +1,13 @@
 # Handoff · Aula C
 
+## Actualización 2026-11-14 · Administración local y biblioteca compartida
+
+- Causa: `npm run dev` consulta `dev/` en GCS, mientras los ocho documentos procesados por el asistente están en la biblioteca principal. No eran visibles en la administración local.
+- `/admin` local ahora abre **Biblioteca principal** por defecto; Vite proxy `/library-api` reenvía al API Cloud Run y conserva la autenticación Firebase. **Pruebas locales** sigue disponible por selección explícita y conserva su prefijo temporal `dev/`.
+- No se copian originales ni borradores a la zona que caduca. El selector indica que los cambios de la biblioteca principal se comparten con la web publicada. Las solicitudes bloquean cambios de biblioteca y el cambio limpia la selección para evitar mezclar documentos.
+- Comprobación: Vite recargó su configuración y la ruta local devolvió 401 sin sesión (requiere Google); en el navegador se observó la selección principal por defecto. Esa ventana de prueba no tenía sesión del propietario. Los ocho registros de la biblioteca principal se verificaron aparte en GCS.
+- `npm run quick` pasó con 21 pruebas y build. Se conservaron los cambios de interfaz previos. Esta corrección se activa en desarrollo; no requiere cambiar Cloud Run, bucket ni sus reglas de acceso.
+
 ## Actualización 2026-11-14 · Seis fuentes de fundamentos incorporadas
 
 - Incorporados los seis PDF adjuntos de 1INF01/PUCP 2026-2: guías 1, 2, 3, 4, 5/6 y taller del parcial. Son 309 páginas, 17 lecciones, 22 ejercicios y 64 casos propuestos; quedan como borradores privados. Biblioteca documental acumulada: ocho fuentes, 398 páginas. Inventario y progresión: `docs/FUENTES-DOCENTES.md`.

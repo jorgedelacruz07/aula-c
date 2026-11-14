@@ -34,7 +34,8 @@ Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar c
    - El borrador se puede editar y solo aparece en el aula después de guardarlo y publicarlo expresamente.
    - Analiza el documento completo para proponer una selección de hasta 3 lecciones y 4 ejercicios con referencias al origen. No equivale a convertir automáticamente cada página en una lección.
    - Si Gemini corta su respuesta, el API vuelve a intentarlo una vez con una selección más compacta. Los errores de cuota, conexión o tiempo se distinguen y el original sigue disponible para reanalizar.
-   - Archivos del entorno local usan el prefijo `dev/` y se eliminan tras 7 días.
+   - La administración local abre por defecto la **Biblioteca principal**, compartida con producción y con los documentos incorporados por el asistente.
+   - El selector **Pruebas locales** usa el prefijo `dev/`; sus archivos se eliminan tras 7 días.
 
 La biblioteca y su progresión temática se registran en [Fuentes docentes incorporadas](docs/FUENTES-DOCENTES.md). Los materiales derivados conservan preguntas, rúbricas y explicaciones propias de símbolos cuando se llevan al laboratorio.
 
@@ -59,7 +60,7 @@ npm run dev:auth
 
 El comando guarda credenciales solo en `~/.config/aula-c/gcloud/`; no modifica el ADC global usado por otros proyectos.
 
-`npm run dev` inicia Vite en `5183` y el API en `5184`; la API usa `Doppler dev-tools/dev`, ADC y el bucket `aula-c-knowledge-jorge-774195700936`. Las cargas locales quedan bajo `dev/` y el ciclo de vida de Cloud Storage las elimina a los 7 días.
+`npm run dev` inicia Vite en `5183` y el API de pruebas en `5184`; ese API usa `Doppler dev-tools/dev`, ADC y el prefijo `dev/` del bucket de Aula C. En `http://localhost:5183/admin`, **Biblioteca principal** consulta el API compartido a través de Vite; **Pruebas locales** consulta el API local y sus archivos caducan a los 7 días. La biblioteca principal permite revisar los documentos procesados desde el asistente y conserva sus cambios entre local y producción.
 
 | Comando          | Resultado                                                                                                                       |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |

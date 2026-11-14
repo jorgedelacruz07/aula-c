@@ -9,6 +9,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { apiBase, firebaseConfig } from "./firebase-config.js";
+import { adminLibraries, chooseAdminLibrary } from "./admin-library.js";
 
 const ADMIN_EMAIL = "jdelacruzp7@gmail.com";
 const $ = (selector) => document.querySelector(selector);
@@ -19,6 +20,20 @@ provider.setCustomParameters({ prompt: "select_account" });
 
 let currentDocument = null;
 let documents = [];
+const libraries = adminLibraries({ development: import.meta.env.DEV, apiBase });
+let savedLibrary;
+try {
+  savedLibrary = localStorage.getItem("aula-c:admin-library");
+} catch {
+  /* Browser storage can be unavailable. */
+}
+let activeLibrary = chooseAdminLibrary(libraries, savedLibrary);
+let pendingRequests = 0;
+const librarySelect = $("#library-select");
+librarySelect.replaceChildren(...libraries.map((library) => new Option(library.title, library.id)));
+librarySelect.value = activeLibrary.id;
+$("#library-picker").hidden = libraries.length < 2;
+$("#library-description").textContent = activeLibrary.description;
 
 function status(element, message, kind = "") {
   element.textContent = message;
@@ -40,24 +55,32 @@ function escapeHtml(value) {
 }
 
 async function request(path, options = {}) {
-  const token = await auth.currentUser?.getIdToken();
-  const response = await fetch(`${apiBase}${path}`, {
-    ...options,
-    headers: {
-      ...(options.body && !(options.body instanceof Blob) ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.message || `La solicitud falló (${response.status}).`);
-  return body;
+  const library = activeLibrary;
+  pendingRequests++;
+  librarySelect.disabled = true;
+  try {
+    const token = await auth.currentUser?.getIdToken();
+    const response = await fetch(`${library.apiBase}${path}`, {
+      ...options,
+      headers: {
+        ...(options.body && !(options.body instanceof Blob) ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.message || `La solicitud falló (${response.status}).`);
+    return body;
+  } finally {
+    pendingRequests--;
+    librarySelect.disabled = pendingRequests > 0;
+  }
 }
 
 function renderDocuments() {
   const list = $("#documents-list");
   if (!documents.length) {
-    list.innerHTML = '<p class="empty">Aún no has subido documentos.</p>';
+    list.innerHTML = '<p class="empty">Esta biblioteca todavía no tiene documentos.</p>';
     return;
   }
   list.innerHTML = documents
@@ -112,15 +135,19 @@ function renderDraft(draft) {
 }
 
 async function refreshDocuments() {
+  const library = activeLibrary;
   const result = await request("/admin/documents");
+  if (library !== activeLibrary) return;
   documents = result.documents || [];
   renderDocuments();
 }
 
 async function selectDocument(id) {
+  const library = activeLibrary;
   status($("#review-message"), "Cargando documento…");
   try {
     const result = await request(`/admin/documents/${encodeURIComponent(id)}`);
+    if (library !== activeLibrary) return;
     currentDocument = result.document;
     renderDraft(result.draft);
     $("#review-title").textContent = currentDocument.title;
@@ -171,6 +198,34 @@ $("#sign-out").addEventListener("click", () => signOut(auth));
 $("#refresh-documents").addEventListener("click", () =>
   refreshDocuments().catch((error) => status($("#review-message"), error.message, "error")),
 );
+
+librarySelect.addEventListener("change", async () => {
+  if (pendingRequests) {
+    librarySelect.value = activeLibrary.id;
+    return;
+  }
+  activeLibrary = chooseAdminLibrary(libraries, librarySelect.value);
+  try {
+    localStorage.setItem("aula-c:admin-library", activeLibrary.id);
+  } catch {
+    /* Optional preference. */
+  }
+  currentDocument = null;
+  documents = [];
+  $("#library-description").textContent = activeLibrary.description;
+  $("#review-title").textContent = "Borrador docente";
+  renderDraft(null);
+  $("#documents-list").textContent = "Cargando documentos…";
+  status($("#upload-status"), "");
+  status($("#review-message"), "Cargando biblioteca…");
+  try {
+    await refreshDocuments();
+    status($("#review-message"), "Selecciona un documento de esta biblioteca para revisarlo.");
+  } catch (error) {
+    $("#documents-list").textContent = "No se pudo cargar esta biblioteca.";
+    status($("#review-message"), error.message, "error");
+  }
+});
 
 $("#reanalyze-document").addEventListener("click", async () => {
   if (!currentDocument) return;
