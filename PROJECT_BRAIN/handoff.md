@@ -1,5 +1,16 @@
 # Handoff · Aula C
 
+## Actualización 2026-11-14 · Seis fuentes de fundamentos incorporadas
+
+- Incorporados los seis PDF adjuntos de 1INF01/PUCP 2026-2: guías 1, 2, 3, 4, 5/6 y taller del parcial. Son 309 páginas, 17 lecciones, 22 ejercicios y 64 casos propuestos; quedan como borradores privados. Biblioteca documental acumulada: ocho fuentes, 398 páginas. Inventario y progresión: `docs/FUENTES-DOCENTES.md`.
+- Se verificaron por SHA-256 los seis originales almacenados contra los adjuntos, los campos internos de cada borrador, las referencias dentro del rango de páginas y comentarios en todos los programas. Las 17 lecciones tienen apertura, preguntas, errores, rúbrica y pizarra.
+- Curación: precedencia frente a orden de evaluación; paso por valor y copia de direcciones en C; recurrencia matemática frente a recursión. Se completó la guía docente y se alinearon niveles con la ruta. La exactitud de los programas y sus 64 salidas propuestas aún necesita revisión docente; no se ejecutaron esos casos.
+- Fuentes privadas: `34a76d9e-31dc-4ab1-b717-6b019204033a` (guía 1), `7a7b6eaa-1c74-467c-bf3f-a188e767887b` (2), `a48af30e-b71a-47a9-a547-3725f782a1df` (3), `ddeba164-0bdf-428c-8716-fa7155a0a4ff` (4), `127c729e-d2a0-442b-9db6-e4b0da1c12d6` (5/6), `49177b74-4299-4854-835e-3256f85153b9` (taller). Metadatos bajo `documents/<id>/` en el bucket de Aula C; originales y borradores nunca se agregan a Git.
+- Integración `f4cc17a`: el catálogo publicado usa el API configurado, y `web/js/materials.js` conserva explicaciones propias de símbolos, casos y guía docente al cargar recursos en el laboratorio. Hosting actualizado con `npm run deploy -- --web-only` desde un checkout limpio; se preservaron fuera del despliegue los cambios previos de interfaz.
+- Generación `371ac32`: campos docentes obligatorios y recuperación cuando faltan; API desplegado con `npm run deploy -- --api-only`, revisión `aula-c-docs-api-00007-vnr` al 100 %, min=0/max=1, CPU throttling. Health 200.
+- Verificación: `npm run quick` exit 0, 18 pruebas y build. Assets de Hosting y CORS del API comprobados; los seis borradores privados se volvieron a leer y validar desde GCS. El catálogo público sigue en cero materiales al cierre.
+- El siguiente paso docente es revisar y publicar los borradores desde `/admin`. El registro de fuentes ofrece una progresión para el aula, no una afirmación de conversión exhaustiva de todas las páginas.
+
 ## Actualización 2026-11-14 · PDF reales recuperados
 
 - Causa reproducida: el Laboratorio 10 generaba `MAX_TOKENS`; de 12.000 tokens de salida, Gemini consumía 7.624 en razonamiento y cortaba el JSON. El archivo PDF original era válido.

@@ -1,5 +1,14 @@
 # Ledger · Aula C (antes C-Testing)
 
+## 2026-11-14 · DATA/FEATURE · Biblioteca de fundamentos y conexión con el aula
+
+- Solicitud: usar los seis documentos nuevos para alimentar teoría, conocimientos, ejercicios y práctica de Aula C.
+- Datos: seis fuentes privadas con 309 páginas, 17 lecciones, 22 ejercicios y 64 casos propuestos. Originales verificados por SHA-256; borradores leídos de vuelta desde GCS, con comentarios, referencias y guía docente completa. Se corrigieron explicaciones de precedencia, paso por valor y recurrencias. Los casos generados siguen pendientes de revisión semántica y ejecución.
+- Integración `f4cc17a`: catálogo desde la URL de API en Hosting, adaptación al laboratorio con símbolos y guía docente propios, pruebas de integración y despliegue separado de web. Se mantuvieron los cambios previos de UI fuera del commit y del deploy.
+- Generación `371ac32`: apertura, preguntas, errores, rúbrica y pizarra obligatorios por lección; recuperación automática si faltan. Nuevo inventario `docs/FUENTES-DOCENTES.md` enlazado desde README y plan docente.
+- Producción: Hosting actualizado, API en `aula-c-docs-api-00007-vnr` al 100 %, min=0/max=1, CPU throttling; health 200. `npm run quick` pasó con 18 pruebas y build.
+- Publicación: fuentes y borradores privados; cero recursos en el catálogo público. La aprobación desde `/admin` sigue siendo el paso para integrarlos en el aula pública.
+
 ## 2026-11-14 · FIX · Análisis de PDF extensos y recuperación de borradores
 
 - Solicitud: corregir los fallos de formato de los PDF subidos a `/admin` y obtener teoría, explicaciones, código comentado y prácticas.
