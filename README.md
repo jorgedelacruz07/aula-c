@@ -1,6 +1,6 @@
 # Aula C · Aprende, experimenta, enseña
 
-Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar clases universitarias (orientada a estándares de PUCP, UNI y UNMSM): **14 lecciones comentadas con problemas cotidianos**, **26 ejercicios originales de catálogo** con **52 casos de prueba automatizados**, **soporte de Dark Theme nativo**, **Modo Docente reforzado** y un laboratorio WebAssembly que compila C real directamente en el navegador.
+Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar clases universitarias (orientada a referencias de PUCP, UNI y UNMSM): **14 lecciones comentadas con problemas cotidianos**, **26 ejercicios originales**, **Modo Docente**, laboratorio WebAssembly y un flujo privado para convertir documentos en material de enseñanza revisado.
 
 ---
 
@@ -27,28 +27,44 @@ Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar c
    - Integrada plenamente con el sistema de diseño y tokens de Aula C.
    - Enlace directo de regreso al Aula C principal y selector de tema compartido.
    - Trazador interactivo de memoria y pila de llamadas (call stack), recetario de algoritmos sin arreglos, explorador de código con árbol top-down y quiz cazador de bugs.
+5. **Administración docente (`/admin.html`)**:
+   - Acceso Google limitado en el backend a `jdelacruzp7@gmail.com`.
+   - Carga privada de PDF, DOCX, TXT y Markdown a Cloud Storage.
+   - Gemini en cuota gratuita prepara teoría, código comentado y ejercicios cotidianos con referencias a páginas o secciones.
+   - El borrador se puede editar y solo aparece en el aula después de guardarlo y publicarlo expresamente.
+   - Archivos del entorno local usan el prefijo `dev/` y se eliminan tras 7 días.
 
 ---
 
 ## Empezar
 
-Requisitos: Node 26 (mise), npm; Clang para las pruebas nativas.
+Requisitos: Node 26 (mise), npm, Doppler CLI con sesión y credenciales ADC de Google Cloud con acceso al bucket; Clang para las pruebas nativas.
 
 ```sh
 npm ci
+npm --prefix api ci
 npm run dev
 ```
 
 Abre **<http://127.0.0.1:5183>**. El puerto es fijo en loopback y coincide con el catálogo de Switchboard (`aulac`).
+Una sola vez, configura ADC para impersonar el service account de ejecución (sin descargar una clave):
+
+```sh
+npm run dev:auth
+```
+
+El comando guarda credenciales solo en `~/.config/aula-c/gcloud/`; no modifica el ADC global usado por otros proyectos.
+
+`npm run dev` inicia Vite en `5183` y el API en `5184`; la API usa `Doppler dev-tools/dev`, ADC y el bucket `aula-c-knowledge-jorge-774195700936`. Las cargas locales quedan bajo `dev/` y el ciclo de vida de Cloud Storage las elimina a los 7 días.
 
 | Comando          | Resultado                                                                                                                       |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`    | Prepara contenido e inicia Vite en `127.0.0.1:5183`                                                                             |
-| `npm run format` | Formatea web, scripts y documentación con Prettier; conserva las fuentes C originales                                           |
+| `npm run dev`    | Prepara contenido; inicia web `127.0.0.1:5183` y API `127.0.0.1:5184` usando Doppler y GCS                                      |
+| `npm run format` | Formatea API, web, scripts y documentación con Prettier; conserva las fuentes C originales                                      |
 | `npm run quick`  | Comprueba formato, ejecuta pruebas de lecciones y los 52 casos C originales en temporales, construye la web y revisa whitespace |
 | `npm run test:c` | Controles académicos existentes: `make verify anidados test_anidados`                                                           |
-| `npm run build`  | Genera `dist/`, listo para Firebase Hosting estático                                                                            |
-| `npm run deploy` | Build + publicación en Firebase Hosting `aula-c-jorge` (otro proyecto: `FIREBASE_PROJECT=<id>`)                                 |
+| `npm run build`  | Genera `dist/` para Hosting; para producción usa la URL de API `VITE_AULA_API_URL`                                              |
+| `npm run deploy` | Construye la API localmente, la publica en Cloud Run y publica Auth + web en Firebase Hosting `aula-c-jorge`                    |
 | `make web`       | Alias de `npm run dev`                                                                                                          |
 
 ---
@@ -84,11 +100,14 @@ El repositorio incluye 26 ejercicios universitarios originales (perfiles Parcial
 
 ## Publicación en Firebase Hosting
 
-La aplicación está diseñada para servirse como sitio estático sin requerir backend de ejecución: la compilación y ejecución de C ocurre completamente en WebAssembly (WASI/Clang 8) dentro del navegador del usuario.
+La ejecución C ocurre completamente en WebAssembly (WASI/Clang 8) dentro del navegador. El flujo de documentos usa un API Node.js aparte en Cloud Run; no ejecuta código C ni crea una base de datos.
 
 - **URL de producción**: <https://aula-c-jorge.web.app>
-- Proyecto Firebase exclusivo: `aula-c-jorge` (sin cuenta de facturación vinculada).
-- Para desplegar nueva versión:
+- Sitio Firebase Hosting y Authentication: `aula-c-jorge`.
+- API, GCS y Secret Manager: proyecto `aula-c-knowledge-jorge`, con facturación vinculada; por tanto puede haber cargos por almacenamiento, Cloud Run, red y Artifact Registry. Cloud Run usa mínimo cero, una instancia máxima y limitación de CPU en reposo.
+- Gemini usa una API key de un proyecto separado sin facturación, para permanecer en el nivel gratuito. La disponibilidad y la cuota dependen de Google; los datos enviados a Gemini siguen sus condiciones del nivel gratuito, aceptadas por el propietario.
+- Los originales GCS son privados. Solo el material publicado en JSON se sirve públicamente. No se crean claves de cuentas de servicio.
+- Para desplegar una nueva versión:
   ```sh
   npm run deploy
   ```

@@ -9,17 +9,20 @@
   },
   "scripts": {
     "prepare:content": "node scripts/prepare.mjs && tailwindcss -c scripts/tailwind.config.cjs -i web/css/legacy-input.css -o web/public/legacy/tailwind.css --minify",
-    "dev": "npm run prepare:content && vite --host 127.0.0.1",
+    "dev": "node scripts/dev.mjs",
+    "dev:auth": "node scripts/setup-gcp-dev-auth.mjs",
+    "dev:web": "vite --host 127.0.0.1",
     "build": "npm run prepare:content && vite build",
-    "format": "prettier --write web/*.html web/js web/css scripts docs PROJECT_BRAIN package.json package-lock.json vite.config.js firebase.json README.md",
-    "format:check": "prettier --check web/*.html web/js web/css scripts docs PROJECT_BRAIN package.json package-lock.json vite.config.js firebase.json README.md",
+    "format": "prettier --write api/*.mjs api/*.json web/*.html web/js web/css scripts docs PROJECT_BRAIN package.json package-lock.json vite.config.js firebase.json README.md",
+    "format:check": "prettier --check api/*.mjs api/*.json web/*.html web/js web/css scripts docs PROJECT_BRAIN package.json package-lock.json vite.config.js firebase.json README.md",
     "test": "node --test scripts/*.test.mjs",
     "quick": "npm run format:check && npm test && npm run build && git diff --check",
     "test:c": "make verify anidados test_anidados",
     "deploy": "node scripts/deploy.mjs"
   },
   "dependencies": {
-    "@runno/wasi": "0.10.0"
+    "@runno/wasi": "0.10.0",
+    "firebase": "^13.3.0"
   },
   "devDependencies": {
     "prettier": "3.10.1",

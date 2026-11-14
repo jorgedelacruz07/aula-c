@@ -7,11 +7,23 @@ const headers = {
 };
 export default defineConfig({
   root: "web",
-  server: { host: "127.0.0.1", port: STUDY_PORT, strictPort: true, headers },
+  server: {
+    host: "127.0.0.1",
+    port: STUDY_PORT,
+    strictPort: true,
+    headers,
+    proxy: { "/api": { target: "http://127.0.0.1:5184", changeOrigin: true } },
+  },
   preview: { host: "127.0.0.1", port: STUDY_PORT, strictPort: true, headers },
   build: {
     outDir: "../dist",
     emptyOutDir: true,
-    rolldownOptions: { input: { main: resolve("web/index.html"), archivo: resolve("web/archivo.html") } },
+    rolldownOptions: {
+      input: {
+        main: resolve("web/index.html"),
+        archivo: resolve("web/archivo.html"),
+        admin: resolve("web/admin.html"),
+      },
+    },
   },
 });

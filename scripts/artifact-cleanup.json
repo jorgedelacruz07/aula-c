@@ -1,0 +1,12 @@
+[
+  {
+    "name": "delete-versions-after-seven-days",
+    "action": { "type": "Delete" },
+    "condition": { "tagState": "any", "olderThan": "7d" }
+  },
+  {
+    "name": "keep-two-most-recent-versions",
+    "action": { "type": "Keep" },
+    "mostRecentVersions": { "keepCount": 2 }
+  }
+]

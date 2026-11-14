@@ -2,7 +2,7 @@
 
 ## Ejecución
 
-La web es estática: Vite empaqueta HTML, CSS y JavaScript. `@runno/wasi` 0.10.0 ofrece un host WASI en workers del navegador. Clang 8 compila un único archivo C a un objeto WebAssembly, wasm-ld enlaza libc/libm y otro worker ejecuta el binario. No hay API que ejecute C nativo, procesos del alumno, base de datos ni credenciales.
+La web pública se compila con Vite y el laboratorio C sigue ejecutándose en `@runno/wasi` 0.10.0 dentro del navegador. El API Node.js separado solo administra documentos didácticos; nunca compila ni ejecuta código C y no usa una base de datos.
 
 El código de integración está en `web/js/runner.js`. Es una adaptación del pipeline C de [Runno](https://github.com/taybenlor/runno/blob/main/packages/runtime/lib/commands.ts), usando su biblioteca WASI MIT. Los binarios de [wasm-clang](https://github.com/binji/wasm-clang) se obtienen de `https://runno.dev/langs` y se fijan por SHA-256 en `scripts/toolchain.json`. `prepare:content` rechaza cambios de integridad; no actualiza hashes automáticamente. Caché descargada y salida generada están ignoradas por Git.
 
@@ -36,9 +36,16 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
-Vite aplica las mismas cabeceras en local. Firebase Functions, Cloud Run y Firebase App Hosting no son necesarios. El propietario autorizó crear el proyecto. Se creó `aula-c-jorge` y se publicó <https://aula-c-jorge.web.app> el 2026-11-13. El proyecto no tiene cuenta de facturación vinculada (`gcloud billing projects describe`: `billingEnabled=false`, `billingAccountName` vacío). La URL pública se verificó compilando y ejecutando el primer programa y el ejemplo de archivos, con aislamiento de origen activo. No se crearon Functions, Cloud Run, App Hosting ni bases de datos.
+Vite aplica las cabeceras COOP/COEP en local. El proyecto Firebase `aula-c-jorge` aloja la web y Google Authentication. El API corre en `aula-c-knowledge-jorge` mediante Cloud Run; el propietario autorizó vincular una cuenta de facturación para GCS y servicios de ejecución. No se usa Firebase Functions, App Hosting ni base de datos.
 
-Para futuras publicaciones: conservar el destino exclusivo y verificar las cuotas de almacenamiento y transferencia en [la documentación de cuotas de Hosting](https://firebase.google.com/docs/hosting/usage-quotas-pricing). El tamaño del compilador hace especialmente relevante la transferencia; estático no significa ilimitado ni garantiza coste cero. Mantener el plan sin facturación mientras se evalúa el uso. No habilitar Blaze ni servicios facturables automáticamente.
+### Ingesta y publicación de documentos
+
+- `web/admin.html` autentica con Firebase Google Sign-In. El API verifica el ID token en cada ruta privada y vuelve a comprobar que `email_verified=true` y el correo exacto sea `jdelacruzp7@gmail.com`.
+- PDF, DOCX, TXT y Markdown se envían al API autenticado con límite de 25 MiB. Los objetos fuente y borradores son privados en `gs://aula-c-knowledge-jorge-774195700936`; el bucket usa acceso uniforme, prevención de acceso público y ciclo de vida que borra `dev/` a los 7 días.
+- Gemini procesa los documentos usando una API key de `gen-lang-client-0329030513`, proyecto sin facturación. PDF conserva citas por páginas; DOCX/TXT/Markdown usan referencias de sección y no inventan páginas. La cuota gratuita puede limitar la disponibilidad.
+- La IA genera material original y un borrador privado. El docente edita y confirma su revisión antes de publicar. Solo los JSON publicados bajo `published/` se exponen en `/api/public/materials` y se consumen en el aula; no se publican los archivos originales.
+- La API key es fuente de verdad en Doppler `dev-tools/dev`; durante el despliegue se sincroniza de stdin a Secret Manager `aula-c-gemini-api-key`. Cloud Run usa Application Default Credentials con `aula-c-docs-api@aula-c-knowledge-jorge.iam.gserviceaccount.com`; no hay llaves de service account.
+- Cloud Run está configurado a escala cero en reposo, una instancia máxima, concurrencia 1, 1 vCPU/1 GiB y CPU throttling. Esto reduce cómputo ocioso, pero no garantiza gasto total cero: GCS, red, Secret Manager, Artifact Registry y solicitudes pueden generar cargos.
 
 Con Firebase CLI ya instalada y autenticada, para actualizar el destino autorizado:
 
@@ -46,7 +53,7 @@ Con Firebase CLI ya instalada y autenticada, para actualizar el destino autoriza
 npm run deploy
 ```
 
-El script publica por defecto en `aula-c-jorge` (otro proyecto existente: `FIREBASE_PROJECT=<id> npm run deploy`), construye localmente y llama a `firebase deploy --only hosting --project <id>`. No inventa una `.firebaserc`, no modifica el proyecto por defecto de otros repos y no crea recursos de cómputo. Publica sobre el sitio Hosting predeterminado del proyecto indicado: no apuntarlo a un sitio de otro producto sin una decisión explícita.
+`npm run deploy` construye la imagen API con Docker local, la sube a Artifact Registry, actualiza el secreto desde Doppler, despliega Cloud Run y luego compila el sitio con la URL del API y publica Authentication + Hosting en `aula-c-jorge`. No usa Cloud Build ni crea llaves de cuenta de servicio. El despliegue puede generar cargos de GCP.
 
 ## Fuentes educativas
 

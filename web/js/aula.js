@@ -176,9 +176,12 @@ async function load(item) {
   renderLessons();
   busy(true);
   try {
-    const response = await fetch("/" + item.path);
-    if (!response.ok) throw new Error("No se pudo cargar el archivo C.");
-    const source = await response.text();
+    let source = item.sourceC;
+    if (typeof source !== "string") {
+      const response = await fetch("/" + item.path);
+      if (!response.ok) throw new Error("No se pudo cargar el archivo C.");
+      source = await response.text();
+    }
     if (version !== loadVersion) return;
     original = source;
     $("#source").value = state.drafts[item.path] ?? source;
@@ -431,3 +434,98 @@ await load(
     catalog.find((item) => item.id === requested) ||
     lessons[0],
 );
+
+function sourceLabel(pages, sections) {
+  const citations = [];
+  if (pages?.length) citations.push(`págs. ${pages.join(", ")}`);
+  if (sections?.length) citations.push(`secciones: ${sections.join(" · ")}`);
+  return citations.length
+    ? `Referencia: ${citations.join("; ")}`
+    : "Referencia de origen pendiente de confirmar";
+}
+
+function materialLabItem(material, item, index, type) {
+  const isLesson = type === "lesson";
+  const title = item.title || (isLesson ? "Lección" : "Ejercicio");
+  return {
+    id: `material-${material.id}-${type}-${index}`,
+    path: `material/${material.id}/${type}-${index}.c`,
+    title,
+    level: item.level || "Intermedio",
+    topic: item.topic || (isLesson ? "Material docente" : "Práctica guiada"),
+    minutes: item.minutes || 20,
+    everyday: item.everyday || "Problema basado en material docente revisado.",
+    concept: isLesson ? item.concept : item.statement,
+    why: isLesson
+      ? item.why
+      : `Entrada: ${item.input || "por definir"}. Salida: ${item.output || "por definir"}. ${item.constraints?.join(" ") || ""}`,
+    symbols: isLesson
+      ? (item.symbols || []).map((symbol) => symbol.symbol || symbol)
+      : ["#include", "()", "{}", ";"],
+    trap: item.commonErrors?.join(" ") || item.hints?.join(" "),
+    challenge:
+      (item.teacherQuestions || []).join(" ") || "Explica qué decisión tomaste y qué caso límite probarías.",
+    sourceC: isLesson ? item.exampleC : item.solutionC,
+    tests: (item.tests || []).map((test, testIndex) => ({
+      name: test.name || `Caso ${testIndex + 1}`,
+      input: test.input || "",
+      output: test.expectedOutput || test.output || "",
+    })),
+    stage: "Material docente",
+  };
+}
+
+async function renderPublishedMaterials() {
+  const container = $("#published-materials");
+  try {
+    const response = await fetch("/api/public/materials");
+    if (!response.ok) throw new Error("Material docente temporalmente no disponible.");
+    const { materials = [] } = await response.json();
+    $("#published-count").textContent =
+      `${materials.length} ${materials.length === 1 ? "material aprobado" : "materiales aprobados"}`;
+    if (!materials.length) {
+      container.innerHTML =
+        '<p class="empty">Todavía no hay documentos aprobados. Cuando un docente publique material revisado, sus explicaciones y ejercicios aparecerán aquí.</p>';
+      return;
+    }
+    container.innerHTML = materials
+      .map(
+        (material) => `
+      <article class="published-card">
+        <div class="published-heading"><div><span class="eyebrow">${esc(material.course || "MATERIAL DOCENTE")}</span><h3>${esc(material.title)}</h3><p>${esc(material.topicSummary || "Material didáctico aprobado por el docente.")}</p></div><span class="pill">${(material.lessons?.length || 0) + (material.exercises?.length || 0)} recursos</span></div>
+        <div class="published-grid">
+          ${(material.lessons || [])
+            .map(
+              (item, index) => `
+            <section class="published-resource"><span class="resource-kind">LECCIÓN · ${esc(item.level || "Intermedio")}</span><h4>${esc(item.title)}</h4><p>${esc(item.everyday || "")}</p><p>${esc(item.concept || "")}</p><details><summary>Por qué funciona y ejemplo comentado</summary><p>${esc(item.why || "")}</p>${item.symbols?.length ? `<ul>${item.symbols.map((symbol) => `<li><code>${esc(symbol.symbol)}</code> · ${esc(symbol.explanation)}</li>`).join("")}</ul>` : ""}<pre><code>${esc(item.exampleC || "")}</code></pre><p class="source-pages">${esc(sourceLabel(item.sourcePages, item.sourceSections))}</p></details><button class="secondary material-open" data-material="${esc(material.id)}" data-kind="lesson" data-index="${index}" type="button">Llevar al laboratorio</button></section>`,
+            )
+            .join("")}
+          ${(material.exercises || [])
+            .map(
+              (item, index) => `
+            <section class="published-resource"><span class="resource-kind">EJERCICIO · ${esc(item.level || "Intermedio")}</span><h4>${esc(item.title)}</h4><p class="everyday-hint">${esc(item.everyday || "")}</p><p>${esc(item.statement || "")}</p><details><summary>Entrada, salida y solución comentada</summary><p><b>Entrada:</b> ${esc(item.input || "")}</p><p><b>Salida:</b> ${esc(item.output || "")}</p><ul>${(item.hints || []).map((hint) => `<li>${esc(hint)}</li>`).join("")}</ul><pre><code>${esc(item.solutionC || "")}</code></pre><p class="source-pages">${esc(sourceLabel(item.sourcePages, item.sourceSections))}</p></details><button class="secondary material-open" data-material="${esc(material.id)}" data-kind="exercise" data-index="${index}" type="button">Probar en el laboratorio</button></section>`,
+            )
+            .join("")}
+        </div>
+        <p class="source-pages">Fuente: ${esc(material.source?.title || material.title)} · ${esc(sourceLabel(material.source?.pages, material.source?.sections))}</p>
+      </article>`,
+      )
+      .join("");
+    container.querySelectorAll(".material-open").forEach((button) => {
+      button.addEventListener("click", () => {
+        const material = materials.find((entry) => entry.id === button.dataset.material);
+        const type = button.dataset.kind;
+        const index = Number(button.dataset.index);
+        const item = type === "lesson" ? material.lessons[index] : material.exercises[index];
+        load(materialLabItem(material, item, index, type));
+        location.hash = "laboratorio";
+      });
+    });
+  } catch {
+    $("#published-count").textContent = "Aula pública";
+    container.innerHTML =
+      '<p class="empty">El catálogo de material docente no está disponible por ahora.</p>';
+  }
+}
+
+renderPublishedMaterials();

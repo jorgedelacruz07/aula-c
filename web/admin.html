@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Administración docente de Aula C: convierte tus documentos en material revisado para enseñar C."
+    />
+    <title>Administración docente · Aula C</title>
+    <script>
+      (() => {
+        const saved = localStorage.getItem("aula-theme");
+        const dark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+        document.documentElement.setAttribute("data-theme", saved || (dark ? "dark" : "light"));
+      })();
+    </script>
+    <link rel="stylesheet" href="/css/aula.css" />
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+  <body class="admin-page">
+    <div class="admin-shell">
+      <header class="admin-topbar">
+        <a class="brand" href="/"
+          ><span class="brand-mark">C<span>;</span></span
+          ><span>Aula C<small>ADMINISTRACIÓN DOCENTE</small></span></a
+        >
+        <div class="topbar-actions">
+          <button id="theme-toggle" class="theme-toggle-btn" type="button">
+            <span id="theme-icon">🌙</span> <span id="theme-text">Oscuro</span>
+          </button>
+          <button id="sign-out" class="secondary" type="button" hidden>Cerrar sesión</button>
+        </div>
+      </header>
+
+      <main class="admin-main">
+        <section class="admin-intro">
+          <div>
+            <p class="eyebrow">TU MATERIAL, CON CRITERIO DOCENTE</p>
+            <h1>De un documento a una clase que puedes explicar.</h1>
+            <p class="section-description">
+              Sube apuntes, laboratorios o exámenes en PDF. La IA prepara una propuesta en español; tú
+              corriges, verificas las páginas y decides qué publicar.
+            </p>
+          </div>
+          <a class="secondary" href="/">Volver al aula</a>
+        </section>
+
+        <section id="auth-panel" class="admin-card auth-panel">
+          <h2>Acceso de administración</h2>
+          <p>
+            Inicia sesión con Google usando <b>jdelacruzp7@gmail.com</b>. Solo esta cuenta puede subir,
+            revisar o publicar documentos.
+          </p>
+          <button id="sign-in" class="primary" type="button">Continuar con Google</button>
+          <p id="auth-message" class="status-message" role="status">Verificando configuración de acceso…</p>
+        </section>
+
+        <div id="workspace" hidden>
+          <section class="admin-card upload-card">
+            <div class="admin-section-title">
+              <div>
+                <p class="eyebrow">1 · INCORPORA FUENTES</p>
+                <h2>Subir un PDF</h2>
+              </div>
+              <span class="pill">Hasta 25 MB</span>
+            </div>
+            <form id="upload-form" class="upload-form">
+              <label
+                >Título del material<input
+                  name="title"
+                  required
+                  maxlength="180"
+                  placeholder="Laboratorio 3 · Ciclos y sumatorias"
+              /></label>
+              <label
+                >Curso o institución<input
+                  name="course"
+                  maxlength="120"
+                  placeholder="PUCP · Fundamentos de Programación"
+              /></label>
+              <label>Periodo<input name="semester" maxlength="80" placeholder="2026-2 / Semana 04" /></label>
+              <label
+                >Nivel<select name="level">
+                  <option>Básico</option>
+                  <option selected>Intermedio</option>
+                  <option>Avanzado</option>
+                </select></label
+              >
+              <label class="file-field"
+                >Documento<input
+                  name="file"
+                  type="file"
+                  required
+                  accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown"
+              /></label>
+              <button class="primary" type="submit">Subir y preparar borrador</button>
+            </form>
+            <p class="privacy-note">
+              PDF, DOCX, TXT o Markdown · hasta 25 MB. Los originales quedan privados en Cloud Storage. La IA
+              recibe el documento para preparar un borrador; nada llega al aula pública hasta que lo revises y
+              lo publiques.
+            </p>
+            <p id="upload-status" class="status-message" role="status"></p>
+          </section>
+
+          <div class="admin-columns">
+            <section class="admin-card document-card">
+              <div class="admin-section-title">
+                <div>
+                  <p class="eyebrow">2 · SIGUE EL PROCESO</p>
+                  <h2>Tus documentos</h2>
+                </div>
+                <button id="refresh-documents" class="text-button" type="button">Actualizar</button>
+              </div>
+              <div id="documents-list" class="documents-list"><p class="empty">Cargando documentos…</p></div>
+            </section>
+
+            <section id="review-card" class="admin-card review-card" aria-labelledby="review-title">
+              <div class="admin-section-title">
+                <div>
+                  <p class="eyebrow">3 · REVISA ANTES DE ENSEÑAR</p>
+                  <h2 id="review-title">Borrador docente</h2>
+                </div>
+                <span id="review-status" class="pill">Selecciona un documento</span>
+              </div>
+              <div id="draft-summary" class="draft-summary">
+                <p>
+                  La IA propone conceptos, ejemplos C comentados, preguntas para guiar la clase y ejercicios
+                  cotidianos. Comprueba el contenido y las páginas o secciones antes de publicarlo.
+                </p>
+              </div>
+              <label class="draft-label" for="draft-json"
+                >Borrador editable (JSON)<textarea
+                  id="draft-json"
+                  spellcheck="false"
+                  placeholder="Selecciona un documento con borrador para revisar…"
+                ></textarea>
+              </label>
+              <div class="review-actions">
+                <button id="reanalyze-document" class="secondary" type="button" hidden>
+                  Volver a analizar
+                </button>
+                <button id="save-draft" class="secondary" type="button" disabled>Guardar cambios</button>
+                <button id="publish-draft" class="primary" type="button" disabled>
+                  Publicar material revisado
+                </button>
+              </div>
+              <p id="review-message" class="status-message" role="status"></p>
+              <button id="delete-document" class="danger-button" type="button" hidden>
+                Eliminar documento, borrador y publicación
+              </button>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/js/admin.js"></script>
+  </body>
+</html>

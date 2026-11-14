@@ -1,5 +1,17 @@
 # Handoff · Aula C
 
+## Actualización 2026-11-14 · Ingesta de documentos en producción
+
+La adición estática del 2026-11-13 queda como antecedente histórico; el estado actual incluye backend de documentos.
+
+- Producción: Firebase Hosting/Auth Spark en https://aula-c-jorge.web.app y Cloud Run `aula-c-docs-api` en el proyecto facturable `aula-c-knowledge-jorge`. API: https://aula-c-docs-api-uwwafcckza-uc.a.run.app.
+- Bucket privado `gs://aula-c-knowledge-jorge-774195700936`; Secret Manager y Artifact Registry separados en ese proyecto. Gemini usa cuota gratuita en `gen-lang-client-0329030513`. La facturación del backend puede generar cargos; Cloud Run está en min=0, max=1 efectivo a nivel de servicio, CPU throttling, 1 vCPU y 1 GiB.
+- API verificada: health 200 con configuración GCS y clave Gemini presentes; catálogo público vacío (0 materiales); endpoint administrativo anónimo devuelve 401. La web de administración responde 200. Google Sign-In está activado; la sesión interactiva del propietario y la primera generación real de Gemini aún no se han probado.
+- Tipos: PDF, DOCX, TXT y Markdown. Fuente y borradores son privados; el docente edita y confirma publicación. El API no ejecuta C. La carpeta de objetos de desarrollo vence a los 7 días.
+- Switchboard comparte el catálogo `aulac`: web `5183`, API `5184`. Actualizados `project-dev`, túnel SSH y los documentos fuente del workspace.
+- ProjectsDocs privado se regeneró correctamente desde fuentes canónicas; auditoría pasó, con aviso de 93 enlaces no resueltos ya incluidos en su informe. No se publicó la copia pública.
+- Pendiente de esta sesión: registrar el SHA final, revisar el diff y empujar los cambios del repo Aula C a `master`.
+
 Fecha: 2026-11-13. Base Git C-Testing: `4486fd8`; implementación local sin commit de esta sesión.
 
 ## Entrega
