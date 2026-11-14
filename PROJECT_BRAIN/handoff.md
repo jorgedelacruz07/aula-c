@@ -1,5 +1,13 @@
 # Handoff · Aula C
 
+## Publicación completa · 2026-11-14
+
+- Solicitud expresa: commit, push a master y despliegue a producción. Se incluyeron los tres archivos de interfaz pendientes (CSS, HTML y lógica del laboratorio), confirmados en `6981b28`; master enviado a origin.
+- `npm run quick` pasó con 21 pruebas y build. Sintaxis JS, IDs únicos y referencias de selectores estáticos comprobados.
+- `npm run deploy` completó Docker local → Artifact Registry → Cloud Run y Firebase Auth/Hosting. API activa: `aula-c-docs-api-00008-65b` con 100 % del tráfico, min=0/max=1, CPU throttling, 1 vCPU/1 GiB.
+- Verificación pública: `/`, `/admin` y `/archivo` devolvieron 200; sus HTML y ocho assets JS/CSS coinciden por SHA-256 con el build publicado. Cabeceras de aislamiento del laboratorio y compatibilidad de popup de administración comprobadas.
+- API: health 200 con GCS/Gemini configurados, administración anónima 401, catálogo público 200 con CORS correcto. Los documentos continúan como borradores privados; el despliegue no los publica.
+
 ## Actualización 2026-11-14 · Administración local y biblioteca compartida
 
 - Causa: `npm run dev` consulta `dev/` en GCS, mientras los ocho documentos procesados por el asistente están en la biblioteca principal. No eran visibles en la administración local.

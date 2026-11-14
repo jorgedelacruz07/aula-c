@@ -1,5 +1,13 @@
 # Ledger · Aula C (antes C-Testing)
 
+## 2026-11-14 · RELEASE · Master y producción actualizados
+
+- Autorización: el propietario pidió commit, push a master y despliegue a producción.
+- Cambios pendientes de navegación por niveles, progreso, filtros y presentación del laboratorio incluidos en `6981b28` y enviados a origin/master.
+- Gate `npm run quick` exit 0 (21 pruebas y build); sintaxis, IDs y selectores estáticos verificados.
+- Deploy completo mediante `npm run deploy`: Hosting/Auth finalizado y Cloud Run `aula-c-docs-api-00008-65b` al 100 %, min=0/max=1, CPU throttling.
+- Evidencia: HTML de inicio/admin/archivo y ocho assets coinciden por SHA-256 con dist; HTTP 200 en las tres páginas, health 200 y administración sin sesión 401. Catálogo público protegido por el flujo de aprobación.
+
 ## 2026-11-14 · FIX · Biblioteca principal visible en administración local
 
 - Solicitud: mostrar en `localhost:5183/admin` los documentos procesados por el asistente.
