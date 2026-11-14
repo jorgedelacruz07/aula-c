@@ -227,11 +227,14 @@ function schema(compact = false) {
                 required: ["symbol", "explanation"],
               },
             },
-            exampleC: str,
-            commonErrors: strings,
+            exampleC: {
+              type: "STRING",
+              description: "Programa completo en C17 con comentarios que expliquen intención y decisiones.",
+            },
+            commonErrors: { ...strings, minItems: 1, maxItems: 5 },
             teacherOpening: str,
-            teacherQuestions: strings,
-            rubric: strings,
+            teacherQuestions: { ...strings, minItems: 1, maxItems: 5 },
+            rubric: { ...strings, minItems: 1, maxItems: 5 },
             blackboard: str,
             sourcePages: pages,
             sourceSections: strings,
@@ -246,6 +249,11 @@ function schema(compact = false) {
             "symbols",
             "exampleC",
             "sourcePages",
+            "commonErrors",
+            "teacherOpening",
+            "teacherQuestions",
+            "rubric",
+            "blackboard",
           ],
         },
       },
@@ -264,7 +272,11 @@ function schema(compact = false) {
             input: str,
             output: str,
             hints: strings,
-            solutionC: str,
+            solutionC: {
+              type: "STRING",
+              description:
+                "Solución completa en C17 con comentarios didácticos; debe coincidir con los casos.",
+            },
             tests: {
               type: "ARRAY",
               minItems: 1,
@@ -313,7 +325,7 @@ export async function generateDraft(
     "Lee el documento completo y sintetiza sus temas principales, no solo las primeras páginas. Resume su alcance y las limitaciones en topicSummary.",
     "Devuelve de 1 a 3 lecciones y de 2 a 4 ejercicios representativos que cubran los temas principales. Esto es una selección didáctica, no una transcripción de todos los problemas.",
     "Sé concreto: cada explicación debe ocupar como máximo dos párrafos, cada lista hasta cinco elementos, cada código hasta 45 líneas y cada ejercicio hasta tres casos pequeños.",
-    "Incluye una apertura docente, preguntas, errores frecuentes y criterios de evaluación. El código C debe ser completo, llevar comentarios y coincidir con los casos propuestos.",
+    "Cada lección debe incluir apertura docente, preguntas, errores frecuentes, rúbrica y esquema de pizarra; ninguno de esos campos puede quedar vacío. Cada programa C debe llevar comentarios y coincidir con sus casos.",
   ].join("\n");
   let sourcePart;
   if (metadata.contentType === "application/pdf") {
@@ -424,7 +436,19 @@ export async function generateDraft(
       .join("");
     if (finishReason !== "MAX_TOKENS" && text) {
       try {
-        return safeDraft(JSON.parse(text));
+        const draft = safeDraft(JSON.parse(text));
+        if (
+          draft.lessons.some(
+            (lesson) =>
+              !lesson.teacherOpening?.trim() ||
+              !lesson.blackboard?.trim() ||
+              !lesson.teacherQuestions?.length ||
+              !lesson.rubric?.length ||
+              !lesson.commonErrors?.length,
+          )
+        )
+          throw new Error("Missing teaching guidance");
+        return draft;
       } catch {
         // Never save partial JSON or relax the lesson/exercise contract to accept a bad response.
       }

@@ -20,6 +20,11 @@ function draft() {
         symbols: [{ symbol: "while", explanation: "Repite mientras la condición sea verdadera." }],
         sourcePages: [1],
         sourceSections: [],
+        teacherOpening: "Predice cuántas columnas se visitan.",
+        teacherQuestions: ["¿Cuándo se reinicia el contador?"],
+        commonErrors: ["No reiniciar el contador interior."],
+        rubric: ["Justifica el reinicio."],
+        blackboard: "fila → columnas → siguiente fila",
       },
     ],
     exercises: [
@@ -84,6 +89,25 @@ test("Quota errors preserve their cause and never consume a second attempt", asy
     (error) => error.status === 429 && error.code === "gemini_free_quota",
   );
   assert.equal(calls, 1);
+});
+
+test("Missing teacher guidance triggers recovery before a generated lesson is saved", async () => {
+  let calls = 0;
+  const result = await generateDraft(pdf, "test-key", metadata, {
+    fetchImpl: async (_, options) => {
+      calls++;
+      const config = JSON.parse(options.body).generationConfig;
+      assert(config.responseSchema.properties.lessons.items.required.includes("teacherQuestions"));
+      const value = draft();
+      if (calls === 1) {
+        delete value.lessons[0].teacherOpening;
+        value.lessons[0].teacherQuestions = [];
+      }
+      return answer(value);
+    },
+  });
+  assert.equal(calls, 2);
+  assert(result.lessons[0].teacherQuestions.length > 0);
 });
 
 test("Repeated truncation is reported as incomplete output, not an invalid PDF", async () => {

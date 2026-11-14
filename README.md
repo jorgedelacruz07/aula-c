@@ -36,6 +36,8 @@ Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar c
    - Si Gemini corta su respuesta, el API vuelve a intentarlo una vez con una selección más compacta. Los errores de cuota, conexión o tiempo se distinguen y el original sigue disponible para reanalizar.
    - Archivos del entorno local usan el prefijo `dev/` y se eliminan tras 7 días.
 
+La biblioteca y su progresión temática se registran en [Fuentes docentes incorporadas](docs/FUENTES-DOCENTES.md). Los materiales derivados conservan preguntas, rúbricas y explicaciones propias de símbolos cuando se llevan al laboratorio.
+
 ---
 
 ## Empezar

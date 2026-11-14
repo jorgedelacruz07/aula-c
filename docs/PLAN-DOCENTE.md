@@ -26,6 +26,8 @@ Un comentario útil expresa intención, precondición, invariante, unidad o lím
 
 ## Preparar materiales universitarios
 
+La biblioteca incorporada y su correspondencia con los tramos de la ruta están en [Fuentes docentes](FUENTES-DOCENTES.md). Las guías de estructura, programas secuenciales, selección, ciclos y modularidad ofrecen una secuencia para preparar clases; el taller del parcial y los ciclos anidados permiten integrar y transferir esas ideas.
+
 Por cada material anota autoría, institución/facultad, curso, semestre, tema, prerrequisitos, restricciones, casos y permiso de publicación. Mantén separados el enunciado, las pistas y la solución. Las restricciones Parcial y Anidados actuales pertenecen al material existente; no representan todas las clases de PUCP, UNI o UNMSM.
 
 Para comparar universidades hacen falta sus sílabos concretos y fechas. [Las fuentes consultadas y sus límites](ARQUITECTURA.md#fuentes-educativas) se conservan en el repo. El lenguaje de implementación puede variar entre facultades y cursos.
