@@ -6,30 +6,25 @@ const headers = {
   "Cross-Origin-Embedder-Policy": "require-corp",
 };
 function crossOriginIsolationPlugin() {
+  const applyMiddleware = (server) => {
+    server.middlewares.use((req, res, next) => {
+      const url = req.url || "/";
+      const pathname = url.split("?")[0];
+      if (pathname === "/admin" || pathname === "/archivo") {
+        req.url = `${pathname}.html${url.slice(pathname.length)}`;
+      }
+      if (!pathname.startsWith("/admin") && !pathname.startsWith("/api")) {
+        for (const [key, value] of Object.entries(headers)) {
+          res.setHeader(key, value);
+        }
+      }
+      next();
+    });
+  };
   return {
     name: "aula-c-coop-coep",
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
-        const url = req.url || "/";
-        if (!url.startsWith("/admin") && !url.startsWith("/api")) {
-          for (const [key, value] of Object.entries(headers)) {
-            res.setHeader(key, value);
-          }
-        }
-        next();
-      });
-    },
-    configurePreviewServer(server) {
-      server.middlewares.use((req, res, next) => {
-        const url = req.url || "/";
-        if (!url.startsWith("/admin") && !url.startsWith("/api")) {
-          for (const [key, value] of Object.entries(headers)) {
-            res.setHeader(key, value);
-          }
-        }
-        next();
-      });
-    },
+    configureServer: applyMiddleware,
+    configurePreviewServer: applyMiddleware,
   };
 }
 

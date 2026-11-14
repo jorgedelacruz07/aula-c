@@ -23,11 +23,11 @@ Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar c
    - Espacios en blanco optimizados: reducción drástica de márgenes y paddings excesivos para lograr un entorno denso, legible y ergonómico tipo panel de control.
    - Tamaños de fuente ajustados para máxima legibilidad tanto en pantallas estándar como Retina.
 
-4. **Subpágina Rediseñada de Mentoría PUCP (`/archivo.html`)**:
+4. **Subpágina Rediseñada de Mentoría PUCP (`/archivo`)**:
    - Integrada plenamente con el sistema de diseño y tokens de Aula C.
    - Enlace directo de regreso al Aula C principal y selector de tema compartido.
    - Trazador interactivo de memoria y pila de llamadas (call stack), recetario de algoritmos sin arreglos, explorador de código con árbol top-down y quiz cazador de bugs.
-5. **Administración docente (`/admin.html`)**:
+5. **Administración docente (`/admin`)**:
    - Acceso Google limitado en el backend a `jdelacruzp7@gmail.com`.
    - Carga privada de PDF, DOCX, TXT y Markdown a Cloud Storage.
    - Gemini en cuota gratuita prepara teoría, código comentado y ejercicios cotidianos con referencias a páginas o secciones.
