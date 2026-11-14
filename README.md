@@ -32,6 +32,8 @@ Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar c
    - Carga privada de PDF, DOCX, TXT y Markdown a Cloud Storage.
    - Gemini en cuota gratuita prepara teoría, código comentado y ejercicios cotidianos con referencias a páginas o secciones.
    - El borrador se puede editar y solo aparece en el aula después de guardarlo y publicarlo expresamente.
+   - Analiza el documento completo para proponer una selección de hasta 3 lecciones y 4 ejercicios con referencias al origen. No equivale a convertir automáticamente cada página en una lección.
+   - Si Gemini corta su respuesta, el API vuelve a intentarlo una vez con una selección más compacta. Los errores de cuota, conexión o tiempo se distinguen y el original sigue disponible para reanalizar.
    - Archivos del entorno local usan el prefijo `dev/` y se eliminan tras 7 días.
 
 ---
@@ -111,6 +113,8 @@ La ejecución C ocurre completamente en WebAssembly (WASI/Clang 8) dentro del na
   ```sh
   npm run deploy
   ```
+
+Para publicar únicamente una corrección del API, usa `npm run deploy -- --api-only`. Esto permite actualizar el procesamiento de documentos independientemente de los cambios de la web.
 
 ---
 

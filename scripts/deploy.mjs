@@ -5,6 +5,10 @@ const firebaseProject = "aula-c-jorge";
 const apiProject = "aula-c-knowledge-jorge";
 const apiRegion = "us-central1";
 const apiService = "aula-c-docs-api";
+const args = process.argv.slice(2);
+if (args.some((arg) => arg !== "--api-only")) {
+  throw new Error("Opción no válida. Usa npm run deploy o npm run deploy -- --api-only.");
+}
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, { stdio: "inherit", shell: false, ...options });
@@ -15,6 +19,10 @@ function run(command, args, options = {}) {
 
 console.log("Publicando API de documentos en Cloud Run…");
 run("node", ["scripts/deploy-api.mjs"]);
+if (args.includes("--api-only")) {
+  console.log("API de Aula C publicada.");
+  process.exit(0);
+}
 
 const endpoint = spawnSync(
   "gcloud",

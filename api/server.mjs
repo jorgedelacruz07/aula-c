@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
-import { randomUUID } from "node:crypto";
 import { extname } from "node:path";
+import { pathToFileURL } from "node:url";
 import { Storage } from "@google-cloud/storage";
 import mammoth from "mammoth";
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
@@ -50,7 +50,7 @@ function safeTitle(value) {
   return title;
 }
 
-function safeDraft(value) {
+export function safeDraft(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new HttpError(400, "invalid_draft", "El borrador debe ser un objeto JSON.");
   }
@@ -64,8 +64,70 @@ function safeDraft(value) {
       "El borrador necesita lecciones y ejercicios en forma de listas.",
     );
   }
-  if (value.lessons.length > 12 || value.exercises.length > 40) {
+  if (
+    !value.lessons.length ||
+    !value.exercises.length ||
+    value.lessons.length > 12 ||
+    value.exercises.length > 40
+  ) {
     throw new HttpError(400, "invalid_draft", "El borrador excede el máximo de materiales por documento.");
+  }
+  const validText = (text) => typeof text === "string" && Boolean(text.trim());
+  const validReferences = (item) =>
+    Array.isArray(item.sourcePages) &&
+    item.sourcePages.every((page) => Number.isInteger(page) && page > 0) &&
+    (item.sourceSections === undefined ||
+      (Array.isArray(item.sourceSections) && item.sourceSections.every(validText)));
+  const validItem = (item, fields) =>
+    item &&
+    typeof item === "object" &&
+    fields.every((field) => validText(item[field])) &&
+    validReferences(item);
+  if (
+    !validText(value.documentTitle) ||
+    !validText(value.topicSummary) ||
+    !value.lessons.every(
+      (item) =>
+        validItem(item, ["title", "level", "topic", "everyday", "concept", "why", "exampleC"]) &&
+        Array.isArray(item.symbols) &&
+        item.symbols.length > 0 &&
+        item.symbols.every((symbol) => symbol && validText(symbol.symbol) && validText(symbol.explanation)),
+    ) ||
+    !value.exercises.every(
+      (item) =>
+        validItem(item, ["title", "level", "everyday", "statement", "solutionC"]) &&
+        typeof item.input === "string" &&
+        typeof item.output === "string" &&
+        Array.isArray(item.tests) &&
+        item.tests.length > 0 &&
+        item.tests.every(
+          (test) =>
+            test &&
+            validText(test.name) &&
+            typeof test.input === "string" &&
+            typeof test.expectedOutput === "string",
+        ),
+    )
+  ) {
+    throw new HttpError(
+      400,
+      "invalid_draft",
+      "Revisa los campos de teoría, código, ejercicios, casos y referencias del borrador.",
+    );
+  }
+  for (const item of [...value.lessons, ...value.exercises]) {
+    for (const field of [
+      "objectives",
+      "commonErrors",
+      "teacherQuestions",
+      "rubric",
+      "constraints",
+      "hints",
+    ]) {
+      if (item[field] !== undefined && (!Array.isArray(item[field]) || !item[field].every(validText))) {
+        throw new HttpError(400, "invalid_draft", "Las listas del borrador deben contener únicamente texto.");
+      }
+    }
   }
   return value;
 }
@@ -132,7 +194,7 @@ async function readBinaryBody(req, maxBytes = PDF_LIMIT) {
   return Buffer.concat(chunks);
 }
 
-function schema() {
+function schema(compact = false) {
   const str = { type: "STRING" };
   const strings = { type: "ARRAY", items: str };
   const pages = { type: "ARRAY", items: { type: "INTEGER" } };
@@ -144,6 +206,8 @@ function schema() {
       topicSummary: str,
       lessons: {
         type: "ARRAY",
+        minItems: 1,
+        maxItems: compact ? 2 : 3,
         items: {
           type: "OBJECT",
           properties: {
@@ -187,6 +251,8 @@ function schema() {
       },
       exercises: {
         type: "ARRAY",
+        minItems: 1,
+        maxItems: compact ? 2 : 4,
         items: {
           type: "OBJECT",
           properties: {
@@ -201,6 +267,8 @@ function schema() {
             solutionC: str,
             tests: {
               type: "ARRAY",
+              minItems: 1,
+              maxItems: 3,
               items: {
                 type: "OBJECT",
                 properties: { name: str, input: str, expectedOutput: str },
@@ -228,7 +296,12 @@ function schema() {
   };
 }
 
-async function generateDraft(bytes, apiKey, metadata) {
+export async function generateDraft(
+  bytes,
+  apiKey,
+  metadata,
+  { fetchImpl = fetch, timeoutMs = 180_000 } = {},
+) {
   if (!apiKey) throw new HttpError(503, "ai_unconfigured", "Gemini gratuito aún no está configurado.");
   const prompt = [
     "Eres una asistente docente de programación C. Convierte el documento de origen en un borrador didáctico en español.",
@@ -237,7 +310,10 @@ async function generateDraft(bytes, apiKey, metadata) {
     "Escribe explicaciones claras de por qué se usa cada símbolo; incluye código C con comentarios pedagógicos útiles.",
     "Genera problemas cotidianos originales, adecuados al nivel, y ejercicios con casos de prueba verificables.",
     "No copies literalmente enunciados extensos ni soluciones de exámenes. Conserva la idea y crea variantes originales.",
-    "Devuelve entre 1 y 6 lecciones y entre 2 y 12 ejercicios. Si falta información, dilo en topicSummary.",
+    "Lee el documento completo y sintetiza sus temas principales, no solo las primeras páginas. Resume su alcance y las limitaciones en topicSummary.",
+    "Devuelve de 1 a 3 lecciones y de 2 a 4 ejercicios representativos que cubran los temas principales. Esto es una selección didáctica, no una transcripción de todos los problemas.",
+    "Sé concreto: cada explicación debe ocupar como máximo dos párrafos, cada lista hasta cinco elementos, cada código hasta 45 líneas y cada ejercicio hasta tres casos pequeños.",
+    "Incluye una apertura docente, preguntas, errores frecuentes y criterios de evaluación. El código C debe ser completo, llevar comentarios y coincidir con los casos propuestos.",
   ].join("\n");
   let sourcePart;
   if (metadata.contentType === "application/pdf") {
@@ -267,43 +343,105 @@ async function generateDraft(bytes, apiKey, metadata) {
     }
     sourcePart = { text: `Material de origen (${metadata.originalName}):\n\n${sourceText}` };
   }
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }, sourcePart] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 12_000,
-          responseMimeType: "application/json",
-          responseSchema: schema(),
+  // One shared deadline bounds both attempts below Cloud Run's request timeout.
+  const signal = AbortSignal.timeout(timeoutMs);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const compact = attempt > 0;
+    const instruction = compact
+      ? prompt +
+        "\nLa respuesta anterior no llegó completa. Genera ahora como máximo dos lecciones y dos ejercicios, con código de hasta 25 líneas. Entrega un objeto JSON completo y válido."
+      : prompt;
+    let response;
+    try {
+      response = await fetchImpl(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: instruction }, sourcePart] }],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 24_576,
+              thinkingConfig: { thinkingBudget: 1024 },
+              responseMimeType: "application/json",
+              responseSchema: schema(compact),
+            },
+          }),
+          signal,
         },
-      }),
-      signal: AbortSignal.timeout(180_000),
-    },
-  );
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const status = response.status === 429 ? 429 : response.status >= 500 ? 502 : 422;
-    throw new HttpError(
-      status,
-      response.status === 429 ? "gemini_free_quota" : "gemini_request_failed",
-      "Gemini no pudo procesar el documento. Revisa el tamaño o la cuota gratuita y vuelve a intentar.",
-    );
-  }
-  const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("");
-  if (!text) throw new HttpError(422, "empty_ai_response", "Gemini no devolvió material para revisar.");
-  try {
-    return safeDraft(JSON.parse(text));
-  } catch (error) {
-    if (error instanceof HttpError) throw error;
-    throw new HttpError(
-      422,
-      "invalid_ai_response",
-      "La respuesta de Gemini no cumplió el formato didáctico esperado.",
-    );
+      );
+    } catch (error) {
+      const timedOut = signal.aborted || error.name === "TimeoutError" || error.name === "AbortError";
+      throw new HttpError(
+        timedOut ? 504 : 502,
+        timedOut ? "gemini_timeout" : "gemini_unavailable",
+        timedOut
+          ? "Gemini tardó demasiado en responder. El original sigue guardado; vuelve a analizarlo."
+          : "No se pudo conectar con Gemini. El original sigue guardado; intenta analizarlo más tarde.",
+      );
+    }
+    let payload;
+    try {
+      payload = await response.json();
+      if (!payload || typeof payload !== "object") payload = {};
+    } catch (error) {
+      if (signal.aborted || error.name === "TimeoutError" || error.name === "AbortError") {
+        throw new HttpError(
+          504,
+          "gemini_timeout",
+          "Gemini tardó demasiado en responder. El original sigue guardado; vuelve a analizarlo.",
+        );
+      }
+      payload = {};
+    }
+    if (!response.ok) {
+      const quota = response.status === 429;
+      const unavailable = response.status >= 500 || [401, 403, 404].includes(response.status);
+      throw new HttpError(
+        quota ? 429 : unavailable ? 502 : 422,
+        quota ? "gemini_free_quota" : "gemini_request_failed",
+        quota
+          ? "Gemini alcanzó su límite gratuito o de velocidad. El original sigue guardado; espera y vuelve a analizarlo."
+          : "Gemini no pudo leer el documento en este intento. El original sigue guardado; vuelve a analizarlo más tarde.",
+      );
+    }
+    const candidate = payload.candidates?.[0];
+    const finishReason = candidate?.finishReason;
+    if (
+      payload.promptFeedback?.blockReason ||
+      (finishReason && !["STOP", "MAX_TOKENS"].includes(finishReason))
+    ) {
+      throw new HttpError(
+        422,
+        "gemini_content_blocked",
+        "Gemini bloqueó la generación de este contenido. Revisa el documento original antes de volver a analizarlo.",
+      );
+    }
+    const text = candidate?.content?.parts
+      ?.filter((part) => !part.thought)
+      .map((part) => part.text || "")
+      .join("");
+    if (finishReason !== "MAX_TOKENS" && text) {
+      try {
+        return safeDraft(JSON.parse(text));
+      } catch {
+        // Never save partial JSON or relax the lesson/exercise contract to accept a bad response.
+      }
+    }
+    console.warn("Aula C Gemini response rejected", {
+      attempt: attempt + 1,
+      finishReason: finishReason || "EMPTY",
+      outputTokens: payload.usageMetadata?.candidatesTokenCount,
+      thinkingTokens: payload.usageMetadata?.thoughtsTokenCount,
+    });
+    if (compact) {
+      throw new HttpError(
+        502,
+        finishReason === "MAX_TOKENS" ? "gemini_response_incomplete" : "invalid_ai_response",
+        "Gemini devolvió una respuesta incompleta o inválida incluso tras reintentar. Tu documento está guardado; pulsa Volver a analizar para intentarlo de nuevo.",
+      );
+    }
   }
 }
 
@@ -506,6 +644,8 @@ export function createApiServer({
           );
         }
         metadata.status = "processing";
+        delete metadata.errorCode;
+        delete metadata.errorMessage;
         metadata.updatedAt = new Date().toISOString();
         await saveJson(metadataFile, metadata);
         try {
@@ -531,6 +671,10 @@ export function createApiServer({
         } catch (error) {
           metadata.status = error.code === "gemini_free_quota" ? "quota" : "failed";
           metadata.errorCode = error.code || "processing_failed";
+          metadata.errorMessage =
+            error instanceof HttpError
+              ? error.message
+              : "No se pudo procesar el documento. El original sigue guardado.";
           metadata.updatedAt = new Date().toISOString();
           await saveJson(metadataFile, metadata);
           throw error;
@@ -610,8 +754,8 @@ export function createApiServer({
   return server;
 }
 
-const server = createApiServer();
-if (process.env.NODE_ENV !== "test") {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const server = createApiServer();
   const port = Number(process.env.PORT || 8080);
   server.listen(port, "0.0.0.0", () => console.log(`Aula C API escuchando en ${port}`));
 }
