@@ -39,4 +39,35 @@ console.log(`Construyendo Aula C para ${apiUrl}…`);
 run("npm", ["run", "build"], { env: { ...process.env, VITE_AULA_API_URL: apiUrl } });
 console.log(`Publicando configuración de acceso y sitio en ${firebaseProject}…`);
 run("firebase", ["deploy", "--only", "auth,hosting", "--project", firebaseProject]);
+
+const token = spawnSync("gcloud", ["auth", "print-access-token"], {
+  encoding: "utf8",
+  stdio: ["ignore", "pipe", "inherit"],
+  shell: false,
+});
+if (token.status === 0 && token.stdout.trim()) {
+  run("curl", [
+    "-fsS",
+    "-X",
+    "PATCH",
+    "-H",
+    `Authorization: Bearer ${token.stdout.trim()}`,
+    "-H",
+    `x-goog-user-project: ${firebaseProject}`,
+    "-H",
+    "Content-Type: application/json",
+    `https://identitytoolkit.googleapis.com/admin/v2/projects/${firebaseProject}/config?updateMask=authorizedDomains`,
+    "-d",
+    JSON.stringify({
+      authorizedDomains: [
+        "localhost",
+        "127.0.0.1",
+        `${firebaseProject}.firebaseapp.com`,
+        `${firebaseProject}.web.app`,
+      ],
+    }),
+    "-o",
+    "/dev/null",
+  ]);
+}
 console.log(`Listo: https://${firebaseProject}.web.app`);

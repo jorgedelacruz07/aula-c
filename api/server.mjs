@@ -323,7 +323,7 @@ export function createApiServer({
     return claims;
   },
   analyze = generateDraft,
-  apiKey = process.env.GEMINI_API_KEY,
+  apiKey = process.env.GEMINI_API_KEY || process.env.AULA_C_GEMINI_API_KEY,
 } = {}) {
   const server = createServer(async (req, res) => {
     const origin = req.headers.origin;

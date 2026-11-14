@@ -4,6 +4,7 @@ import {
   getAuth,
   getRedirectResult,
   onAuthStateChanged,
+  signInWithPopup,
   signInWithRedirect,
   signOut,
 } from "firebase/auth";
@@ -150,8 +151,12 @@ async function prepareDocument(metadata) {
 $("#sign-in").addEventListener("click", async () => {
   status($("#auth-message"), "Abriendo Google…");
   try {
-    await signInWithRedirect(auth, provider);
+    await signInWithPopup(auth, provider);
   } catch (error) {
+    if (error.code === "auth/popup-blocked") {
+      await signInWithRedirect(auth, provider);
+      return;
+    }
     const message =
       error.code === "auth/operation-not-allowed"
         ? "El proveedor Google aún no está activado en Firebase Authentication."
