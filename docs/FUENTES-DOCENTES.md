@@ -2,6 +2,8 @@
 
 Registro de incorporación del **2026-11-14**. Los PDF originales se conservan privados en la biblioteca de Aula C. Los recursos derivados quedan como borradores en `/admin`; el aula pública utiliza únicamente el material que el docente revisa y publica.
 
+Además, el laboratorio incluye **42 prácticas originales de Aula C con 165 casos ejecutados**, descritas en [Prácticas progresivas](PRACTICAS.md). Este contenido versionado desarrolla los temas de las guías y referencias universitarias; es independiente de los borradores privados generados por IA y de sus 64 casos propuestos. Incorporar estas prácticas no publica los PDF ni aprueba sus borradores.
+
 ## Nuevas fuentes de 1INF01 · PUCP · 2026-2
 
 | Orden     | Fuente                                             | Páginas PDF | Lecciones | Ejercicios | Aporte a la progresión                                                              |

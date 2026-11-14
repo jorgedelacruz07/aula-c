@@ -35,6 +35,7 @@
       })();
     </script>
     <link rel="stylesheet" href="/css/aula.css" />
+    <link rel="stylesheet" href="/css/practices.css" />
   </head>
   <body>
     <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -139,6 +140,10 @@
               <div>
                 <p class="eyebrow"><span class="short-line"></span> APRENDE HACIENDO</p>
                 <h2 id="lab-title">La teoría, al lado del código.</h2>
+                <p class="section-description">
+                  14 lecciones y 42 ejercicios resueltos: comprende la solución y reconstruye el programa en
+                  tu equipo.
+                </p>
               </div>
               <span class="pill"><span class="status-dot"></span> C real · WebAssembly</span>
             </div>
@@ -172,7 +177,10 @@
                     <option value="all">Todos los temas</option>
                   </select></label
                 ><label class="search-label"
-                  >Buscar lección<input id="search" type="search" placeholder="Punteros, ciclos, memoria…"
+                  >Buscar lección o práctica<input
+                    id="search"
+                    type="search"
+                    placeholder="Punteros, ciclos, memoria…"
                 /></label>
               </div>
             </div>
@@ -198,7 +206,14 @@
               <div id="lesson-list"></div>
             </aside>
             <div class="lesson-main">
+              <section
+                id="practice-browser"
+                class="practice-browser"
+                aria-label="Prácticas de la lección activa"
+                hidden
+              ></section>
               <div id="lesson-content"></div>
+              <p id="practice-editor-label" class="practice-editor-label" hidden></p>
               <div class="editor-panel">
                 <div class="editor-heading">
                   <span id="filename">01-hola.c</span
@@ -219,6 +234,9 @@
                 ></textarea>
                 <div class="editor-tools">
                   <button id="reset" class="text-button">Restaurar ejemplo</button>
+                  <button id="practice-mode-toggle" class="text-button" hidden>
+                    Abrir plantilla opcional
+                  </button>
                   <div>
                     <button id="import" class="text-button">Abrir .c</button
                     ><button id="download" class="text-button">Descargar .c ↓</button>
@@ -278,9 +296,9 @@ Prueba a predecirla antes de ejecutar.</pre>
                 <p class="eyebrow"><span class="short-line"></span> TU MATERIAL, EN UN SOLO LUGAR</p>
                 <h2 id="library-title">Del ejercicio a la explicación.</h2>
                 <p class="section-description">
-                  Los programas originales del repositorio con sus comentarios pedagógicos, casos de prueba y
-                  contexto real. Selecciona cualquier ejercicio para inspeccionarlo, modificarlo y compilarlo
-                  en el laboratorio.
+                  Ejercicios resueltos del repositorio, con comentarios pedagógicos, casos de prueba y
+                  contexto real. Estudia la solución, descarga el .c y reconstruye el ejercicio en tu equipo.
+                  El laboratorio permite demostrar cómo se ejecuta.
                 </p>
               </div>
               <div class="library-stats" aria-live="polite">
@@ -407,30 +425,30 @@ Prueba a predecirla antes de ejecutar.</pre>
               <span>UNI</span>
               <h3>Resolver antes de traducir</h3>
               <p>
-                El material introductorio de Sistemas UNI sirve como referencia complementaria de sintaxis y
-                resolución. Es formación de extensión; no se presenta como sílabo de una carrera ni prueba de
-                que su lenguaje inicial sea C.
+                La descripción de Algoritmia y Estructura de Datos (SI205, FIIS) orienta la continuidad hacia
+                recursión, listas, pilas, colas y análisis de algoritmos. Aquí introducimos esos temas
+                mediante prácticas propias en C.
               </p>
               <a
-                href="https://www.sistemasuni.edu.pe/templates/sistemasuni/nuevo/pdf/programacion/INTRODUCCI%C3%93N_Lenguaje%20Cc%20copia.pdf"
+                href="https://www.fiis.uni.edu.pe/departamentos-academicos/sistemas-y-telematica/299-si205-algoritmia-y-estructura-de-datos"
                 target="_blank"
                 rel="noreferrer"
-                >Consultar material introductorio ↗</a
+                >Consultar descripción del curso ↗</a
               >
             </article>
             <article>
               <span>UNMSM</span>
               <h3>Programar y aplicar</h3>
               <p>
-                El plan 2023 de Estadística incluye Introducción a la Programación y después Programación y
-                Métodos Numéricos. Se usa como ejemplo de progresión; no acredita un curso específico de C ni
-                una malla común de toda la universidad.
+                Las sumillas 2023 de Ingeniería Industrial incluyen funciones, arreglos y cadenas, y una
+                progresión hacia estructuras, recursión y archivos. Sirven como orientación temática para
+                nuestra práctica; el lenguaje y la profundidad dependen del curso.
               </p>
               <a
-                href="https://matematicas.unmsm.edu.pe/img/about/PLAN%20DE%20ESTUDIOS%202023%20-%20FINAL.pdf"
+                href="https://industrial.unmsm.edu.pe/escuelas-profesionales/epii/sumilla-de-los-cursos-de-la-eap-ing-industrial-2023/"
                 target="_blank"
                 rel="noreferrer"
-                >Consultar plan de estudios ↗</a
+                >Consultar sumillas 2023 ↗</a
               >
             </article>
           </div>

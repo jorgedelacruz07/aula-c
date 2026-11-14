@@ -69,3 +69,23 @@
 - **Corrección de carga:** el frontend ahora envía el tipo MIME del archivo seleccionado (PDF/DOCX/TXT/Markdown), requisito del endpoint autenticado de subida. Se confirmó la versión compilada desplegada en Hosting.
 - **Comandos e integración:** `npm run dev` inicia web :5183 y API :5184; Switchboard `aulac` ya muestra ambos. `npm run dev:auth` configura ADC aisladas con navegador. Actualizados ProjectsDocs, la ficha Vault, el catálogo de workspace, scripts/túneles y la documentación de máquinas. Proyección privada de ProjectsDocs pasó build/auditoría con aviso de 93 enlaces no resueltos. Implementación enviada a `master` en `76c33db`.
 - **Verificación realizada:** formato Prettier, sintaxis Node, build Vite, health, catálogo vacío, admin anónimo 401, asset desplegado con MIME dinámico y configuración activa de Cloud Run. No se ejecutó `npm run quick` ni la suite de pruebas.
+
+## 2026-11-14 · Prácticas progresivas junto a la teoría
+
+- **Solicitud:** más ejercicios por tema y dificultad, acordes con las guías compartidas y referencias de PUCP, UNI y UNMSM.
+- **Resultado:** 42 prácticas propias (15 básicas, 12 intermedias, 15 avanzadas), con 165 casos, plantillas C17, contratos, pistas independientes, soluciones comentadas opcionales y guía docente. Banco dentro del laboratorio con filtros, retorno al ejemplo, URL directa y progreso por práctica.
+- **Contenido y referencias:** `docs/PRACTICAS.md` registra catálogo y correspondencia temática; se actualizaron README, plan docente y fuentes. No se publicaron PDF ni borradores privados.
+- **Revisión:** una incidencia corregida: limitar el lote de memoria a 500 datos para que la entrada máxima habitual quepa en el runner web; cobertura del máximo, rechazo de 501 y límites de fixtures/plantillas.
+- **Evidencia:** `npm run quick` exit 0, 26/26 pruebas y build; 165 casos nuevos y 52 originales. Las 42 soluciones HTTP coinciden con archivos locales. Sin navegador. Base `5e0507a`, cambios locales sin commit/push/deploy.
+
+## 2026-11-14 · UX · Prácticas limitadas a la lección activa
+
+- **Solicitud:** eliminar la confusión de poder buscar otros temas desde el panel de una lección, duplicando la navegación superior y lateral.
+- **Resultado:** retirados los filtros internos; siempre se muestran Inicio/Aplicación/Reto de la lección activa y progreso local sobre tres prácticas. Sin scroll anidado de tarjetas. La búsqueda superior mantiene acceso por lección o práctica.
+- **Evidencia:** dos regresiones del componente pasan, incluyendo cambio entre las 14 lecciones, progreso local, selección y retorno al ejemplo; build correcto. Actualizados README y metodología. Sin cambios de contenido C, commit, push ni despliegue.
+
+## 2026-11-14 · Docencia · Soluciones completas por defecto
+
+- **Solicitud:** ejercicios resueltos para enseñar con Aula C; el alumno reconstruye el código en su laptop.
+- **Resultado:** las 42 prácticas cargan el C resuelto y comentado; desarrollo visible, descarga directa e indicaciones de compilación/reconstrucción local. Plantillas como alternativa secundaria, con borradores separados; alcance por lección conservado. Actualizados README y guía docente.
+- **Verificación:** `npm run quick` exit 0, 25/25 pruebas, 165 casos de prácticas y build. Las 42 rutas predeterminadas sirven exactamente las soluciones locales sin TODO. Sin cambios a API/infraestructura ni publicación.

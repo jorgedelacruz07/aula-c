@@ -1,6 +1,6 @@
 # Aula C · Aprende, experimenta, enseña
 
-Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar clases universitarias (orientada a referencias de PUCP, UNI y UNMSM): **14 lecciones comentadas con problemas cotidianos**, **26 ejercicios originales**, **Modo Docente**, laboratorio WebAssembly y un flujo privado para convertir documentos en material de enseñanza revisado.
+Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar clases universitarias (orientada a referencias de PUCP, UNI y UNMSM): **14 lecciones comentadas**, **42 prácticas progresivas con 165 casos de referencia**, **26 ejercicios del archivo**, **Modo Docente**, laboratorio WebAssembly y un flujo privado para convertir documentos en material de enseñanza revisado.
 
 ---
 
@@ -39,6 +39,16 @@ Guía interactiva y cuaderno de cátedra para dominar el lenguaje C y preparar c
 
 La biblioteca y su progresión temática se registran en [Fuentes docentes incorporadas](docs/FUENTES-DOCENTES.md). Los materiales derivados conservan preguntas, rúbricas y explicaciones propias de símbolos cuando se llevan al laboratorio.
 
+## Practicar junto a la teoría
+
+En **Aprende haciendo · La teoría, al lado del código**, cada lección ofrece tres prácticas: **Inicio**, **Aplicación** y **Reto**. Esta dificultad es relativa al tema; el nivel de contenidos sigue siendo Básico, Intermedio o Avanzado. Las tres prácticas mostradas pertenecen siempre a la lección activa. Los filtros superiores y la lista lateral permiten buscar y cambiar de lección; el panel de prácticas no repite esa navegación. Su progreso cuenta únicamente las prácticas de esa lección.
+
+Cada práctica abre directamente su **solución C17 completa y comentada**, junto al enunciado, contrato de entrada/salida, restricciones, desarrollo y casos de referencia. El alumno estudia la explicación en Aula C y reconstruye el programa en su laptop; puede descargar el `.c` resuelto y consultar indicaciones para Xcode o una terminal con GCC/Clang. La ejecución web sirve como demostración de clase.
+
+**Abrir plantilla opcional** conserva una alternativa de preparación docente. Sus borradores se guardan en una ruta distinta de la solución: un borrador antiguo con TODO no sustituye al código resuelto. **Ver solución comentada** vuelve al programa completo y **Restaurar solución** recupera el original si se modificó. Las verificaciones comprueban casos, no acreditan el aprendizaje del alumno. La URL abre por defecto el ejercicio resuelto.
+
+Son problemas propios, organizados según los temas de las guías compartidas y referencias oficiales universitarias; no son exámenes oficiales ni equivalencias de cursos. [Catálogo, metodología y referencias](docs/PRACTICAS.md).
+
 ---
 
 ## Empezar
@@ -62,15 +72,15 @@ El comando guarda credenciales solo en `~/.config/aula-c/gcloud/`; no modifica e
 
 `npm run dev` inicia Vite en `5183` y el API de pruebas en `5184`; ese API usa `Doppler dev-tools/dev`, ADC y el prefijo `dev/` del bucket de Aula C. En `http://localhost:5183/admin`, **Biblioteca principal** consulta el API compartido a través de Vite; **Pruebas locales** consulta el API local y sus archivos caducan a los 7 días. La biblioteca principal permite revisar los documentos procesados desde el asistente y conserva sus cambios entre local y producción.
 
-| Comando          | Resultado                                                                                                                       |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`    | Prepara contenido; inicia web `127.0.0.1:5183` y API `127.0.0.1:5184` usando Doppler y GCS                                      |
-| `npm run format` | Formatea API, web, scripts y documentación con Prettier; conserva las fuentes C originales                                      |
-| `npm run quick`  | Comprueba formato, ejecuta pruebas de lecciones y los 52 casos C originales en temporales, construye la web y revisa whitespace |
-| `npm run test:c` | Controles académicos existentes: `make verify anidados test_anidados`                                                           |
-| `npm run build`  | Genera `dist/` para Hosting; para producción usa la URL de API `VITE_AULA_API_URL`                                              |
-| `npm run deploy` | Construye la API localmente, la publica en Cloud Run y publica Auth + web en Firebase Hosting `aula-c-jorge`                    |
-| `make web`       | Alias de `npm run dev`                                                                                                          |
+| Comando          | Resultado                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`    | Prepara contenido; inicia web `127.0.0.1:5183` y API `127.0.0.1:5184` usando Doppler y GCS                                                    |
+| `npm run format` | Formatea API, web, scripts y documentación con Prettier; conserva las fuentes C originales                                                    |
+| `npm run quick`  | Comprueba formato, pruebas de integración, lecciones, 165 casos de las prácticas y 52 casos del archivo; construye la web y revisa whitespace |
+| `npm run test:c` | Controles académicos existentes: `make verify anidados test_anidados`                                                                         |
+| `npm run build`  | Genera `dist/` para Hosting; para producción usa la URL de API `VITE_AULA_API_URL`                                                            |
+| `npm run deploy` | Construye la API localmente, la publica en Cloud Run y publica Auth + web en Firebase Hosting `aula-c-jorge`                                  |
+| `make web`       | Alias de `npm run dev`                                                                                                                        |
 
 ---
 

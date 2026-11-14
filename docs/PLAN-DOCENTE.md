@@ -12,7 +12,15 @@ Una ruta de trabajo propia, con orientación universitaria y sin equivalencias o
 | 6. Aplicación               | E/S de archivos y lista enlazada inicial                                                              | Gestionar errores, cerrar recursos, distinguir almacenamiento virtual/nativo y explicar coste de recorrido       |
 | 7. Profundización siguiente | Búsqueda y ordenamiento, listas dinámicas, pilas, colas, árboles, módulos .h/.c y proyecto integrador | Resolver sin solución modelo, probar casos adversos, analizar tiempo/espacio y revisar el código de otra persona |
 
-Los tramos 1–6 tienen ejemplos ejecutables introductorios en esta entrega; el tramo 7 es trabajo posterior, no contenido ya implementado. Los ejercicios originales añaden problemas numéricos y de ciclos de mayor dificultad. Ningún programa aislado sustituye una práctica completa de diseño.
+Los tramos 1–6 tienen ejemplos ejecutables introductorios. El estudio sistemático del tramo 7 sigue como trabajo posterior, con introducciones puntuales en el banco de prácticas. Los ejercicios del archivo añaden problemas numéricos y de ciclos de mayor dificultad. Ningún programa aislado sustituye una práctica completa de diseño.
+
+## Tres prácticas por tema
+
+El laboratorio incorpora [42 prácticas y su catálogo](PRACTICAS.md), con tres etapas por cada una de las 14 lecciones. **Inicio** desarrolla una idea con una solución breve; **Aplicación** muestra cómo adaptarla a otro problema; **Reto** integra decisiones o recorridos y exige justificar límites. Las etapas expresan dificultad dentro del tema, separada del nivel de contenidos.
+
+Aula C presenta el ejercicio resuelto para explicar entrada, salida, algoritmo, símbolos y una traza. Después pide al alumno reconstruirlo en su propia laptop y resolver una variante sin copiar la referencia. La ejecución web permite hacer demostraciones; las plantillas quedan como una alternativa opcional de preparación docente. Las preguntas, errores frecuentes y pizarra del Modo Docente cambian con la práctica. El progreso de prácticas es independiente del de los ejemplos.
+
+Hay prácticas introductorias de búsqueda binaria, matrices, pila y cola enlazadas; el tramo 7 sigue pendiente como estudio sistemático de búsqueda/ordenamiento, análisis de complejidad, árboles y proyectos de varios archivos.
 
 ## Secuencia de una clase
 

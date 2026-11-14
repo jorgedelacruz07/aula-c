@@ -1,5 +1,30 @@
 # Handoff · Aula C
 
+## Ejercicios resueltos como referencia docente · 2026-11-14 · cambios locales
+
+- Solicitud: presentar los ejercicios resueltos según tema/nivel para explicar en Aula C; el alumno construye los programas en su laptop personal.
+- Las 42 prácticas ahora abren su solución C17 completa y comentada en el editor. El panel muestra desarrollo, contrato, casos, descarga directa del `.c` e indicaciones para reconstrucción con Xcode o GCC/Clang. El catálogo del archivo también se describe como ejercicios resueltos.
+- Plantillas conservadas como opción secundaria mediante «Abrir plantilla opcional» / «Ver solución comentada». Su ruta original `practicas/<id>.c` conserva borradores anteriores; la referencia usa `lecciones/practicas/<id>.c`, evitando que un borrador antiguo con TODO la reemplace. «Restaurar solución» recupera el C original.
+- Se mantiene el alcance de tres prácticas por lección y la navegación global superior/lateral. Los materiales son propuestas propias orientadas por las fuentes, sin atribuirlas a un solucionario oficial.
+- Evidencia: `npm run quick` exit 0, 25/25 pruebas; 165 casos nuevos, 52 casos del archivo y build. Las 42 rutas por defecto coinciden por HTTP con las soluciones locales y no contienen TODO. Soluciones y plantillas compilan con C17 y advertencias como errores. Sin commit/push/deploy.
+
+## Navegación de prácticas simplificada · 2026-11-14 · cambios locales
+
+- Corrección solicitada: el panel de una lección permitía explorar otros temas y duplicaba los filtros superiores/sidebar.
+- Ahora presenta únicamente las tres prácticas de la lección activa, sin selectores de alcance/nivel/dificultad ni búsqueda interna. El progreso cuenta solo esas tres prácticas. La navegación entre temas se mantiene en los filtros superiores y la lista lateral; la búsqueda superior se etiqueta «Buscar lección o práctica».
+- Eliminados el filtrado global interno y el scroll anidado de tarjetas. Se conservan Inicio/Aplicación/Reto, el retorno al ejemplo, borradores y soluciones opcionales.
+- Verificación: dos pruebas de regresión del componente pasan; comprueban las 14 lecciones, progreso local, selección de práctica, retorno al padre y rechazo de una tarjeta de otra lección. Build Vite correcto; las fuentes C y sus casos permanecen sin cambios respecto de la verificación anterior. Sin commit/push/deploy.
+
+## Prácticas por tema · 2026-11-14 · cambios locales
+
+- Solicitud: ampliar «Aprende haciendo · La teoría, al lado del código» con ejercicios de diferentes dificultades acordes a las guías y referencias universitarias.
+- Resultado: 42 prácticas propias, tres por cada lección (Inicio/Aplicación/Reto), con 165 casos; 15 de contenidos básicos, 12 intermedios y 15 avanzados. Plantillas incompletas, contratos, pistas, soluciones comentadas separadas y guía docente por ejercicio.
+- Banco integrado en el laboratorio: tema actual o todos los temas, filtros de nivel/dificultad y búsqueda; conserva relación con la lección y borradores/verificaciones independientes. Consultar la solución no sobrescribe el editor. La ruta `?leccion=practica-...` restaura la práctica.
+- Archivos: `web/js/practice-content/`, `web/js/practices.js`, `web/js/practice-ui.js`, `web/css/practices.css`, `web/js/aula.js`, `web/index.html`, `lecciones/practicas/`, dos suites nuevas y documentación. Catálogo y referencias en `docs/PRACTICAS.md`; PDF y borradores privados conservan su flujo de aprobación.
+- Verificación: `npm run quick` exit 0, 26/26 pruebas; soluciones C17 y plantillas con advertencias como errores, 165 casos nuevos, 52 del archivo y build Vite. HTTP local 200 y las 42 soluciones coinciden con el C local; IDs y sintaxis comprobados. Sin revisión visual en navegador. Aviso existente de Browserslist desactualizado.
+- Revisión independiente: corregido el dominio de `practica-11-promedio` a 500 mediciones para caber en los 4096 bytes de stdin. Añadidos máximo válido (3004 bytes), rechazo de 501 e invariantes de tamaño en fixtures/plantillas. Segunda ejecución de quick pasó tras corregirlo.
+- Base git: `5e0507a`. Esta ampliación está en el árbol local; no se hizo commit, push ni despliegue en esta solicitud. La publicación anterior descrita abajo conserva su evidencia histórica.
+
 ## Publicación completa · 2026-11-14
 
 - Solicitud expresa: commit, push a master y despliegue a producción. Se incluyeron los tres archivos de interfaz pendientes (CSS, HTML y lógica del laboratorio), confirmados en `6981b28`; master enviado a origin.

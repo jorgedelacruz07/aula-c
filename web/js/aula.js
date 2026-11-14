@@ -3,6 +3,8 @@ import { symbols, passes, escapeHtml as esc } from "./learning.js";
 import { CRunner } from "./runner.js";
 import { apiBase } from "./firebase-config.js";
 import { materialLabItem, fetchPublishedMaterials } from "./materials.js";
+import { practices, practiceLabItem } from "./practices.js";
+import { createPracticeBrowser, practiceTaskMarkup, bindPracticeTask } from "./practice-ui.js";
 
 const $ = (selector) => document.querySelector(selector);
 const runner = new CRunner();
@@ -22,6 +24,18 @@ let selected = null,
   catalog = [],
   loadVersion = 0,
   actionVersion = 0;
+
+const practiceItems = practices.map((practice) => practiceLabItem(practice));
+const practiceBrowser = createPracticeBrowser($("#practice-browser"), {
+  items: practiceItems,
+  lessons,
+  checked: (path) => typeof state.checked[path] === "string",
+  onSelect: async (item) => {
+    await load(item);
+    $("#lesson-content").scrollIntoView({ behavior: "smooth", block: "start" });
+  },
+  onExample: (item) => load(item),
+});
 
 function persist() {
   try {
@@ -112,7 +126,10 @@ function renderLessons() {
     (item) =>
       (levelVal === "all" || item.level === levelVal) &&
       (topicVal === "all" || item.topic === topicVal) &&
-      `${item.title} ${item.topic} ${item.concept} ${item.everyday || ""}`
+      `${item.title} ${item.topic} ${item.concept} ${item.everyday || ""} ${practices
+        .filter((practice) => practice.lessonId === item.id)
+        .map((practice) => `${practice.title} ${practice.statement}`)
+        .join(" ")}`
         .toLocaleLowerCase("es")
         .includes(query),
   );
@@ -126,7 +143,7 @@ function renderLessons() {
 
   const externalBanner = $("#active-external-item");
   if (externalBanner) {
-    const isExternalSelected = selected && !lessons.some((l) => l.id === selected.id);
+    const isExternalSelected = selected && !selected.lessonId && !lessons.some((l) => l.id === selected.id);
     if (isExternalSelected) {
       externalBanner.hidden = false;
       externalBanner.innerHTML = `
@@ -159,7 +176,7 @@ function renderLessons() {
 
           const itemsHtml = groupItems
             .map((item) => {
-              const isSelected = selected?.id === item.id;
+              const isSelected = (selected?.lessonId || selected?.id) === item.id;
               const isChecked = Boolean(state.checked[item.path]);
               const hasDraft = Boolean(state.drafts[item.path]) && !isChecked;
               const stepNum = item.id.slice(0, 2);
@@ -171,6 +188,7 @@ function renderLessons() {
                     <span class="lesson-topic-pill">${esc(item.topic)}</span>
                     <span class="lesson-meta-sep">·</span>
                     <span>${item.minutes} min</span>
+                    <span>· 3 prácticas</span>
                     ${
                       isChecked
                         ? '<span class="lesson-status-tag verified">Verificada</span>'
@@ -230,6 +248,7 @@ function explain(symbol) {
 }
 
 function theory(item) {
+  practiceBrowser.render(item);
   const isLesson = !!item.concept;
   const teacherActive = $("#teacher-mode").checked;
   const lessonIndex = lessons.findIndex((l) => l.id === item.id);
@@ -244,7 +263,7 @@ function theory(item) {
   $("#lesson-content").innerHTML = `
     <div class="lesson-header-bar">
       <div class="lesson-meta">
-        ${lessonIndex >= 0 ? `<span class="lesson-step-chip">LECCIÓN ${String(lessonIndex + 1).padStart(2, "0")} DE ${lessons.length}</span>` : `<span class="lesson-step-chip">EJERCICIO DE CATÁLOGO</span>`}
+        ${lessonIndex >= 0 ? `<span class="lesson-step-chip">LECCIÓN ${String(lessonIndex + 1).padStart(2, "0")} DE ${lessons.length}</span>` : `<span class="lesson-step-chip">${item.lessonId ? `${item.practiceMode === "template" ? "PLANTILLA" : "EJERCICIO RESUELTO"} · ${esc(item.difficulty)}` : "EJERCICIO DE CATÁLOGO"}</span>`}
         <span class="badge-level level-${esc(levelSlug)}">${esc(item.level)}</span>
         <span class="lesson-meta-topic">${esc(item.topic || (item.stage === "Anidados" ? "Ciclos anidados" : "Algoritmos numéricos"))}</span>
         <span class="lesson-meta-duration">${isLesson ? `⏱ ${item.minutes} min` : `Perfil ${esc(item.stage)}`}</span>
@@ -257,19 +276,20 @@ function theory(item) {
               <button type="button" class="stepper-btn" id="next-lesson-btn" ${nextLesson ? "" : "disabled"} title="${nextLesson ? esc(nextLesson.title) : "Última lección"}">Siguiente →</button>
             </div>`
           : `<div class="lesson-stepper">
-              <button type="button" class="stepper-btn" id="back-to-lessons-btn">← Volver a lecciones</button>
+              <button type="button" class="stepper-btn" id="back-to-lessons-btn">← ${item.lessonId ? "Ejemplo del tema" : "Volver a lecciones"}</button>
             </div>`
       }
     </div>
     <h3>${esc(item.title)}</h3>
-    ${item.everyday ? `<p class="everyday-hint">${esc(item.everyday)}</p>` : ""}
+    ${item.everyday && !item.lessonId ? `<p class="everyday-hint">${esc(item.everyday)}</p>` : ""}
     <p class="lesson-concept">${esc(item.concept || "Lee el encabezado y los contratos de las funciones. Predice la salida, selecciona un caso disponible y compara tu razonamiento con la ejecución.")}</p>
+    ${practiceTaskMarkup(item)}
     <div class="explanation">
       <b>EL PORQUÉ</b>
       ${esc(item.why || "Este programa se carga desde su archivo original. Las restricciones de su perfil pertenecen al material de práctica: C general también permite arreglos, estructuras y otros ciclos. El compilador C89 comprueba sintaxis de ese estándar, no las reglas académicas particulares.")}
     </div>
     <div class="symbols-panel">
-      <span class="symbols-caption">SÍMBOLOS CLAVE DE LA LECCIÓN (haz clic para inspeccionar):</span>
+      <span class="symbols-caption">SÍMBOLOS CLAVE (haz clic para inspeccionar):</span>
       <div class="symbols">
         ${(item.symbols || ["&", "*", "%d", "while", "return"])
           .map(
@@ -291,7 +311,7 @@ function theory(item) {
       </details>
     </div>
     <div class="teacher-content" ${teacherActive ? "" : "hidden"}>
-      <b>PARA TU SIGUIENTE CLASE · MODO DOCENTE (PUCP / UNI / UNMSM)</b>
+      <b>PARA TU SIGUIENTE CLASE · MODO DOCENTE</b>
       <p>${esc(item.teacher || "Dibuja el flujo entre módulos. Pide al alumno elegir una variable y describir su tipo, propósito, rango y duración; después solicita una prueba que pueda refutar su solución.")}</p>
       ${
         item.teacherDetails
@@ -317,6 +337,12 @@ function theory(item) {
     </div>
   `;
 
+  bindPracticeTask($("#lesson-content"), item, (index) => {
+    $("#test-case").value = String(index);
+    $("#stdin").value = item.tests[index].input;
+    $("#stdin").focus();
+  });
+
   if ($("#prev-lesson-btn") && prevLesson) {
     $("#prev-lesson-btn").onclick = () => load(prevLesson);
   }
@@ -324,7 +350,8 @@ function theory(item) {
     $("#next-lesson-btn").onclick = () => load(nextLesson);
   }
   if ($("#back-to-lessons-btn")) {
-    $("#back-to-lessons-btn").onclick = () => load(lessons[0]);
+    $("#back-to-lessons-btn").onclick = () =>
+      load(lessons.find((lesson) => lesson.id === item.lessonId) || lessons[0]);
   }
 
   document
@@ -350,6 +377,20 @@ async function load(item) {
   original = "";
   $("#source").value = "";
   $("#filename").textContent = item.path.split("/").pop();
+  $("#reset").textContent = item.lessonId
+    ? item.practiceMode === "template"
+      ? "Restaurar plantilla"
+      : "Restaurar solución"
+    : "Restaurar ejemplo";
+  $("#practice-mode-toggle").hidden = !item.lessonId;
+  $("#practice-mode-toggle").textContent =
+    item.practiceMode === "template" ? "Ver solución comentada" : "Abrir plantilla opcional";
+  $("#practice-editor-label").hidden = !item.lessonId;
+  $("#practice-editor-label").textContent =
+    item.practiceMode === "template"
+      ? "Plantilla opcional · completa los TODO"
+      : "Solución comentada · estudia el código y reconstruye el ejercicio en tu laptop";
+  if (item.lessonId) $("#standard").value = "c17";
   $("#test-results").replaceChildren();
   $("#output").textContent = "Cargando código…";
   $("#output").className = "";
@@ -371,7 +412,10 @@ async function load(item) {
       ? item.tests.map((test, i) => `<option value="${i}">${esc(test.name)}</option>`).join("")
       : "<option>Sin casos guardados</option>";
     $("#stdin").value = item.tests?.[0]?.input || "";
-    $("#output").textContent = "Predice la salida. Luego ejecuta o verifica los casos de referencia.";
+    $("#output").textContent =
+      item.practiceMode === "solution"
+        ? "Solución de referencia cargada. Predice su salida y contrástala con los casos. Puedes descargar el .c para reconstruirlo en tu equipo."
+        : "Predice la salida. Luego ejecuta o verifica los casos de referencia.";
     $("#execution-status").textContent =
       state.checked[item.path] === $("#source").value
         ? "Casos verificados para este código"
@@ -401,6 +445,8 @@ function recordDraft() {
   updateProgress();
   renderLessons();
   renderExercises();
+  practiceBrowser.refresh();
+  if (!state.checked[selected.path]) $("#lesson-content .lesson-verified-pill")?.remove();
 }
 
 async function execute(verify = false) {
@@ -439,6 +485,14 @@ async function execute(verify = false) {
       updateProgress();
       renderLessons();
       renderExercises();
+      practiceBrowser.refresh();
+      $("#lesson-content .lesson-verified-pill")?.remove();
+      if (state.checked[item.path]) {
+        $("#lesson-content .lesson-meta").insertAdjacentHTML(
+          "beforeend",
+          '<span class="lesson-verified-pill">✓ Casos verificados</span>',
+        );
+      }
     } else {
       const result = await runner.run(code, $("#stdin").value, { standard, onStatus });
       if (version !== actionVersion) return;
@@ -644,7 +698,17 @@ document.addEventListener("keydown", (event) => {
 $("#reset").onclick = () => {
   $("#source").value = original;
   recordDraft();
-  $("#execution-status").textContent = "Ejemplo restaurado";
+  $("#execution-status").textContent = selected?.lessonId
+    ? selected.practiceMode === "template"
+      ? "Plantilla restaurada"
+      : "Solución restaurada"
+    : "Ejemplo restaurado";
+};
+
+$("#practice-mode-toggle").onclick = () => {
+  const practice = practices.find((practice) => practice.id === selected?.id);
+  if (practice)
+    load(practiceLabItem(practice, selected.practiceMode === "template" ? "solution" : "template"));
 };
 
 $("#test-case").onchange = () => {
@@ -687,6 +751,9 @@ $("#file-input").onchange = async (event) => {
       stage: "Personal",
       everyday: "Archivo C personalizado importado.",
     };
+    $("#practice-mode-toggle").hidden = true;
+    $("#practice-editor-label").hidden = true;
+    $("#reset").textContent = "Restaurar ejemplo";
     original = source;
     $("#source").value = original;
     $("#filename").textContent = file.name;
@@ -726,6 +793,7 @@ try {
 const requested = new URLSearchParams(location.search).get("leccion") || state.last;
 await load(
   lessons.find((item) => item.id === requested) ||
+    practiceItems.find((item) => item.id === requested) ||
     catalog.find((item) => item.id === requested) ||
     lessons[0],
 );
