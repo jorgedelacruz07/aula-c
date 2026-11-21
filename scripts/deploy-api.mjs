@@ -1,5 +1,6 @@
 // Publishes the Aula C docs API to Cloud Run with the canonical safety set:
-// clean tree, immutable @sha256 digest, --no-traffic candidate + health probe before promotion,
+// clean tree, immutable @sha256 digest (from `docker push`, cross-checked with AR), first deploy only with
+// --first-deploy, --no-traffic candidate + health probe before promotion,
 // zero-cost flags (min 0, bounded max, CPU throttling) and Artifact Registry cleanup in dry-run unless asked.
 // Mirrors meta-repo tools/deploy/deploy-engine.mjs (branch office/platform-deploy); do not import across repos.
 import { spawnSync } from "node:child_process";
@@ -21,12 +22,16 @@ config.runtimeAccount = `aula-c-docs-api@${config.project}.iam.gserviceaccount.c
 config.image = `${config.region}-docker.pkg.dev/${config.project}/${config.repository}/docs-api`;
 
 const SHA256_RE = /^sha256:[a-f0-9]{64}$/;
-const FLAGS = new Set(["--sync-secret", "--apply-ar-policy"]);
+const FLAGS = new Set(["--sync-secret", "--apply-ar-policy", "--first-deploy"]);
 
 export function parseFlags(argv) {
   const unknown = argv.filter((arg) => !FLAGS.has(arg));
   if (unknown.length) throw new Error(`Flags no reconocidos: ${unknown.join(", ")}.`);
-  return { syncSecret: argv.includes("--sync-secret"), applyArPolicy: argv.includes("--apply-ar-policy") };
+  return {
+    syncSecret: argv.includes("--sync-secret"),
+    applyArPolicy: argv.includes("--apply-ar-policy"),
+    firstDeploy: argv.includes("--first-deploy"),
+  };
 }
 
 export function assertCleanTree(exec) {
@@ -43,7 +48,7 @@ export function assertCleanTree(exec) {
   return { sha, tag: sha.slice(0, 12) };
 }
 
-export function buildDeployArgs({ imageRef, commitSha, hasPreviousRevision }) {
+export function buildDeployArgs({ imageRef, commitSha }) {
   if (!/@sha256:[a-f0-9]{64}$/.test(imageRef || "")) {
     throw new Error(`Se rechaza el despliegue sin digest inmutable @sha256: ${String(imageRef)}`);
   }
@@ -69,11 +74,15 @@ export function buildDeployArgs({ imageRef, commitSha, hasPreviousRevision }) {
     "--timeout=240s",
     "--allow-unauthenticated",
     "--tag=candidate",
+    "--no-traffic",
     "--quiet",
   ];
-  // The first deploy of a service has no previous revision, so --no-traffic would be rejected.
-  if (hasPreviousRevision) args.push("--no-traffic");
   return args;
+}
+
+/** The digest reported by `docker push` ("<tag>: digest: sha256:... size: N"). */
+export function parsePushDigest(output) {
+  return String(output || "").match(/digest:\s*(sha256:[a-f0-9]{64})/)?.[1] || "";
 }
 
 export function buildCleanupPolicyArgs({ apply }) {
@@ -171,6 +180,13 @@ export async function deployApi({
   log = console.log,
 } = {}) {
   const { sha, tag } = assertCleanTree(exec);
+  const serviceExists =
+    exec("gcloud", [...serviceArgs("describe"), "--format=value(metadata.name)"]).status === 0;
+  if (!serviceExists && !flags.firstDeploy) {
+    throw new Error(
+      `No hay revisión en servicio para ${config.service}. Un primer deploy no tiene revisión previa a la que volver; repite con --first-deploy para aceptarlo explícitamente.`,
+    );
+  }
   if (flags.syncSecret) syncSecret();
   log(
     `Limpieza de Artifact Registry: ${flags.applyArPolicy ? "APLICA la política" : "dry-run (usa --apply-ar-policy para aplicarla)"}.`,
@@ -191,9 +207,9 @@ export async function deployApi({
     [
       "buildx",
       "build",
+      "--load",
       "--platform=linux/amd64",
       "--provenance=false",
-      "--push",
       "--tag",
       `${config.image}:${tag}`,
       "--file",
@@ -203,31 +219,32 @@ export async function deployApi({
     "docker buildx falló",
     { stdio: "inherit" },
   );
-  const digest = must(
-    exec,
-    "gcloud",
-    [
-      "artifacts",
-      "docker",
-      "images",
-      "describe",
-      `${config.image}:${tag}`,
-      `--project=${config.project}`,
-      "--format=value(image_summary.digest)",
-    ],
-    "No se pudo resolver el digest",
-  ).stdout.trim();
-  if (!SHA256_RE.test(digest)) throw new Error(`Digest inválido para ${config.image}:${tag}`);
+  // The digest comes from the push itself (not a mutable tag lookup); the registry must agree.
+  const pushed = must(exec, "docker", ["push", `${config.image}:${tag}`], "docker push falló");
+  const digest = parsePushDigest(pushed.stdout);
+  if (!SHA256_RE.test(digest))
+    throw new Error(`docker push no informó un digest válido para ${config.image}:${tag}`);
+  const registry = exec("gcloud", [
+    "artifacts",
+    "docker",
+    "images",
+    "describe",
+    `${config.image}:${tag}`,
+    `--project=${config.project}`,
+    "--format=value(image_summary.digest)",
+  ]);
+  const registryDigest = registry.stdout.trim();
+  if (registry.status !== 0 || !SHA256_RE.test(registryDigest)) {
+    throw new Error(`No se pudo verificar el digest en Artifact Registry para ${config.image}:${tag}`);
+  }
+  if (registryDigest !== digest) {
+    throw new Error(
+      `El digest no coincide para ${config.image}:${tag}: el push informó ${digest} y el registro tiene ${registryDigest}.`,
+    );
+  }
   const imageRef = `${config.image}@${digest}`;
 
-  const hasPreviousRevision =
-    exec("gcloud", [...serviceArgs("describe"), "--format=value(metadata.name)"]).status === 0;
-  must(
-    exec,
-    "gcloud",
-    buildDeployArgs({ imageRef, commitSha: sha, hasPreviousRevision }),
-    "Cloud Run rechazó el candidato",
-  );
+  must(exec, "gcloud", buildDeployArgs({ imageRef, commitSha: sha }), "Cloud Run rechazó el candidato");
   const deployed = describeService(exec);
   const candidateRevision = deployed?.status?.latestCreatedRevisionName;
   const candidateUrl = (deployed?.status?.traffic || []).find((item) => item.tag === "candidate")?.url;
