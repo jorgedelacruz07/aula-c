@@ -72,15 +72,16 @@ El comando guarda credenciales solo en `~/.config/aula-c/gcloud/`; no modifica e
 
 `npm run dev` inicia Vite en `5183` y el API de pruebas en `5184`; ese API usa `Doppler dev-tools/dev`, ADC y el prefijo `dev/` del bucket de Aula C. En `http://localhost:5183/admin`, **Biblioteca principal** consulta el API compartido a través de Vite; **Pruebas locales** consulta el API local y sus archivos caducan a los 7 días. La biblioteca principal permite revisar los documentos procesados desde el asistente y conserva sus cambios entre local y producción.
 
-| Comando          | Resultado                                                                                                                                     |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`    | Prepara contenido; inicia web `127.0.0.1:5183` y API `127.0.0.1:5184` usando Doppler y GCS                                                    |
-| `npm run format` | Formatea API, web, scripts y documentación con Prettier; conserva las fuentes C originales                                                    |
-| `npm run quick`  | Comprueba formato, pruebas de integración, lecciones, 165 casos de las prácticas y 52 casos del archivo; construye la web y revisa whitespace |
-| `npm run test:c` | Controles académicos existentes: `make verify anidados test_anidados`                                                                         |
-| `npm run build`  | Genera `dist/` para Hosting; para producción usa la URL de API `VITE_AULA_API_URL`                                                            |
-| `npm run deploy` | Construye la API localmente, la publica en Cloud Run y publica Auth + web en Firebase Hosting `aula-c-jorge`                                  |
-| `make web`       | Alias de `npm run dev`                                                                                                                        |
+| Comando             | Resultado                                                                                                                                     |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`       | Prepara contenido; inicia web `127.0.0.1:5183` y API `127.0.0.1:5184` usando Doppler y GCS                                                    |
+| `npm run format`    | Formatea API, web, scripts y documentación con Prettier; conserva las fuentes C originales                                                    |
+| `npm run quick`     | Comprueba formato, pruebas de integración, lecciones, 165 casos de las prácticas y 52 casos del archivo; construye la web y revisa whitespace |
+| `npm run quick:fix` | Variante mutante de `quick`: aplica Prettier (`npm run format`) y luego pruebas, build y whitespace                                           |
+| `npm run test:c`    | Controles académicos existentes: `make verify anidados test_anidados`                                                                         |
+| `npm run build`     | Genera `dist/` para Hosting; para producción usa la URL de API `VITE_AULA_API_URL`                                                            |
+| `npm run deploy`    | Construye la API localmente, la publica en Cloud Run y publica Auth + web en Firebase Hosting `aula-c-jorge`                                  |
+| `make web`          | Alias de `npm run dev`                                                                                                                        |
 
 ---
 

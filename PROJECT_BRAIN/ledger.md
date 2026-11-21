@@ -97,3 +97,11 @@
 - **Gate:** `npm run quick` exit 0, 25/25 pruebas, 165 casos nuevos y 52 del archivo; revisión de política sin hallazgos materiales.
 - **Publicación:** `npm run deploy -- --web-only` finalizado; Auth + Hosting `aula-c-jorge`, con API existente. Web pública <https://aula-c-jorge.web.app>.
 - **Evidencia:** 54 recursos (3 HTML, 9 assets y 42 soluciones C) HTTP 200 y SHA-256 idénticos al build; COOP/COEP correctos. API health 200, administración anónima 401 y materiales públicos 200 con CORS válido; cero borradores privados publicados.
+
+## 2026-11-21 · WAVE B6 · Verificación compile-once, caché del toolchain, deploy seguro y baseline del API
+
+- Rama local `office/wave-b-aulac` (sin push ni deploy). Verificar un ejercicio ahora compila y enlaza una vez (`CRunner.runTests`) y reutiliza el WebAssembly en cada caso: con 9 casos pasan de 9×(clang.wasm + wasm-ld.wasm) a 1×(clang.wasm + wasm-ld.wasm) + 9 ejecuciones (prueba de conteo en `scripts/runner.test.mjs` con host simulado; el tiempo real de clang.wasm no se midió).
+- Toolchain publicado en `/toolchain/<versión>/` con `Cache-Control: immutable` de 1 año; `manifest.json`, HTML y JS sin caché larga.
+- `scripts/deploy-api.mjs`: árbol limpio, digest `@sha256`, candidato `--no-traffic --tag=candidate` con health antes de mover tráfico, min 0 / max 1 / CPU throttling, limpieza de Artifact Registry en dry-run y sincronización de secretos solo con `--sync-secret`.
+- API: `listenHost` loopback fuera de producción, CORS por origen exacto validado al arrancar, `/api/health` solo de liveness; guard de red de pruebas (solo loopback). `npm run quick` es no mutante; `quick:fix` aplica formato.
+- Skill `.agents/skills/aulac-exercise-author/SKILL.md`.
