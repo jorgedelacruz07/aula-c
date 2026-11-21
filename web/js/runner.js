@@ -51,7 +51,7 @@ export class CRunner {
   toolchainBase = null;
   active = false;
   constructor({
-    fetchImpl = globalThis.fetch,
+    fetchImpl = (...args) => globalThis.fetch(...args),
     createHost = (binaryURL, context) => new WASIWorkerHost(new URL(binaryURL, location.href).href, context),
   } = {}) {
     this.fetchImpl = fetchImpl;

@@ -134,3 +134,56 @@ test("cancelling aborts the remaining cases", async () => {
   assert.equal(count(calls, "program"), 2);
   assert.equal(runner.active, false);
 });
+
+test("default fetchImpl preserves globalThis receiver for strict browser fetch", async () => {
+  globalThis.crossOriginIsolated = true;
+  const previousFetch = globalThis.fetch;
+  const { createHost } = (() => {
+    const calls = [];
+    return {
+      calls,
+      createHost: (binaryURL, context) => {
+        const kind = binaryURL.endsWith("clang.wasm")
+          ? "clang"
+          : binaryURL.endsWith("wasm-ld.wasm")
+            ? "wasm-ld"
+            : "program";
+        calls.push(kind);
+        return {
+          stdinBuffer: new SharedArrayBuffer(4100),
+          kill() {},
+          async start() {
+            if (kind === "clang") return { exitCode: 0, fs: {} };
+            if (kind === "wasm-ld") {
+              return {
+                exitCode: 0,
+                fs: { "/program.wasm": { mode: "binary", content: new Uint8Array([0, 97, 115, 109]) } },
+              };
+            }
+            context.stdout("ok\n");
+            return { exitCode: 0, fs: {} };
+          },
+        };
+      },
+    };
+  })();
+  globalThis.fetch = async function strictFetch(url) {
+    if (this !== globalThis) throw new TypeError("Failed to execute 'fetch' on 'Window': Illegal invocation");
+    if (url === "/toolchain/manifest.json") {
+      return { ok: true, json: async () => ({ version: "abc123def456", basePath: BASE }) };
+    }
+    if (url === `${BASE}/clang-fs.tar`) {
+      return { ok: true, arrayBuffer: async () => new ArrayBuffer(512) };
+    }
+    throw new Error(`Unexpected fetch ${url}`);
+  };
+  try {
+    const runner = new CRunner({ createHost });
+    const { compiled, results } = await runner.runTests("int main(){return 0;}", tests.slice(0, 2));
+    assert.equal(compiled.ok, true);
+    assert.equal(results.length, 2);
+    assert.equal(runner.toolchainBase, BASE);
+  } finally {
+    globalThis.fetch = previousFetch;
+  }
+});
