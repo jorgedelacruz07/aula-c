@@ -65,7 +65,7 @@ start(
     "node",
     "api/server.mjs",
   ],
-  { ...baseEnv, PORT: "5184" },
+  { ...baseEnv, NODE_ENV: "development", PORT: "5184" },
 );
 start("npm", ["run", "dev:web"], baseEnv);
 console.log("Aula C: web http://127.0.0.1:5183 · API http://127.0.0.1:5184 · GCS dev/ (caduca en 7 días)");

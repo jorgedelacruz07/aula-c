@@ -15,8 +15,9 @@
     "build": "npm run prepare:content && vite build",
     "format": "prettier --write api/*.mjs api/*.json web/*.html web/js web/css scripts docs PROJECT_BRAIN package.json package-lock.json vite.config.js firebase.json README.md",
     "format:check": "prettier --check api/*.mjs api/*.json web/*.html web/js web/css scripts docs PROJECT_BRAIN package.json package-lock.json vite.config.js firebase.json README.md",
-    "test": "node --test scripts/*.test.mjs",
+    "test": "node --import ./scripts/test-network-guard.mjs --test scripts/*.test.mjs",
     "quick": "npm run format:check && npm test && npm run build && git diff --check",
+    "quick:fix": "npm run format && npm test && npm run build && git diff --check",
     "test:c": "make verify anidados test_anidados",
     "deploy": "node scripts/deploy.mjs"
   },

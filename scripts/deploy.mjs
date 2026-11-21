@@ -17,6 +17,11 @@ function run(command, args, options = {}) {
   return result;
 }
 
+const tree = spawnSync("git", ["status", "--porcelain"], { encoding: "utf8", shell: false });
+if (tree.status !== 0 || tree.stdout.trim()) {
+  throw new Error("Árbol de trabajo sucio: haz commit o stash antes de desplegar (no se crean tags -dirty).");
+}
+
 if (!args.includes("--web-only")) {
   console.log("Publicando API de documentos en Cloud Run…");
   run("node", ["scripts/deploy-api.mjs"]);

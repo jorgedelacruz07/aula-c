@@ -5,6 +5,12 @@ import { Storage } from "@google-cloud/storage";
 import mammoth from "mammoth";
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import {
+  createCorsOriginPolicy,
+  createLivenessPayload,
+  parseConfiguredCorsOrigins,
+  resolveListenHostname,
+} from "./security-baseline.mjs";
 
 const ADMIN_EMAIL = "jdelacruzp7@gmail.com";
 const PDF_LIMIT = 25 * 1024 * 1024;
@@ -18,12 +24,12 @@ const DOCUMENT_TYPES = new Map([
 ]);
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const STORAGE_PREFIX = (process.env.AULA_C_STORAGE_PREFIX || "").replace(/^\/+|\/+$/g, "");
-const ALLOWED_ORIGINS = new Set(
-  (process.env.ALLOWED_ORIGINS || "https://aula-c-jorge.web.app,http://127.0.0.1:5183,http://localhost:5183")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean),
-);
+const DEFAULT_ORIGINS = ["https://aula-c-jorge.web.app", "http://127.0.0.1:5183", "http://localhost:5183"];
+const corsPolicy = createCorsOriginPolicy({
+  origins: process.env.ALLOWED_ORIGINS?.trim()
+    ? parseConfiguredCorsOrigins(process.env.ALLOWED_ORIGINS)
+    : DEFAULT_ORIGINS,
+});
 
 class HttpError extends Error {
   constructor(status, code, message) {
@@ -489,7 +495,7 @@ export function createApiServer({
 } = {}) {
   const server = createServer(async (req, res) => {
     const origin = req.headers.origin;
-    if (origin && ALLOWED_ORIGINS.has(origin)) {
+    if (origin && corsPolicy.isAllowedOrigin(origin)) {
       res.setHeader("Access-Control-Allow-Origin", origin);
       res.setHeader("Vary", "Origin");
       res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
@@ -508,7 +514,7 @@ export function createApiServer({
     const url = new URL(req.url || "/", "http://localhost");
     const path = url.pathname.replace(/\/$/, "") || "/";
     if (req.method === "GET" && path === "/api/health") {
-      json(res, 200, { ok: true, storageReady: Boolean(bucketName), aiReady: Boolean(apiKey) });
+      json(res, 200, createLivenessPayload());
       return;
     }
 
@@ -781,5 +787,6 @@ export function createApiServer({
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const server = createApiServer();
   const port = Number(process.env.PORT || 8080);
-  server.listen(port, "0.0.0.0", () => console.log(`Aula C API escuchando en ${port}`));
+  const hostname = resolveListenHostname(process.env);
+  server.listen(port, hostname, () => console.log(`Aula C API escuchando en ${hostname}:${port}`));
 }
