@@ -30,15 +30,53 @@ export function readTar(bytes) {
   return files;
 }
 
+function createSandboxFS() {
+  const now = new Date();
+  // Seed a root directory in the virtual drive so fopen can create files.
+  return {
+    "/.aula": {
+      path: "/.aula",
+      mode: "string",
+      content: "",
+      timestamps: { access: now, modification: now, change: now },
+    },
+  };
+}
+
 // Each phase owns a worker, deadline and virtual filesystem. No native process or server execution.
 export class CRunner {
   host = null;
   controller = null;
   baseFS = null;
+  toolchainBase = null;
   active = false;
+  constructor({
+    fetchImpl = globalThis.fetch,
+    createHost = (binaryURL, context) => new WASIWorkerHost(new URL(binaryURL, location.href).href, context),
+  } = {}) {
+    this.fetchImpl = fetchImpl;
+    this.createHost = createHost;
+  }
   cancel() {
     this.controller?.abort(new Error("Ejecución detenida."));
     this.host?.kill();
+  }
+  async resolveToolchainBase(signal) {
+    if (this.toolchainBase) return this.toolchainBase;
+    try {
+      const response = await this.fetchImpl("/toolchain/manifest.json", { signal });
+      if (response.ok) {
+        const manifest = await response.json();
+        if (typeof manifest?.basePath === "string" && manifest.basePath.startsWith("/toolchain/")) {
+          this.toolchainBase = manifest.basePath.replace(/\/$/, "");
+          return this.toolchainBase;
+        }
+      }
+    } catch (error) {
+      if (signal?.aborted) throw error;
+    }
+    this.toolchainBase = "/toolchain";
+    return this.toolchainBase;
   }
   async phase(binaryURL, args, fs, stdin, milliseconds, signal) {
     signal.throwIfAborted();
@@ -56,7 +94,7 @@ export class CRunner {
       if (kind === "out") stdout += chunk;
       else stderr += chunk;
     };
-    const host = new WASIWorkerHost(new URL(binaryURL, location.href).href, {
+    const host = this.createHost(binaryURL, {
       args,
       fs,
       stdout: (chunk) => append("out", chunk),
@@ -97,24 +135,22 @@ export class CRunner {
       if (this.host === host) this.host = null;
     }
   }
-  async run(code, stdin = "", { standard = "c17", onStatus = () => {} } = {}) {
-    if (this.active) throw new Error("Ya hay una ejecución activa.");
+  assertEnvironment() {
     if (!globalThis.crossOriginIsolated || typeof SharedArrayBuffer === "undefined") {
       throw new Error("El compilador necesita localhost o HTTPS y las cabeceras COOP/COEP. Usa npm run dev.");
     }
-    if (new TextEncoder().encode(code).length > LIMIT || new TextEncoder().encode(stdin).length > 4096) {
+  }
+  async compileInternal(code, { standard = "c17", onStatus = () => {} }, signal) {
+    if (new TextEncoder().encode(code).length > LIMIT) {
       throw new Error("Límite: 64 KiB de código y 4096 bytes de entrada.");
     }
     if (!["c17", "c89"].includes(standard)) throw new Error("Estándar desconocido.");
-    this.active = true;
-    this.controller = new AbortController();
-    const signal = this.controller.signal;
     const loadingDeadline = setTimeout(() => this.controller?.abort(), 60000);
-    let url;
     try {
+      const base = await this.resolveToolchainBase(signal);
       if (!this.baseFS) {
         onStatus("Preparando las bibliotecas C…");
-        const response = await fetch("/toolchain/clang-fs.tar", { signal });
+        const response = await this.fetchImpl(`${base}/clang-fs.tar`, { signal });
         if (!response.ok)
           throw new Error("No se encuentran las bibliotecas. Ejecuta npm run prepare:content.");
         this.baseFS = readTar(new Uint8Array(await response.arrayBuffer()));
@@ -133,7 +169,7 @@ export class CRunner {
       };
       onStatus("Compilando C → WebAssembly…");
       const compiled = await this.phase(
-        "/toolchain/clang.wasm",
+        `${base}/clang.wasm`,
         [
           "clang",
           "-cc1",
@@ -164,10 +200,10 @@ export class CRunner {
         20000,
         signal,
       );
-      if (compiled.exitCode !== 0) return { ...compiled, phase: "compilación" };
+      if (compiled.exitCode !== 0) return { ...compiled, phase: "compilación", ok: false };
       onStatus("Enlazando la biblioteca estándar…");
       const linked = await this.phase(
-        "/toolchain/wasm-ld.wasm",
+        `${base}/wasm-ld.wasm`,
         [
           "wasm-ld",
           "--no-threads",
@@ -186,25 +222,88 @@ export class CRunner {
         20000,
         signal,
       );
-      if (linked.exitCode !== 0)
-        return { ...linked, phase: "enlazado", stderr: compiled.stderr + linked.stderr };
+      if (linked.exitCode !== 0) {
+        return { ...linked, phase: "enlazado", stderr: compiled.stderr + linked.stderr, ok: false };
+      }
       const file = linked.fs["/program.wasm"];
       if (!file || file.mode !== "binary") throw new Error("El enlazador no produjo un programa.");
-      url = URL.createObjectURL(new Blob([file.content], { type: "application/wasm" }));
-      onStatus("Ejecutando en un entorno aislado…");
-      // Seed a root directory in the virtual drive so fopen can create files.
-      const sandbox = {
-        "/.aula": {
-          path: "/.aula",
-          mode: "string",
-          content: "",
-          timestamps: { access: now, modification: now, change: now },
-        },
+      return {
+        ok: true,
+        phase: "enlazado",
+        exitCode: 0,
+        stdout: "",
+        stderr: compiled.stderr + linked.stderr,
+        wasmBytes: file.content,
       };
-      const execution = await this.phase(url, ["program"], sandbox, stdin, 3000, signal);
-      return { ...execution, phase: "ejecución", stderr: compiled.stderr + linked.stderr + execution.stderr };
     } finally {
       clearTimeout(loadingDeadline);
+    }
+  }
+  async executeUrlInternal(binaryURL, stdin, { onStatus = () => {}, compilerStderr = "" }, signal) {
+    if (new TextEncoder().encode(stdin).length > 4096) {
+      throw new Error("Límite: 64 KiB de código y 4096 bytes de entrada.");
+    }
+    onStatus("Ejecutando en un entorno aislado…");
+    const execution = await this.phase(binaryURL, ["program"], createSandboxFS(), stdin, 3000, signal);
+    return {
+      ...execution,
+      phase: "ejecución",
+      stderr: compilerStderr + execution.stderr,
+    };
+  }
+  async run(code, stdin = "", { standard = "c17", onStatus = () => {} } = {}) {
+    if (this.active) throw new Error("Ya hay una ejecución activa.");
+    this.assertEnvironment();
+    if (new TextEncoder().encode(stdin).length > 4096) {
+      throw new Error("Límite: 64 KiB de código y 4096 bytes de entrada.");
+    }
+    this.active = true;
+    this.controller = new AbortController();
+    const signal = this.controller.signal;
+    let url;
+    try {
+      const compiled = await this.compileInternal(code, { standard, onStatus }, signal);
+      if (!compiled.ok) return compiled;
+      url = URL.createObjectURL(new Blob([compiled.wasmBytes], { type: "application/wasm" }));
+      return await this.executeUrlInternal(url, stdin, { onStatus, compilerStderr: compiled.stderr }, signal);
+    } finally {
+      if (url) URL.revokeObjectURL(url);
+      this.active = false;
+      this.controller = null;
+    }
+  }
+  /** Compile and link once, then reuse the produced WebAssembly module across every test fixture. */
+  async runTests(code, tests, { standard = "c17", onStatus = () => {}, onCase = () => {} } = {}) {
+    if (this.active) throw new Error("Ya hay una ejecución activa.");
+    this.assertEnvironment();
+    for (const test of tests) {
+      if (new TextEncoder().encode(test.input || "").length > 4096) {
+        throw new Error("Límite: 64 KiB de código y 4096 bytes de entrada.");
+      }
+    }
+    this.active = true;
+    this.controller = new AbortController();
+    const signal = this.controller.signal;
+    let url;
+    try {
+      const compiled = await this.compileInternal(code, { standard, onStatus }, signal);
+      if (!compiled.ok) return { compiled, results: [] };
+      url = URL.createObjectURL(new Blob([compiled.wasmBytes], { type: "application/wasm" }));
+      const results = [];
+      for (const [index, test] of tests.entries()) {
+        onStatus(`Ejecutando caso ${index + 1} de ${tests.length}…`);
+        const result = await this.executeUrlInternal(
+          url,
+          test.input || "",
+          { onStatus: () => {}, compilerStderr: compiled.stderr },
+          signal,
+        );
+        signal.throwIfAborted();
+        results.push(result);
+        onCase(test, result, index);
+      }
+      return { compiled, results };
+    } finally {
       if (url) URL.revokeObjectURL(url);
       this.active = false;
       this.controller = null;
