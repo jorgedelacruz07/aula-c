@@ -170,6 +170,38 @@ function syncSecret() {
     { encoding: "utf8", shell: false, input: value, stdio: ["pipe", "pipe", "inherit"] },
   );
   if (add.status !== 0) throw new Error("No se pudo sincronizar Gemini con Secret Manager.");
+  const newVersion = add.stdout.trim().split("/").pop();
+  const listRes = spawnSync(
+    "gcloud",
+    [
+      "secrets",
+      "versions",
+      "list",
+      config.secretName,
+      `--project=${config.project}`,
+      "--filter=state!=DESTROYED",
+      "--format=value(name.basename())",
+    ],
+    { encoding: "utf8", shell: false },
+  );
+  if (listRes.status === 0) {
+    for (const oldVer of listRes.stdout.split(/\s+/).filter((v) => v && v !== newVersion)) {
+      must(
+        defaultExec,
+        "gcloud",
+        [
+          "secrets",
+          "versions",
+          "destroy",
+          oldVer,
+          `--secret=${config.secretName}`,
+          `--project=${config.project}`,
+          "--quiet",
+        ],
+        `No se pudo destruir la versión anterior del secreto ${oldVer}`,
+      );
+    }
+  }
   console.log(`Secreto sincronizado: ${add.stdout.trim()}`);
 }
 
