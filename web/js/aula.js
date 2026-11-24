@@ -465,20 +465,35 @@ async function execute(verify = false) {
   try {
     if (verify) {
       let allPassed = true;
-      for (const [i, test] of item.tests.entries()) {
-        const result = await runner.run(code, test.input, { standard, onStatus });
-        if (version !== actionVersion) return;
-        const ok = passes(result, test);
-        allPassed = allPassed && ok;
+      const { compiled } = await runner.runTests(code, item.tests, {
+        standard,
+        onStatus,
+        onCase: (test, result, i) => {
+          if (version !== actionVersion) return;
+          const ok = passes(result, test);
+          allPassed = allPassed && ok;
+          const row = document.createElement("div");
+          row.className = `test-result ${ok ? "" : "fail"}`;
+          row.innerHTML = `${ok ? "✓" : "✗"} ${i + 1}. ${esc(test.name)}${ok ? "" : `<pre>Esperado (salida ${test.exitCode ?? 0}):\n${esc(test.output)}\nObtenido (salida ${result.exitCode} · ${esc(result.phase)}):\n${esc(result.stdout)}\n${esc(result.stderr)}</pre>`}`;
+          $("#test-results").append(row);
+          $("#output").textContent = result.stdout + result.stderr;
+        },
+      });
+      if (version !== actionVersion) return;
+      if (!compiled.ok) {
+        allPassed = false;
         const row = document.createElement("div");
-        row.className = `test-result ${ok ? "" : "fail"}`;
-        row.innerHTML = `${ok ? "✓" : "✗"} ${i + 1}. ${esc(test.name)}${ok ? "" : `<pre>Esperado (salida ${test.exitCode ?? 0}):\n${esc(test.output)}\nObtenido (salida ${result.exitCode} · ${esc(result.phase)}):\n${esc(result.stdout)}\n${esc(result.stderr)}</pre>`}`;
+        row.className = "test-result fail";
+        row.innerHTML = `✗ Error de ${esc(compiled.phase)} (salida ${compiled.exitCode})<pre>${esc(compiled.stderr || compiled.stdout)}</pre>`;
         $("#test-results").append(row);
-        $("#output").textContent = result.stdout + result.stderr;
+        $("#output").textContent = compiled.stderr || compiled.stdout || "(Error sin salida)";
+        $("#output").className = "error";
+        $("#execution-status").textContent = `${compiled.phase} · código de salida ${compiled.exitCode}`;
+      } else {
+        $("#execution-status").textContent = allPassed
+          ? `${item.tests.length} caso(s) verificado(s). Explica por qué funciona.`
+          : "Hay diferencias: revisa los resultados.";
       }
-      $("#execution-status").textContent = allPassed
-        ? `${item.tests.length} caso(s) verificado(s). Explica por qué funciona.`
-        : "Hay diferencias: revisa los resultados.";
       if (allPassed && $("#source").value === code) state.checked[item.path] = code;
       else delete state.checked[item.path];
       persist();

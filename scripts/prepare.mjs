@@ -7,10 +7,15 @@ import { exercises } from "../web/js/catalog.js";
 const root = fileURLToPath(new URL("../", import.meta.url));
 process.chdir(root);
 const manifest = JSON.parse(await readFile("scripts/toolchain.json", "utf8"));
+const toolchainVersion = createHash("sha256")
+  .update(JSON.stringify(manifest.files))
+  .digest("hex")
+  .slice(0, 12);
+const toolchainDir = resolve("web/public/toolchain", toolchainVersion);
 await mkdir(".cache/toolchain", { recursive: true });
 // This directory is exclusively generated; remove deleted/renamed source material too.
 await rm("web/public", { recursive: true, force: true });
-await mkdir("web/public/toolchain", { recursive: true });
+await mkdir(toolchainDir, { recursive: true });
 for (const [name, sha256] of Object.entries(manifest.files)) {
   const cache = resolve(".cache/toolchain", name);
   let bytes;
@@ -27,10 +32,14 @@ for (const [name, sha256] of Object.entries(manifest.files)) {
   }
   await writeFile(cache, bytes);
   await writeFile(
-    resolve("web/public/toolchain", name === "clang-fs.tar.gz" ? "clang-fs.tar" : name),
+    resolve(toolchainDir, name === "clang-fs.tar.gz" ? "clang-fs.tar" : name),
     name.endsWith(".gz") ? gunzipSync(bytes) : bytes,
   );
 }
+await writeFile(
+  "web/public/toolchain/manifest.json",
+  JSON.stringify({ version: toolchainVersion, basePath: `/toolchain/${toolchainVersion}` }, null, 2) + "\n",
+);
 for (const directory of ["ejercicios", "pruebas", "lecciones"]) {
   await cp(directory, `web/public/${directory}`, { recursive: true });
 }
@@ -77,5 +86,5 @@ const catalog = await Promise.all(
 );
 await writeFile("web/public/catalog.json", JSON.stringify(catalog, null, 2) + "\n");
 console.log(
-  `Contenido listo: ${catalog.length} ejercicios, ${catalog.reduce((n, x) => n + x.tests.length, 0)} pruebas y compilador local.`,
+  `Contenido listo: ${catalog.length} ejercicios, ${catalog.reduce((n, x) => n + x.tests.length, 0)} pruebas y compilador local (${toolchainVersion}).`,
 );
